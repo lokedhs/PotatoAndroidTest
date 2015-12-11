@@ -33,7 +33,7 @@ public class ChannelListActivity extends AppCompatActivity
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
+    private boolean twoPane;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -63,7 +63,7 @@ public class ChannelListActivity extends AppCompatActivity
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
-            mTwoPane = true;
+            twoPane = true;
         }
     }
 
@@ -90,17 +90,17 @@ public class ChannelListActivity extends AppCompatActivity
 
         @Override
         public void onBindViewHolder( final ViewHolder holder, int position ) {
-            holder.mItem = mValues.get( position );
-            holder.mIdView.setText( mValues.get( position ).id );
-            holder.mContentView.setText( mValues.get( position ).content );
+            holder.item = mValues.get( position );
+            holder.idView.setText( mValues.get( position ).id );
+            holder.contentView.setText( mValues.get( position ).content );
 
-            holder.mView.setOnClickListener( new View.OnClickListener()
+            holder.view.setOnClickListener( new View.OnClickListener()
             {
                 @Override
                 public void onClick( View v ) {
-                    if( mTwoPane ) {
+                    if( twoPane ) {
                         Bundle arguments = new Bundle();
-                        arguments.putString( ChannelDetailFragment.ARG_ITEM_ID, holder.mItem.id );
+                        arguments.putString( ChannelDetailFragment.ARG_ITEM_ID, holder.item.id );
                         ChannelDetailFragment fragment = new ChannelDetailFragment();
                         fragment.setArguments( arguments );
                         getSupportFragmentManager().beginTransaction()
@@ -110,7 +110,7 @@ public class ChannelListActivity extends AppCompatActivity
                     else {
                         Context context = v.getContext();
                         Intent intent = new Intent( context, ChannelDetailActivity.class );
-                        intent.putExtra( ChannelDetailFragment.ARG_ITEM_ID, holder.mItem.id );
+                        intent.putExtra( ChannelDetailFragment.ARG_ITEM_ID, holder.item.id );
 
                         context.startActivity( intent );
                     }
@@ -125,21 +125,21 @@ public class ChannelListActivity extends AppCompatActivity
 
         public class ViewHolder extends RecyclerView.ViewHolder
         {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public final View view;
+            public final TextView idView;
+            public final TextView contentView;
+            public DummyContent.DummyItem item;
 
             public ViewHolder( View view ) {
                 super( view );
-                mView = view;
-                mIdView = (TextView)view.findViewById( R.id.id );
-                mContentView = (TextView)view.findViewById( R.id.content );
+                this.view = view;
+                idView = (TextView)view.findViewById( R.id.id );
+                contentView = (TextView)view.findViewById( R.id.content );
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                return super.toString() + " '" + contentView.getText() + "'";
             }
         }
     }
