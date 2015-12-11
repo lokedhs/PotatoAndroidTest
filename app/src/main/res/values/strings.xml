@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PotatoAndroidTest</string>
+    <string name="title_channel_detail">Channel Detail</string>
+    <string name="title_activity_channel_main">ChannelMainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
