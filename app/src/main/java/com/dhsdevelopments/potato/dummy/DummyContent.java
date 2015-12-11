@@ -1,4 +1,4 @@
-package com.potatoandroidtest.dummy;
+package com.dhsdevelopments.potato.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

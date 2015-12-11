@@ -1,4 +1,4 @@
-package com.potatoandroidtest;
+package com.dhsdevelopments.potato;
 
 public class Log
 {

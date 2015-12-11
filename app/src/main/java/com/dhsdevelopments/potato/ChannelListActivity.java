@@ -1,4 +1,4 @@
-package com.potatoandroidtest;
+package com.dhsdevelopments.potato;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import androidclient.potato.dhsdevelopments.com.potatoandroidtest.R;
-import com.potatoandroidtest.dummy.DummyContent;
+import com.dhsdevelopments.potato.dummy.DummyContent;
 
 import java.util.List;
 

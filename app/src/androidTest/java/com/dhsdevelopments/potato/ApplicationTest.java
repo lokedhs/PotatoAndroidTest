@@ -1,4 +1,4 @@
-package com.potatoandroidtest;
+package com.dhsdevelopments.potato;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
