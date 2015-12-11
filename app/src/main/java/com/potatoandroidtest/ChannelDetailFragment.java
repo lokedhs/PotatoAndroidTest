@@ -1,4 +1,4 @@
-package androidclient.potato.dhsdevelopments.com.potatoandroidtest;
+package com.potatoandroidtest;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,7 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import androidclient.potato.dhsdevelopments.com.potatoandroidtest.dummy.DummyContent;
+import androidclient.potato.dhsdevelopments.com.potatoandroidtest.R;
+import com.potatoandroidtest.dummy.DummyContent;
 
 /**
  * A fragment representing a single Channel detail screen.

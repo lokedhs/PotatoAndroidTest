@@ -1,4 +1,4 @@
-package androidclient.potato.dhsdevelopments.com.potatoandroidtest;
+package com.potatoandroidtest;
 
 public class Log
 {
