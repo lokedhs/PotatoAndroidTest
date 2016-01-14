@@ -13,7 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.dhsdevelopments.potato.clientapi.Domain;
+import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.dummy.DummyContent;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import retrofit.*;
 
 import java.util.List;
 
@@ -64,6 +69,26 @@ public class ChannelListActivity extends AppCompatActivity
             // activity should be in two-pane mode.
             twoPane = true;
         }
+
+        Gson gson = new GsonBuilder().setDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" ).create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl( "http://10.0.2.2:8080/api/1.0/" )
+                .addConverterFactory( GsonConverterFactory.create( gson ) )
+                .build();
+        PotatoApi api = retrofit.create( PotatoApi.class );
+        Call<List<Domain>> call = api.getChannels( PotatoApplication.getInstance( this ).getApiKey() );
+        call.enqueue( new Callback<List<Domain>>()
+        {
+            @Override
+            public void onResponse( Response<List<Domain>> response, Retrofit retrofit ) {
+                Log.i( "Got response from server: " + response.body() );
+            }
+
+            @Override
+            public void onFailure( Throwable t ) {
+                Log.i( "Got error from server", t );
+            }
+        } );
     }
 
     private void setupRecyclerView( @NonNull RecyclerView recyclerView ) {

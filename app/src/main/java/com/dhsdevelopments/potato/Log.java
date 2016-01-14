@@ -31,4 +31,12 @@ public class Log
     public static void i( String message, Throwable e ) {
         android.util.Log.i( LOG_TAG, message, e );
     }
+
+    public static void wtf( String message ) {
+        android.util.Log.wtf( LOG_TAG, message );
+    }
+
+    public static void wtf( String message, Throwable e ) {
+        android.util.Log.wtf( LOG_TAG, message, e );
+    }
 }

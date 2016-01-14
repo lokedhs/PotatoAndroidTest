@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import com.dhsdevelopments.potato.ChannelListActivity;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.LoginActivity;
 import com.dhsdevelopments.potato.R;
@@ -45,6 +46,9 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
                 }
             }
         }
+
+        startActivity( new Intent( this, ChannelListActivity.class ) );
+        finish();
     }
 
     @Override
