@@ -7,9 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
-import com.dhsdevelopments.potato.dummy.DummyContent;
 
 /**
  * A fragment representing a single Channel detail screen.
@@ -23,12 +21,11 @@ public class ChannelDetailFragment extends Fragment
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_CHANNEL_ID = "item_id";
+    public static final String ARG_CHANNEL_NAME = "channel_name";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem item;
+    private String cid;
+    private String name;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,16 +38,17 @@ public class ChannelDetailFragment extends Fragment
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        if( getArguments().containsKey( ARG_ITEM_ID ) ) {
+        if( getArguments().containsKey( ARG_CHANNEL_ID ) ) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            item = DummyContent.ITEM_MAP.get( getArguments().getString( ARG_ITEM_ID ) );
+            cid = getArguments().getString( ARG_CHANNEL_ID );
+            name = getArguments().getString( ARG_CHANNEL_NAME );
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)activity.findViewById( R.id.toolbar_layout );
             if( appBarLayout != null ) {
-                appBarLayout.setTitle( item.content );
+                appBarLayout.setTitle( name );
             }
         }
     }
@@ -61,9 +59,9 @@ public class ChannelDetailFragment extends Fragment
         View rootView = inflater.inflate( R.layout.channel_detail, container, false );
 
         // Show the dummy content as text in a TextView.
-        if( item != null ) {
-            ((TextView)rootView.findViewById( R.id.channel_detail )).setText( item.details );
-        }
+//        if( item != null ) {
+//            ((TextView)rootView.findViewById( R.id.channel_detail )).setText( item.details );
+//        }
 
         return rootView;
     }
