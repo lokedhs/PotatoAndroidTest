@@ -56,8 +56,9 @@ public class ChannelDetailActivity extends AppCompatActivity
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString( ChannelDetailFragment.ARG_CHANNEL_ID,
-                                 getIntent().getStringExtra( ChannelDetailFragment.ARG_CHANNEL_ID ) );
+            Intent intent = getIntent();
+            arguments.putString( ChannelDetailFragment.ARG_CHANNEL_ID, intent.getStringExtra( ChannelDetailFragment.ARG_CHANNEL_ID ) );
+            arguments.putString( ChannelDetailFragment.ARG_CHANNEL_NAME, intent.getStringExtra( ChannelDetailFragment.ARG_CHANNEL_NAME ) );
             ChannelDetailFragment fragment = new ChannelDetailFragment();
             fragment.setArguments( arguments );
             getSupportFragmentManager().beginTransaction()
