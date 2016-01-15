@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import com.dhsdevelopments.potato.ChannelDetailActivity;
 import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.channelmessages.ChannelDetailActivity;
 
 /**
  * An activity representing a list of Channels. This activity

@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato.clientapi;
+package com.dhsdevelopments.potato.clientapi.channel;
 
 @SuppressWarnings( "unused" )
 public class Channel

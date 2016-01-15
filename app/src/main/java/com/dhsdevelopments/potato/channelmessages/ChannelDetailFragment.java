@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato;
+package com.dhsdevelopments.potato.channelmessages;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 
 /**
@@ -57,11 +60,13 @@ public class ChannelDetailFragment extends Fragment
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.channel_detail, container, false );
+        ListView messageListView = (ListView)rootView.findViewById( R.id.message_list );
 
-        // Show the dummy content as text in a TextView.
-//        if( item != null ) {
-//            ((TextView)rootView.findViewById( R.id.channel_detail )).setText( item.details );
-//        }
+        MessageListAdapter adapter = new MessageListAdapter( getContext(), cid );
+        messageListView.setAdapter( adapter );
+        adapter.loadMessages();
+
+        TextView messageInput = (TextView)rootView.findViewById( R.id.message_input_field );
 
         return rootView;
     }

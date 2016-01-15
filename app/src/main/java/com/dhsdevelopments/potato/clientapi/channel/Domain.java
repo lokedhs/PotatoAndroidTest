@@ -1,13 +1,13 @@
-package com.dhsdevelopments.potato.clientapi;
+package com.dhsdevelopments.potato.clientapi.channel;
 
 import java.util.List;
 
 @SuppressWarnings( "unused" )
-public class Group
+public class Domain
 {
     private String id;
     private String name;
-    private List<Channel> channels;
+    private List<Group> groups;
 
     public String getId() {
         return id;
@@ -17,16 +17,16 @@ public class Group
         return name;
     }
 
-    public List<Channel> getChannels() {
-        return channels;
+    public List<Group> getGroups() {
+        return groups;
     }
 
     @Override
     public String toString() {
-        return "Group[" +
+        return "Domain[" +
                        "id='" + id + '\'' +
                        ", name='" + name + '\'' +
-                       ", channels=" + channels +
+                       ", groups=" + groups +
                        ']';
     }
 }

@@ -8,12 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.dhsdevelopments.potato.*;
-import com.dhsdevelopments.potato.clientapi.Domain;
-import com.dhsdevelopments.potato.clientapi.PotatoApi;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import retrofit.*;
+import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.PotatoApplication;
+import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.channelmessages.ChannelDetailActivity;
+import com.dhsdevelopments.potato.channelmessages.ChannelDetailFragment;
+import com.dhsdevelopments.potato.clientapi.channel.Domain;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 import java.util.Collections;
 import java.util.List;
@@ -78,13 +82,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     }
 
     private void loadItems() {
-        Gson gson = new GsonBuilder().setDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" ).create();
-        Retrofit retrofit = new Retrofit.Builder()
-                                    .baseUrl( "http://10.0.2.2:8080/api/1.0/" )
-                                    .addConverterFactory( GsonConverterFactory.create( gson ) )
-                                    .build();
-        PotatoApi api = retrofit.create( PotatoApi.class );
-        Call<List<Domain>> call = api.getChannels( PotatoApplication.getInstance( parent ).getApiKey() );
+        PotatoApplication app = PotatoApplication.getInstance( parent );
+        Call<List<Domain>> call = app.getPotatoApi().getChannels( app.getApiKey() );
         call.enqueue( new Callback<List<Domain>>()
         {
             @Override

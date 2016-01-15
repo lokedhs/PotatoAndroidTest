@@ -25,7 +25,7 @@
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".ChannelDetailActivity"
+                android:name=".channelmessages.ChannelDetailActivity"
                 android:label="@string/title_channel_detail"
                 android:parentActivityName=".channellist.ChannelListActivity"
                 android:theme="@style/AppTheme.NoActionBar">
