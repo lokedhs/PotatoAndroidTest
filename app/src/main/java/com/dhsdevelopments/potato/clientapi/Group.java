@@ -24,9 +24,9 @@ public class Group
     @Override
     public String toString() {
         return "Group[" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", channels=" + channels +
-                ']';
+                       "id='" + id + '\'' +
+                       ", name='" + name + '\'' +
+                       ", channels=" + channels +
+                       ']';
     }
 }

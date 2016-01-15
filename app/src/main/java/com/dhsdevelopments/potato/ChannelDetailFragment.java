@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 import com.dhsdevelopments.potato.dummy.DummyContent;
 
 /**

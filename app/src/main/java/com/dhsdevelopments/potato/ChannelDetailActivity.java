@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 
 /**
  * An activity representing a single Channel detail screen. This
@@ -55,7 +56,7 @@ public class ChannelDetailActivity extends AppCompatActivity
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString                                                                  ( ChannelDetailFragment.ARG_ITEM_ID,
+            arguments.putString( ChannelDetailFragment.ARG_ITEM_ID,
                                  getIntent().getStringExtra( ChannelDetailFragment.ARG_ITEM_ID ) );
             ChannelDetailFragment fragment = new ChannelDetailFragment();
             fragment.setArguments( arguments );

@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato;
+package com.dhsdevelopments.potato.channellist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.dhsdevelopments.potato.*;
 import com.dhsdevelopments.potato.clientapi.Domain;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.dummy.DummyContent;
@@ -72,9 +73,9 @@ public class ChannelListActivity extends AppCompatActivity
 
         Gson gson = new GsonBuilder().setDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" ).create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl( "http://10.0.2.2:8080/api/1.0/" )
-                .addConverterFactory( GsonConverterFactory.create( gson ) )
-                .build();
+                                    .baseUrl( "http://10.0.2.2:8080/api/1.0/" )
+                                    .addConverterFactory( GsonConverterFactory.create( gson ) )
+                                    .build();
         PotatoApi api = retrofit.create( PotatoApi.class );
         Call<List<Domain>> call = api.getChannels( PotatoApplication.getInstance( this ).getApiKey() );
         call.enqueue( new Callback<List<Domain>>()

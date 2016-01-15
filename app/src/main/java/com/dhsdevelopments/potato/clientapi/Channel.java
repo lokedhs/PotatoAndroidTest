@@ -17,8 +17,8 @@ public class Channel
     @Override
     public String toString() {
         return "Channel[" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ']';
+                       "id='" + id + '\'' +
+                       ", name='" + name + '\'' +
+                       ']';
     }
 }

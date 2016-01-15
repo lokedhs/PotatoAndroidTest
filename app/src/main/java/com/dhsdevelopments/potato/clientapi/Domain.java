@@ -24,9 +24,9 @@ public class Domain
     @Override
     public String toString() {
         return "Domain[" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", groups=" + groups +
-                ']';
+                       "id='" + id + '\'' +
+                       ", name='" + name + '\'' +
+                       ", groups=" + groups +
+                       ']';
     }
 }

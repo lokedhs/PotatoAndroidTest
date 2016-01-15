@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PotatoApi
 {
-    @GET("channels")
-    Call<List<Domain>> getChannels( @Header("API-token") String apiKey );
+    @GET( "channels" )
+    Call<List<Domain>> getChannels( @Header( "API-token" ) String apiKey );
 
 }
