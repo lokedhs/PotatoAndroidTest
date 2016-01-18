@@ -4,10 +4,7 @@ import com.dhsdevelopments.potato.clientapi.channel.Domain;
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
 import retrofit.Call;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Path;
-import retrofit.http.Query;
+import retrofit.http.*;
 
 import java.util.List;
 
@@ -26,4 +23,11 @@ public interface PotatoApi
                                                    @Query( "channels" ) String channels,
                                                    @Query( "services" ) String services,
                                                    @Query( "event-id" ) String eventId );
+
+    @POST( "channel-updates/update" )
+    Call<ChannelUpdatesUpdateResult> channelUpdatesUpdate( @Header( "API-token" ) String apiKey,
+                                                           @Query( "event-id" ) String eventId,
+                                                           @Query( "cmd" ) String cmd,
+                                                           @Query( "channel" ) String channelId,
+                                                           @Query( "services" ) String services );
 }

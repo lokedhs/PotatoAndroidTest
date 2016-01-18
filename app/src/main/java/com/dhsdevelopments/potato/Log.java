@@ -33,10 +33,12 @@ public class Log
     }
 
     public static void wtf( String message ) {
+        android.util.Log.e( LOG_TAG, message );
         android.util.Log.wtf( LOG_TAG, message );
     }
 
     public static void wtf( String message, Throwable e ) {
+        android.util.Log.e( LOG_TAG, message, e );
         android.util.Log.wtf( LOG_TAG, message, e );
     }
 }

@@ -6,25 +6,31 @@ import android.os.Handler;
 import android.os.IBinder;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
+import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
 import retrofit.Call;
+import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChannelSubscriptionService extends Service
 {
-    public static final String ACTION_BIND_TO_CHANNEL = "bindToChannel";
+    public static final String ACTION_BIND_TO_CHANNEL = "bindChannel";
+    public static final String ACTION_UNBIND_FROM_CHANNEL = "unbindChannel";
     public static final String EXTRA_CHANNEL_ID = "channelId";
 
     public static final String ACTION_MESSAGE_RECEIVED = ChannelSubscriptionService.class.getName() + ".MESSAGE_RECEIVED";
     public static final String EXTRA_MESSAGE = "message";
 
-    private Thread receiverThread = null;
+    private Receiver receiverThread = null;
 
     public ChannelSubscriptionService() {
     }
@@ -32,13 +38,26 @@ public class ChannelSubscriptionService extends Service
     @Override
     public int onStartCommand( Intent intent, int flags, int startId ) {
         String action = intent.getAction();
-        if( action.equals( ACTION_BIND_TO_CHANNEL ) ) {
-            bindToChannel( intent.getStringExtra( EXTRA_CHANNEL_ID ) );
-        }
-        else {
-            throw new UnsupportedOperationException( "Illegal subscription command: " + action );
+        switch( action ) {
+            case ACTION_BIND_TO_CHANNEL:
+                bindToChannel( intent.getStringExtra( EXTRA_CHANNEL_ID ) );
+                break;
+            case ACTION_UNBIND_FROM_CHANNEL:
+                unbindFromChannel( intent.getStringExtra( EXTRA_CHANNEL_ID ) );
+                break;
+            default:
+                throw new UnsupportedOperationException( "Illegal subscription command: " + action );
         }
         return START_NOT_STICKY;
+    }
+
+    private void unbindFromChannel( String cid ) {
+        if( receiverThread == null ) {
+            Log.w( "Attempt to unbind with no thread running" );
+        }
+        else {
+            receiverThread.unbindFromChannel( cid );
+        }
     }
 
     private void bindToChannel( String cid ) {
@@ -48,7 +67,7 @@ public class ChannelSubscriptionService extends Service
             receiverThread.start();
         }
         else {
-            throw new UnsupportedOperationException( "Channel binding not supported yet" );
+            receiverThread.bindToChannel( cid );
         }
     }
 
@@ -75,27 +94,39 @@ public class ChannelSubscriptionService extends Service
         private String apiKey;
         private String cid;
 
+        private boolean shutdown = false;
+        private Set<String> subscribedChannels = new HashSet<>();
+        private Set<String> pendingBinds = new HashSet<>();
+        private String eventId = null;
+
         public Receiver( String cid ) {
             super( "NotificationReceiver" );
             this.cid = cid;
             PotatoApplication app = PotatoApplication.getInstance( ChannelSubscriptionService.this );
+
             api = app.getPotatoApi();
             apiKey = app.getApiKey();
+
+            subscribedChannels.add( cid );
+        }
+
+        public synchronized String getEventId() {
+            return eventId;
         }
 
         @Override
         public void run() {
             Handler handler = new Handler( ChannelSubscriptionService.this.getMainLooper() );
 
-            String eventId = null;
             try {
                 while( !interrupted() ) {
-                    Call<PotatoNotificationResult> call = api.channelUpdates( apiKey, cid, "content", eventId );
+                    Call<PotatoNotificationResult> call = api.channelUpdates( apiKey, cid, "content", getEventId() );
                     try {
                         Response<PotatoNotificationResult> response = call.execute();
                         if( response.isSuccess() ) {
                             PotatoNotificationResult body = response.body();
-                            eventId = body.eventId;
+
+                            updateEventIdAndCheckPendingBindRequests( body.eventId );
 
                             final List<PotatoNotification> notifications = body.notifications;
                             if( notifications != null && !notifications.isEmpty() ) {
@@ -115,15 +146,102 @@ public class ChannelSubscriptionService extends Service
                     }
                     catch( IOException e ) {
                         // If an error occurs, wait for a while before trying again
+                        Log.e( "Got exception when waiting for updates", e );
                         Thread.sleep( 10000 );
                     }
                 }
             }
             catch( InterruptedException e ) {
-                Log.e( "Should exit normally here, but this hasn't been tested yet", e );
+                if( !shutdown ) {
+                    Log.wtf( "Got interruption while not being shutdown", e );
+                }
+            }
+            Log.i( "Updates thread shut down" );
+        }
+
+        private void updateEventIdAndCheckPendingBindRequests( String eventId ) {
+            if( eventId == null ) {
+                throw new IllegalStateException( "Received eventId was null when updating" );
+            }
+
+            Set<String> pendingBindsCopy = null;
+            synchronized( this ) {
+                this.eventId = eventId;
+                if( shutdown ) {
+                    return;
+                }
+                if( !pendingBinds.isEmpty() ) {
+                    pendingBindsCopy = pendingBinds;
+                    pendingBinds = null;
+                }
+            }
+            if( pendingBindsCopy != null ) {
+                for( String s : pendingBindsCopy ) {
+                    submitBindRequest( s );
+                }
             }
         }
 
 
+        public void bindToChannel( String cid ) {
+            boolean willAdd = false;
+            synchronized( this ) {
+                if( shutdown ) {
+                    Log.w( "Not binding since the connection is being shut down" );
+                    return;
+                }
+                if( !subscribedChannels.contains( cid ) ) {
+                    subscribedChannels.add( cid );
+                    if( eventId == null ) {
+                        pendingBinds.add( cid );
+                    }
+                    else {
+                        willAdd = true;
+                    }
+                }
+            }
+            if( willAdd ) {
+                submitBindRequest( cid );
+            }
+        }
+
+        private void submitBindRequest( String cid ) {
+            Log.i( "Submit bind request: " + cid );
+            if( getEventId() == null ) {
+                throw new IllegalStateException( "eventId is null" );
+            }
+            Call<ChannelUpdatesUpdateResult> call = api.channelUpdatesUpdate( apiKey, getEventId(), "add", cid, "content" );
+            call.enqueue( new Callback<ChannelUpdatesUpdateResult>()
+            {
+                @Override
+                public void onResponse( Response<ChannelUpdatesUpdateResult> response, Retrofit retrofit ) {
+                    if( response.isSuccess() ) {
+                        if( !"ok".equals( response.body().result ) ) {
+                            Log.wtf( "Unexpected result form bind call" );
+                        }
+                    }
+                    else {
+                        Log.wtf( "Got failure from server: " + response.message() );
+                    }
+                }
+
+                @Override
+                public void onFailure( Throwable t ) {
+                    Log.wtf( "Failed to bind", t );
+                }
+            } );
+        }
+
+        public void unbindFromChannel( String cid ) {
+            synchronized( this ) {
+                subscribedChannels.remove( cid );
+                pendingBinds.remove( cid );
+                if( subscribedChannels.isEmpty() ) {
+                    shutdown = true;
+                    interrupt();
+                }
+            }
+            // TODO: Send unbind request to server here
+        }
     }
 }
