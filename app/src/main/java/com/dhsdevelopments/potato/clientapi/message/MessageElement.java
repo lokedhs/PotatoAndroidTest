@@ -1,6 +1,8 @@
 package com.dhsdevelopments.potato.clientapi.message;
 
-public abstract class MessageElement
+import java.io.Serializable;
+
+public abstract class MessageElement implements Serializable
 {
     public CharSequence getSpannable() {
         return "[NOT-IMPLEMENTED type=" + getClass().getName() + "]";

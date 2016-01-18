@@ -3,12 +3,16 @@ package com.dhsdevelopments.potato.clientapi.message;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 @SuppressWarnings( "UnusedDeclaration" )
 public class Message implements Serializable
 {
     @SerializedName( "id" )
     public String id;
+
+    @SerializedName( "channel" )
+    public String channel;
 
     @SerializedName( "created_date" )
     public String createdDate;
@@ -25,30 +29,36 @@ public class Message implements Serializable
     @SerializedName( "use_math" )
     public boolean useMath;
 
-    @SerializedName( "update" )
-    public MessageUpdate update;
+    @SerializedName( "deleted" )
+    public boolean deleted;
 
-    public String type;
+    @SerializedName( "hash" )
+    public String hash;
 
-    public String getChannel() {
-        String namePrefix = "msg-";
-        if( !type.startsWith( namePrefix ) ) {
-            throw new IllegalStateException( "Type for message does not start with '" + namePrefix + "'" );
-        }
-        return type.substring( namePrefix.length() );
-    }
+    @SerializedName( "updated" )
+    public Integer updated;
+
+    @SerializedName( "extra_html" )
+    public String extraHtml;
+
+    @SerializedName( "star_users" )
+    public List<String> starUsers;
 
     @Override
     public String toString() {
         return "Message[" +
                        "id='" + id + '\'' +
+                       ", channel='" + channel + '\'' +
                        ", createdDate='" + createdDate + '\'' +
                        ", from='" + from + '\'' +
                        ", fromName='" + fromName + '\'' +
                        ", text=" + text +
                        ", useMath=" + useMath +
-                       ", update='" + update + '\'' +
-                       ", type='" + type + '\'' +
+                       ", deleted=" + deleted +
+                       ", hash='" + hash + '\'' +
+                       ", updated=" + updated +
+                       ", extraHtml='" + extraHtml + '\'' +
+                       ", starUsers=" + starUsers +
                        ']';
     }
 }

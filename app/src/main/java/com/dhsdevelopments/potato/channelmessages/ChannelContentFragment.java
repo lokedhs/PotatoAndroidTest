@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
+import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
 
 /**
  * A fragment representing a single Channel detail screen.
@@ -29,10 +31,6 @@ public class ChannelContentFragment extends Fragment
     private String cid;
     private String name;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ChannelContentFragment() {
     }
 
@@ -50,6 +48,15 @@ public class ChannelContentFragment extends Fragment
 //                appBarLayout.setTitle( name );
 //            }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent( getContext(), ChannelSubscriptionService.class );
+        intent.setAction( ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL );
+        intent.putExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid );
+        getContext().startService( intent );
     }
 
     @Override
