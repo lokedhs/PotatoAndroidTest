@@ -1,8 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,11 +44,11 @@ public class ChannelContentFragment extends Fragment
             cid = getArguments().getString( ARG_CHANNEL_ID );
             name = getArguments().getString( ARG_CHANNEL_NAME );
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)activity.findViewById( R.id.toolbar_layout );
-            if( appBarLayout != null ) {
-                appBarLayout.setTitle( name );
-            }
+//            Activity activity = this.getActivity();
+//            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)activity.findViewById( R.id.toolbar_layout );
+//            if( appBarLayout != null ) {
+//                appBarLayout.setTitle( name );
+//            }
         }
     }
 
