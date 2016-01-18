@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
-    apply plugin: 'com.google.gms.google-services'
 
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
@@ -34,3 +33,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

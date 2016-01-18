@@ -24,7 +24,7 @@ public class ChannelContentActivity extends AppCompatActivity
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_channel_detail );
+        setContentView( R.layout.activity_channel_content );
         Toolbar toolbar = (Toolbar)findViewById( R.id.detail_toolbar );
         setSupportActionBar( toolbar );
 
