@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
-import com.dhsdevelopments.potato.channelmessages.ChannelDetailActivity;
-import com.dhsdevelopments.potato.channelmessages.ChannelDetailFragment;
+import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
+import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment;
 import com.dhsdevelopments.potato.clientapi.channel.Domain;
 import retrofit.Call;
 import retrofit.Callback;
@@ -55,9 +55,9 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             public void onClick( View v ) {
                 if( parent.isTwoPane() ) {
                     Bundle arguments = new Bundle();
-                    arguments.putString( ChannelDetailFragment.ARG_CHANNEL_ID, holder.item.getId() );
-                    arguments.putString( ChannelDetailFragment.ARG_CHANNEL_NAME, holder.item.getName() );
-                    ChannelDetailFragment fragment = new ChannelDetailFragment();
+                    arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, holder.item.getId() );
+                    arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, holder.item.getName() );
+                    ChannelContentFragment fragment = new ChannelContentFragment();
                     fragment.setArguments( arguments );
 
                     parent.getSupportFragmentManager()
@@ -67,9 +67,9 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
                 }
                 else {
                     Context context = v.getContext();
-                    Intent intent = new Intent( context, ChannelDetailActivity.class );
-                    intent.putExtra( ChannelDetailFragment.ARG_CHANNEL_ID, holder.item.getId() );
-                    intent.putExtra( ChannelDetailFragment.ARG_CHANNEL_NAME, holder.item.getName() );
+                    Intent intent = new Intent( context, ChannelContentActivity.class );
+                    intent.putExtra( ChannelContentFragment.ARG_CHANNEL_ID, holder.item.getId() );
+                    intent.putExtra( ChannelContentFragment.ARG_CHANNEL_NAME, holder.item.getName() );
                     context.startActivity( intent );
                 }
             }

@@ -18,7 +18,7 @@ import com.dhsdevelopments.potato.channellist.ChannelListActivity;
  * item details are presented side-by-side with a list of items
  * in a {@link ChannelListActivity}.
  */
-public class ChannelDetailActivity extends AppCompatActivity
+public class ChannelContentActivity extends AppCompatActivity
 {
 
     @Override
@@ -58,9 +58,9 @@ public class ChannelDetailActivity extends AppCompatActivity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             Intent intent = getIntent();
-            arguments.putString( ChannelDetailFragment.ARG_CHANNEL_ID, intent.getStringExtra( ChannelDetailFragment.ARG_CHANNEL_ID ) );
-            arguments.putString( ChannelDetailFragment.ARG_CHANNEL_NAME, intent.getStringExtra( ChannelDetailFragment.ARG_CHANNEL_NAME ) );
-            ChannelDetailFragment fragment = new ChannelDetailFragment();
+            arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_ID ) );
+            arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_NAME ) );
+            ChannelContentFragment fragment = new ChannelContentFragment();
             fragment.setArguments( arguments );
             getSupportFragmentManager().beginTransaction()
                                        .add( R.id.channel_detail_container, fragment )

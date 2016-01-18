@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
@@ -15,10 +16,10 @@ import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 /**
  * A fragment representing a single Channel detail screen.
  * This fragment is either contained in a {@link ChannelListActivity}
- * in two-pane mode (on tablets) or a {@link ChannelDetailActivity}
+ * in two-pane mode (on tablets) or a {@link ChannelContentActivity}
  * on handsets.
  */
-public class ChannelDetailFragment extends Fragment
+public class ChannelContentFragment extends Fragment
 {
     /**
      * The fragment argument representing the item ID that this fragment
@@ -34,7 +35,7 @@ public class ChannelDetailFragment extends Fragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ChannelDetailFragment() {
+    public ChannelContentFragment() {
     }
 
     @Override
@@ -42,9 +43,6 @@ public class ChannelDetailFragment extends Fragment
         super.onCreate( savedInstanceState );
 
         if( getArguments().containsKey( ARG_CHANNEL_ID ) ) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             cid = getArguments().getString( ARG_CHANNEL_ID );
             name = getArguments().getString( ARG_CHANNEL_NAME );
 
@@ -59,10 +57,13 @@ public class ChannelDetailFragment extends Fragment
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
-        View rootView = inflater.inflate( R.layout.channel_detail, container, false );
-        ListView messageListView = (ListView)rootView.findViewById( R.id.message_list );
+        View rootView = inflater.inflate( R.layout.channel_content, container, false );
+        RecyclerView messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
 
-        MessageListAdapter adapter = new MessageListAdapter( getContext(), cid );
+        LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );
+        messageListView.setLayoutManager( layoutManager );
+
+        ChannelContentAdapter adapter = new ChannelContentAdapter( getContext(), cid );
         messageListView.setAdapter( adapter );
         adapter.loadMessages();
 

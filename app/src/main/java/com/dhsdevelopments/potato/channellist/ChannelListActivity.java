@@ -9,13 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.dhsdevelopments.potato.R;
-import com.dhsdevelopments.potato.channelmessages.ChannelDetailActivity;
+import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 
 /**
  * An activity representing a list of Channels. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ChannelDetailActivity} representing
+ * lead to a {@link ChannelContentActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
