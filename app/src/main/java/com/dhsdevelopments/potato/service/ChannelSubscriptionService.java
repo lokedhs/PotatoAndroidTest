@@ -141,9 +141,11 @@ public class ChannelSubscriptionService extends Service
                     }
                     try {
                         Response<PotatoNotificationResult> response = call.execute();
+
                         synchronized( this ) {
                             outstandingCall = null;
                         }
+
                         if( response.isSuccess() ) {
                             PotatoNotificationResult body = response.body();
 
@@ -278,7 +280,7 @@ public class ChannelSubscriptionService extends Service
         }
 
         private void requestShutdown() {
-            Call<PotatoNotificationResult> outstandingCallCopy = null;
+            Call<PotatoNotificationResult> outstandingCallCopy;
             synchronized( this ) {
                 shutdown = true;
                 outstandingCallCopy = outstandingCall;
