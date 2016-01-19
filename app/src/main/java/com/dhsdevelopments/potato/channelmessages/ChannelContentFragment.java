@@ -60,6 +60,15 @@ public class ChannelContentFragment extends Fragment
     }
 
     @Override
+    public void onStop() {
+        Intent intent = new Intent( getContext(), ChannelSubscriptionService.class );
+        intent.setAction( ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL );
+        intent.putExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid );
+        getContext().startService( intent );
+        super.onStop();
+    }
+
+    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.channel_content, container, false );

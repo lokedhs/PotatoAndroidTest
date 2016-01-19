@@ -17,6 +17,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,12 +52,24 @@ public class ChannelSubscriptionService extends Service
         return START_NOT_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        Log.i( "Destroying subscription service" );
+        if( receiverThread != null ) {
+            receiverThread.requestShutdown();
+        }
+        super.onDestroy();
+    }
+
     private void unbindFromChannel( String cid ) {
         if( receiverThread == null ) {
             Log.w( "Attempt to unbind with no thread running" );
         }
         else {
-            receiverThread.unbindFromChannel( cid );
+            boolean wasShutdown = receiverThread.unbindFromChannel( cid );
+            if( wasShutdown ) {
+                receiverThread = null;
+            }
         }
     }
 
@@ -104,7 +117,7 @@ public class ChannelSubscriptionService extends Service
             this.cid = cid;
             PotatoApplication app = PotatoApplication.getInstance( ChannelSubscriptionService.this );
 
-            api = app.getPotatoApi();
+            api = app.getPotatoApiLongTimeout();
             apiKey = app.getApiKey();
 
             subscribedChannels.add( cid );
@@ -144,6 +157,9 @@ public class ChannelSubscriptionService extends Service
                             Thread.sleep( 10000 );
                         }
                     }
+                    catch( InterruptedIOException e ) {
+                        throw new ReceiverStoppedException( e );
+                    }
                     catch( IOException e ) {
                         // If an error occurs, wait for a while before trying again
                         Log.e( "Got exception when waiting for updates", e );
@@ -154,6 +170,11 @@ public class ChannelSubscriptionService extends Service
             catch( InterruptedException e ) {
                 if( !shutdown ) {
                     Log.wtf( "Got interruption while not being shutdown", e );
+                }
+            }
+            catch( ReceiverStoppedException e ) {
+                if( !shutdown ) {
+                    Log.wtf( "Receiver stop requested while not in shutdown state", e );
                 }
             }
             Log.i( "Updates thread shut down" );
@@ -232,16 +253,23 @@ public class ChannelSubscriptionService extends Service
             } );
         }
 
-        public void unbindFromChannel( String cid ) {
+        public boolean unbindFromChannel( String cid ) {
+            boolean wasShutdown = false;
             synchronized( this ) {
                 subscribedChannels.remove( cid );
                 pendingBinds.remove( cid );
                 if( subscribedChannels.isEmpty() ) {
-                    shutdown = true;
-                    interrupt();
+                    requestShutdown();
+                    wasShutdown = true;
                 }
             }
             // TODO: Send unbind request to server here
+            return wasShutdown;
+        }
+
+        private void requestShutdown() {
+            shutdown = true;
+            interrupt();
         }
     }
 }

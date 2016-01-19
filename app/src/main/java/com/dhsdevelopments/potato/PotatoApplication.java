@@ -9,8 +9,11 @@ import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.MessageElement;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+
+import java.util.concurrent.TimeUnit;
 
 public class PotatoApplication extends Application
 {
@@ -33,13 +36,26 @@ public class PotatoApplication extends Application
     }
 
     public PotatoApi getPotatoApi() {
+        return makePotatoApi( -1 );
+    }
+
+    public PotatoApi getPotatoApiLongTimeout() {
+        return makePotatoApi( 120 );
+    }
+
+    private PotatoApi makePotatoApi( int timeout ) {
         Gson gson = new GsonBuilder()
                             .setDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" )
                             .registerTypeAdapter( MessageElement.class, new MessageElementTypeAdapter() )
                             .create();
+        OkHttpClient httpClient = new OkHttpClient();
+        if( timeout > 0 ) {
+            httpClient.setReadTimeout( timeout, TimeUnit.SECONDS );
+        }
         Retrofit retrofit = new Retrofit.Builder()
                                     .baseUrl( "http://10.0.2.2:8080/api/1.0/" )
                                     .addConverterFactory( GsonConverterFactory.create( gson ) )
+                                    .client( httpClient )
                                     .build();
         return retrofit.create( PotatoApi.class );
     }
