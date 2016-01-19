@@ -46,34 +46,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
     @Override
     public void onBindViewHolder( final ViewHolder holder, int position ) {
-        holder.item = values.get( position );
-        holder.contentView.setText( values.get( position ).getName() );
-
-        holder.view.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick( View v ) {
-                if( parent.isTwoPane() ) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, holder.item.getId() );
-                    arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, holder.item.getName() );
-                    ChannelContentFragment fragment = new ChannelContentFragment();
-                    fragment.setArguments( arguments );
-
-                    parent.getSupportFragmentManager()
-                          .beginTransaction()
-                          .replace( R.id.channel_detail_container, fragment )
-                          .commit();
-                }
-                else {
-                    Context context = v.getContext();
-                    Intent intent = new Intent( context, ChannelContentActivity.class );
-                    intent.putExtra( ChannelContentFragment.ARG_CHANNEL_ID, holder.item.getId() );
-                    intent.putExtra( ChannelContentFragment.ARG_CHANNEL_NAME, holder.item.getName() );
-                    context.startActivity( intent );
-                }
-            }
-        } );
+        holder.fillInChannelEntry( values.get( position ) );
     }
 
     @Override
@@ -104,7 +77,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     {
         public View view;
         public TextView contentView;
-        public ChannelEntry item;
 
         public ViewHolder( View view ) {
             super( view );
@@ -115,6 +87,36 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
         @Override
         public String toString() {
             return super.toString() + " '" + contentView.getText() + "'";
+        }
+
+        public void fillInChannelEntry( final ChannelEntry item ) {
+            contentView.setText( item.getName() + " (" + item.getDomainName() + ")" );
+
+            view.setOnClickListener( new View.OnClickListener()
+            {
+                @Override
+                public void onClick( View v ) {
+                    if( parent.isTwoPane() ) {
+                        Bundle arguments = new Bundle();
+                        arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, item.getId() );
+                        arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, item.getName() );
+                        ChannelContentFragment fragment = new ChannelContentFragment();
+                        fragment.setArguments( arguments );
+
+                        parent.getSupportFragmentManager()
+                              .beginTransaction()
+                              .replace( R.id.channel_detail_container, fragment )
+                              .commit();
+                    }
+                    else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent( context, ChannelContentActivity.class );
+                        intent.putExtra( ChannelContentFragment.ARG_CHANNEL_ID, item.getId() );
+                        intent.putExtra( ChannelContentFragment.ARG_CHANNEL_NAME, item.getName() );
+                        context.startActivity( intent );
+                    }
+                }
+            } );
         }
     }
 }

@@ -21,6 +21,7 @@ import java.io.InterruptedIOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ChannelSubscriptionService extends Service
 {
@@ -111,6 +112,7 @@ public class ChannelSubscriptionService extends Service
         private Set<String> subscribedChannels = new HashSet<>();
         private Set<String> pendingBinds = new HashSet<>();
         private String eventId = null;
+        private Call<PotatoNotificationResult> outstandingCall = null;
 
         public Receiver( String cid ) {
             super( "NotificationReceiver" );
@@ -132,10 +134,16 @@ public class ChannelSubscriptionService extends Service
             Handler handler = new Handler( ChannelSubscriptionService.this.getMainLooper() );
 
             try {
-                while( !interrupted() ) {
+                while( !isShutdown() && !interrupted() ) {
                     Call<PotatoNotificationResult> call = api.channelUpdates( apiKey, cid, "content", getEventId() );
+                    synchronized( this ) {
+                        outstandingCall = call;
+                    }
                     try {
                         Response<PotatoNotificationResult> response = call.execute();
+                        synchronized( this ) {
+                            outstandingCall = null;
+                        }
                         if( response.isSuccess() ) {
                             PotatoNotificationResult body = response.body();
 
@@ -162,18 +170,20 @@ public class ChannelSubscriptionService extends Service
                     }
                     catch( IOException e ) {
                         // If an error occurs, wait for a while before trying again
-                        Log.e( "Got exception when waiting for updates", e );
-                        Thread.sleep( 10000 );
+                        if( !isShutdown() ) {
+                            Log.e( "Got exception when waiting for updates", e );
+                            Thread.sleep( 10000 );
+                        }
                     }
                 }
             }
             catch( InterruptedException e ) {
-                if( !shutdown ) {
+                if( !isShutdown() ) {
                     Log.wtf( "Got interruption while not being shutdown", e );
                 }
             }
             catch( ReceiverStoppedException e ) {
-                if( !shutdown ) {
+                if( !isShutdown() ) {
                     Log.wtf( "Receiver stop requested while not in shutdown state", e );
                 }
             }
@@ -268,8 +278,20 @@ public class ChannelSubscriptionService extends Service
         }
 
         private void requestShutdown() {
-            shutdown = true;
+            Call<PotatoNotificationResult> outstandingCallCopy = null;
+            synchronized( this ) {
+                shutdown = true;
+                outstandingCallCopy = outstandingCall;
+            }
+            if( outstandingCallCopy != null ) {
+                outstandingCallCopy.cancel();
+            }
+
             interrupt();
+        }
+
+        public synchronized boolean isShutdown() {
+            return shutdown;
         }
     }
 }

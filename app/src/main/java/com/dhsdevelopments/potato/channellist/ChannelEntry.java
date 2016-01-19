@@ -10,11 +10,15 @@ import java.util.List;
 class ChannelEntry
 {
     private String id;
+    private String domainName;
+    private String groupName;
     private String name;
 
-    ChannelEntry( String id, String name ) {
+    ChannelEntry( String id, String domainName, String groupName, String channelName ) {
         this.id = id;
-        this.name = name;
+        this.domainName = domainName;
+        this.groupName = groupName;
+        this.name = channelName;
     }
 
     public String getId() {
@@ -25,12 +29,22 @@ class ChannelEntry
         return name;
     }
 
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
     static List<ChannelEntry> makeFromChannelTree( List<Domain> domains ) {
         List<ChannelEntry> result = new ArrayList<>();
         for( Domain d : domains ) {
+            String domainName = d.getName();
             for( Group g : d.getGroups() ) {
+                String groupName = g.getName();
                 for( Channel c : g.getChannels() ) {
-                    result.add( new ChannelEntry( c.getId(), c.getName() ) );
+                    result.add( new ChannelEntry( c.getId(), domainName, groupName, c.getName() ) );
                 }
             }
         }

@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity
         WebView webView = (WebView)findViewById( R.id.login_webview );
         webView.setWebViewClient( new Client() );
 
-        webView.loadUrl( "http://10.0.2.2:8080/login?m=1" );
+        webView.loadUrl( "http://potato.dhsdevelopments.com/login?m=1" );
     }
 
     private class Client extends WebViewClient
