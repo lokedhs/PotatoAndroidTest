@@ -18,9 +18,7 @@ import retrofit.Retrofit;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>
 {
@@ -82,6 +80,43 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    /**
+     * Called when a new message is received from the server.
+     */
+    public void newMessage( Message msg ) {
+        MessageWrapper w = new MessageWrapper( msg, isoDateFormat, dateFormat );
+        int pos = Collections.binarySearch( messages, w, new Comparator<MessageWrapper>()
+        {
+            @Override
+            public int compare( MessageWrapper m1, MessageWrapper m2 ) {
+                return m1.getCreatedDate().compareTo( m2.getCreatedDate() );
+            }
+        } );
+
+        if( msg.updated == null ) {
+            // This is a new message, add it at the appropriate position.
+            // Don't do this if the message is already in the list.
+            if( pos < 0 ) {
+                int insertionPos = -pos - 1;
+                messages.add( insertionPos, w );
+                notifyItemInserted( insertionPos );
+            }
+        }
+        else {
+            // This is an update. Only update if the message is already in the log.
+            if( pos >= 0 ) {
+                if( msg.deleted ) {
+                    messages.remove( pos );
+                    notifyItemRemoved( pos );
+                }
+                else {
+                    messages.set( pos, w );
+                    notifyItemChanged( pos );
+                }
+            }
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder

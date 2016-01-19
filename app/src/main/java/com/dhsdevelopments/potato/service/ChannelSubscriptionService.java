@@ -24,12 +24,12 @@ import java.util.Set;
 
 public class ChannelSubscriptionService extends Service
 {
-    public static final String ACTION_BIND_TO_CHANNEL = "bindChannel";
-    public static final String ACTION_UNBIND_FROM_CHANNEL = "unbindChannel";
+    public static final String ACTION_BIND_TO_CHANNEL = "com.dhsdevelopments.potato.BIND_CHANNEL";
+    public static final String ACTION_UNBIND_FROM_CHANNEL = "com.dhsdevelopments.potato.UNBIND_CHANNEL";
     public static final String EXTRA_CHANNEL_ID = "channelId";
 
-    public static final String ACTION_MESSAGE_RECEIVED = ChannelSubscriptionService.class.getName() + ".MESSAGE_RECEIVED";
-    public static final String EXTRA_MESSAGE = "message";
+    public static final String ACTION_MESSAGE_RECEIVED = "com.dhsdevelopments.potato.MESSAGE_RECEIVED";
+    public static final String EXTRA_MESSAGE = "com.dhsdevelopments.potato.message";
 
     private Receiver receiverThread = null;
 

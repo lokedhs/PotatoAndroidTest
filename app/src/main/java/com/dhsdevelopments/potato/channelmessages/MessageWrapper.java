@@ -12,23 +12,23 @@ public class MessageWrapper
 {
     private String messageId;
     private String senderName;
-    private String createdDate;
+    private Date createdDate;
     private String createdDateFormatted;
     private MessageElement content;
 
     public MessageWrapper( Message msg, DateFormat isoDateFormat, MessageFormat dateFormat ) {
         this.messageId = msg.id;
         this.senderName = msg.fromName;
-        this.createdDate = msg.createdDate;
         this.content = msg.text;
 
         Date date;
         try {
-            date = isoDateFormat.parse( createdDate );
+            date = isoDateFormat.parse( msg.createdDate );
         }
         catch( ParseException e ) {
-            throw new IllegalStateException( "Unable to parse date format from server: '" + createdDate + "'", e );
+            throw new IllegalStateException( "Unable to parse date format from server: '" + this.createdDate + "'", e );
         }
+        this.createdDate = date;
         this.createdDateFormatted = dateFormat.format( new Object[] { date } );
     }
 
@@ -40,7 +40,7 @@ public class MessageWrapper
         return senderName;
     }
 
-    public String getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
