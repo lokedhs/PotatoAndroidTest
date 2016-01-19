@@ -3,6 +3,8 @@ package com.dhsdevelopments.potato.clientapi;
 import com.dhsdevelopments.potato.clientapi.channel.Domain;
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import retrofit.Call;
 import retrofit.http.*;
 
@@ -30,4 +32,9 @@ public interface PotatoApi
                                                            @Query( "cmd" ) String cmd,
                                                            @Query( "channel" ) String channelId,
                                                            @Query( "services" ) String services );
+
+    @POST( "channel/{cid}/create" )
+    Call<SendMessageResult> sendMessage( @Header( "API-token" ) String apiKey,
+                                         @Path( "cid" ) String channelId,
+                                         @Body SendMessageRequest request );
 }

@@ -5,18 +5,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
+import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+
+import java.io.IOException;
 
 /**
  * A fragment representing a single Channel detail screen.
@@ -62,7 +74,7 @@ public class ChannelContentFragment extends Fragment
             }
         };
         IntentFilter intentFilter = new IntentFilter( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED );
-        getContext().registerReceiver( receiver, intentFilter);
+        getContext().registerReceiver( receiver, intentFilter );
 
         adapter = new ChannelContentAdapter( getContext(), cid );
     }
@@ -75,7 +87,6 @@ public class ChannelContentFragment extends Fragment
 
     private void handleBroadcastMessage( Intent intent ) {
         Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
-        Log.i( "got broadcast message (" + cid + "): " + msg );
         if( msg.channel.equals( cid ) ) {
             adapter.newMessage( msg );
         }
@@ -120,11 +131,66 @@ public class ChannelContentFragment extends Fragment
                 }
             }
         };
-        adapter.registerAdapterDataObserver(  observer );
+        adapter.registerAdapterDataObserver( observer );
 
-        TextView messageInput = (TextView)rootView.findViewById( R.id.message_input_field );
+        final EditText messageInput = (EditText)rootView.findViewById( R.id.message_input_field );
+        messageInput.setImeActionLabel( "Send", KeyEvent.KEYCODE_ENTER );
+        messageInput.setOnKeyListener( new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey( View v, int keyCode, KeyEvent event ) {
+                if( keyCode == KeyEvent.KEYCODE_ENTER ) {
+                    sendMessage( messageInput );
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        } );
 
         return rootView;
+    }
+
+    private void sendMessage( final EditText messageInput ) {
+        CharSequence text = messageInput.getText();
+
+        if( text.length() > 0 ) {
+            PotatoApplication app = PotatoApplication.getInstance( getContext() );
+            PotatoApi api = app.getPotatoApi();
+            String apiKey = app.getApiKey();
+            Call<SendMessageResult> call = api.sendMessage( apiKey, cid, new SendMessageRequest( text.toString() ) );
+            call.enqueue( new Callback<SendMessageResult>()
+            {
+                @Override
+                public void onResponse( Response<SendMessageResult> response, Retrofit retrofit ) {
+                    if( response.isSuccess() ) {
+                        Log.i( "Created message with id: " + response.body().id );
+                    }
+                    else {
+                        try {
+                            Log.e( "Send message error from server: " + response.errorBody().string() );
+                        }
+                        catch( IOException e ) {
+                            Log.e( "Exception when getting error body after sending message", e );
+                        }
+                        displaySnackbarMessage( messageInput, "The server responded with an error" );
+                    }
+                }
+
+                @Override
+                public void onFailure( Throwable t ) {
+                    Log.e( "Error sending message to channel", t );
+                    displaySnackbarMessage( messageInput, "Error sending message: " + t.getMessage() );
+                }
+            } );
+
+            messageInput.setText( "" );
+        }
+    }
+
+    private void displaySnackbarMessage( View view, String message ) {
+        Snackbar.make( view, message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
     }
 
     @Override
