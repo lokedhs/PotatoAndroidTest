@@ -49,13 +49,6 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
-            android:id="@+id/users_nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/users_nav_header_channel_content"
-            app:menu="@menu/users_nav_menu_channel_content"/>
+    <include layout="@layout/user_list_view"/>
 
 </android.support.v4.widget.DrawerLayout>

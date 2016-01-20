@@ -4,10 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +25,11 @@ public class ChannelContentActivity extends AppCompatActivity
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        Intent intent = getIntent();
+        String channelId = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_ID );
+        String channelName = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_NAME );
+
         setContentView( R.layout.activity_channel_content );
         Toolbar toolbar = (Toolbar)findViewById( R.id.detail_toolbar );
         setSupportActionBar( toolbar );
@@ -46,13 +50,17 @@ public class ChannelContentActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled( true );
         }
 
-        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
-        drawer.setDrawerListener( toggle );
-        toggle.syncState();
+//        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
+//        drawer.setDrawerListener( toggle );
+//        toggle.syncState();
 
 //        NavigationView navigationView = (NavigationView)findViewById( R.id.users_nav_view );
 //        UserListPanel userListPanel = new UserListPanel( navigationView );
+        RecyclerView recyclerView = (RecyclerView)findViewById( R.id.user_list_recycler_view );
+        UserListAdapter userListAdapter = new UserListAdapter( this, channelId );
+        recyclerView.setAdapter( userListAdapter );
+        userListAdapter.loadUsers();
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -67,10 +75,6 @@ public class ChannelContentActivity extends AppCompatActivity
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-
-            Intent intent = getIntent();
-            String channelId = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_ID );
-            String channelName = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_NAME );
 
             arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, channelId );
             arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, channelName );

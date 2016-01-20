@@ -34,7 +34,7 @@
                     android:value=".channellist.ChannelListActivity"/>
         </activity>
         <activity
-                android:name=".ChannelMainActivity"
+                android:name=".initial.ChannelMainActivity"
                 android:label="@string/title_activity_channel_main"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>

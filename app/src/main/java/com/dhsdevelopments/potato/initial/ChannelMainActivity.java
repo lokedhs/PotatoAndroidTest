@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato;
+package com.dhsdevelopments.potato.initial;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.R;
 
 public class ChannelMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
