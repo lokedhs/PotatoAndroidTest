@@ -10,4 +10,7 @@
     <string name="pref_apikey">apikey</string>
     <string name="post_message_hint">Send a message</string>
     <string name="message_entry_date_label">{0,date,medium}, {0,time,short}</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

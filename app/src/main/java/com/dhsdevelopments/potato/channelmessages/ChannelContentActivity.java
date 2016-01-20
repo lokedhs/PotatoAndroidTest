@@ -54,13 +54,17 @@ public class ChannelContentActivity extends AppCompatActivity
 //        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
 //        drawer.setDrawerListener( toggle );
 //        toggle.syncState();
-
-//        NavigationView navigationView = (NavigationView)findViewById( R.id.users_nav_view );
-//        UserListPanel userListPanel = new UserListPanel( navigationView );
-        RecyclerView recyclerView = (RecyclerView)findViewById( R.id.user_list_recycler_view );
-        UserListAdapter userListAdapter = new UserListAdapter( this, channelId );
-        recyclerView.setAdapter( userListAdapter );
-        userListAdapter.loadUsers();
+//////////////////////////
+//        RecyclerView recyclerView = (RecyclerView)findViewById( R.id.user_list_recycler_view );
+//        UserListAdapter userListAdapter = new UserListAdapter( this, channelId );
+//        recyclerView.setAdapter( userListAdapter );
+//        userListAdapter.loadUsers();
+//////////////////////////
+        UserListFragment userListFragment = UserListFragment.newInstance( channelId );
+        getSupportFragmentManager()
+                 .beginTransaction()
+                 .replace( R.id.user_list_container, userListFragment )
+                 .commit();
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -81,10 +85,10 @@ public class ChannelContentActivity extends AppCompatActivity
 
             setTitle( channelName );
 
-            ChannelContentFragment fragment = new ChannelContentFragment();
-            fragment.setArguments( arguments );
+            ChannelContentFragment channelContentFragment = new ChannelContentFragment();
+            channelContentFragment.setArguments( arguments );
             getSupportFragmentManager().beginTransaction()
-                                       .add( R.id.channel_detail_container, fragment )
+                                       .add( R.id.channel_detail_container, channelContentFragment )
                                        .commit();
         }
     }
