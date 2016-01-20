@@ -23,7 +23,14 @@
             android:id="@+id/message_input_field"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:inputType="textAutoCorrect"
-            android:hint="@string/post_message_hint"/>
+            android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+            android:hint="@string/post_message_hint" android:layout_toStartOf="@+id/send_button"/>
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="»"
+            android:id="@+id/send_button" android:layout_alignParentBottom="true" android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/message_input_field" android:layout_alignBottom="@+id/message_input_field"
+    />
 </RelativeLayout>

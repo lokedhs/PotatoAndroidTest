@@ -84,11 +84,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             contentView = (TextView)view.findViewById( R.id.content );
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + contentView.getText() + "'";
-        }
-
         public void fillInChannelEntry( final ChannelEntry item ) {
             contentView.setText( item.getName() + " (" + item.getDomainName() + ")" );
 

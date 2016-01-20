@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
@@ -146,6 +147,15 @@ public class ChannelContentFragment extends Fragment
                 else {
                     return false;
                 }
+            }
+        } );
+
+        Button sendButton = (Button)rootView.findViewById( R.id.send_button );
+        sendButton.setOnClickListener( new View.OnClickListener()
+        {
+            @Override
+            public void onClick( View v ) {
+                sendMessage( messageInput );
             }
         } );
 
