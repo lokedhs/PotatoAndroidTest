@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/users_active" android:title="Active">
+        <menu>
+
+        </menu>
+    </item>
+    <item android:id="@+id/users_inactive" android:title="Inactive">
+        <menu>
+            <item android:id="@+id/test_entry" android:title="Test entry"/>
+        </menu>
+    </item>
+</menu>
