@@ -1,0 +1,7 @@
+* Navigation drawer
+
+https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705#.1647mxb8x
+
+http://www.android4devs.com/2014/12/how-to-make-material-design-navigation-drawer.html
+
+https://developer.android.com/training/implementing-navigation/nav-drawer.html
