@@ -60,6 +60,8 @@ public class MessageElementTypeAdapter implements JsonDeserializer<MessageElemen
                     String userId = obj.get( "user_id" ).getAsString();
                     String userDescription = obj.get( "user_description" ).getAsString();
                     return new MessageElementUser( userId, userDescription );
+                case "newline":
+                    return new MessageElementNewline();
                 default:
                     return new MessageElementUnknownType( type );
             }

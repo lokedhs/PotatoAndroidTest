@@ -7,4 +7,15 @@ public class MessageElementUnknownType extends MessageElement
     public MessageElementUnknownType( String type ) {
         this.type = type;
     }
+
+    public CharSequence getSpannable() {
+        return "[TYPE=" + type + "]";
+    }
+
+    @Override
+    public String toString() {
+        return "MessageElementUnknownType[" +
+                       "type='" + type + '\'' +
+                       ']';
+    }
 }
