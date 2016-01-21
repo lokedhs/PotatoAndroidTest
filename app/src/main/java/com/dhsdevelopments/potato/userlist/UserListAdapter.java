@@ -24,19 +24,26 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_USER = 1;
 
-    private Context context;
-    private String cid;
     private ChannelUsersTracker userTracker;
 
     private List<UserWrapper> activeUsers = new ArrayList<>();
     private List<UserWrapper> inactiveUsers = new ArrayList<>();
 
     private ChannelUsersTracker.UserActivityListener listener;
+    private Comparator<? super UserWrapper> comparator;
 
-    public UserListAdapter( Context context, String cid, ChannelUsersTracker userTracker ) {
-        this.context = context;
-        this.cid = cid;
+    public UserListAdapter( ChannelUsersTracker userTracker ) {
         this.userTracker = userTracker;
+
+        final Collator collator = Collator.getInstance();
+        comparator = new Comparator<UserWrapper>()
+        {
+            @Override
+            public int compare( UserWrapper o1, UserWrapper o2 ) {
+                return collator.compare( o1.getName(), o2.getName() );
+            }
+        };
+
         loadStateFromUserTracker();
     }
 
@@ -111,15 +118,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
             }
         }
 
-        final Collator collator = Collator.getInstance();
-        Comparator<? super UserWrapper> comparator = new Comparator<UserWrapper>()
-        {
-            @Override
-            public int compare( UserWrapper o1, UserWrapper o2 ) {
-                return collator.compare( o1.getName(), o2.getName() );
-            }
-        };
-        Collections.sort( activeUsers, comparator);
+        Collections.sort( activeUsers, comparator );
         Collections.sort( inactiveUsers, comparator );
         notifyDataSetChanged();
     }
@@ -136,7 +135,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         private final TextView headerText;
 
         public HeaderViewHolder( View view ) {
-            super( view);
+            super( view );
             headerText = (TextView)view.findViewById( R.id.header_text );
         }
 
