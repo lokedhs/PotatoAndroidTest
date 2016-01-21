@@ -21,7 +21,7 @@ public class PotatoNotification implements Serializable
     public String userStateUser;
 
     @SerializedName( "users" )
-    public List<String> userStateSyncMembers;
+    public List<UserStateUpdateUser> userStateSyncMembers;
 
     @SerializedName( "channel" )
     public String channel;

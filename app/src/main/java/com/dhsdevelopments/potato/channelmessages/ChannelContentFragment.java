@@ -25,6 +25,7 @@ import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -75,7 +76,9 @@ public class ChannelContentFragment extends Fragment
                 handleBroadcastMessage( intent );
             }
         };
-        IntentFilter intentFilter = new IntentFilter( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED );
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED  );
+        intentFilter.addAction( ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE );
         getContext().registerReceiver( receiver, intentFilter );
 
         adapter = new ChannelContentAdapter( getContext(), cid );
@@ -88,6 +91,7 @@ public class ChannelContentFragment extends Fragment
     }
 
     private void handleBroadcastMessage( Intent intent ) {
+        Log.i( "received broadcast message of type " + intent.getAction() );
         switch( intent.getAction() ) {
             case ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED:
                 Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
@@ -95,9 +99,12 @@ public class ChannelContentFragment extends Fragment
                     adapter.newMessage( msg );
                 }
                 break;
-//            case ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE:
-//                channelUsersTracker.processIncoming( intent );
-//                break;
+            case ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE:
+                ChannelUsersTracker tracker = ChannelUsersTracker.findEnclosingUserTracker( this );
+                if( tracker != null ) {
+                    tracker.processIncoming( intent );
+                }
+                break;
         }
     }
 

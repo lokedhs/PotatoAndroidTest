@@ -11,6 +11,7 @@ import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
+import com.dhsdevelopments.potato.clientapi.notifications.UserStateUpdateUser;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -107,7 +108,7 @@ public class ChannelSubscriptionService extends Service
                 switch( n.addType ) {
                     case "sync":
                         intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, n.userStateSyncMembers.toArray( new String[n.userStateSyncMembers.size()] ) );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray( n.userStateSyncMembers ) );
                         sendBroadcast( intent );
                         break;
                     case "add":
@@ -125,6 +126,15 @@ public class ChannelSubscriptionService extends Service
                 }
             }
         }
+    }
+
+    private String[] userListToUserIdArray( List<UserStateUpdateUser> userStateSyncMembers ) {
+        String[] result = new String[userStateSyncMembers.size()];
+        int i = 0;
+        for( UserStateUpdateUser u : userStateSyncMembers ) {
+            result[i++] = u.id;
+        }
+        return result;
     }
 
     @Override

@@ -26,13 +26,30 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     private Context context;
     private String cid;
+    private ChannelUsersTracker userTracker;
 
     private List<UserWrapper> activeUsers = new ArrayList<>();
     private List<UserWrapper> inactiveUsers = new ArrayList<>();
 
-    public UserListAdapter( Context context, String cid ) {
+    private ChannelUsersTracker.UserActivityListener listener;
+
+    public UserListAdapter( Context context, String cid, ChannelUsersTracker userTracker ) {
         this.context = context;
         this.cid = cid;
+        this.userTracker = userTracker;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView( RecyclerView recyclerView ) {
+        super.onAttachedToRecyclerView( recyclerView );
+        listener = new ActivityListener();
+        userTracker.addUserActivityListener( listener );
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView( RecyclerView recyclerView ) {
+        userTracker.removeUserActivityListener( listener );
+        super.onDetachedFromRecyclerView( recyclerView );
     }
 
     @Override
@@ -160,6 +177,20 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         public void fillInUser( UserWrapper user ) {
             this.user = user;
             userDescriptionView.setText( user.getName() );
+        }
+    }
+
+    private class ActivityListener implements ChannelUsersTracker.UserActivityListener
+    {
+
+        @Override
+        public void activeUserListSync() {
+            Log.i( "In UserListAdapter: got sync" );
+        }
+
+        @Override
+        public void userUpdated( String uid ) {
+
         }
     }
 }

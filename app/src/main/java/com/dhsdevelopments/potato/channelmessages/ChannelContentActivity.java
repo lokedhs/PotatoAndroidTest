@@ -20,8 +20,10 @@ import com.dhsdevelopments.potato.userlist.UserListFragment;
  * item details are presented side-by-side with a list of items
  * in a {@link ChannelListActivity}.
  */
-public class ChannelContentActivity extends AppCompatActivity
+public class ChannelContentActivity extends AppCompatActivity implements HasUserTracker
 {
+
+    private ChannelUsersTracker usersTracker;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -56,7 +58,7 @@ public class ChannelContentActivity extends AppCompatActivity
 //        drawer.setDrawerListener( toggle );
 //        toggle.syncState();
 
-        ChannelUsersTracker usersTracker = ChannelUsersTracker.findForChannel( channelId );
+        usersTracker = ChannelUsersTracker.findForChannel( channelId );
 
         UserListFragment userListFragment = UserListFragment.newInstance( channelId );
         getSupportFragmentManager()
@@ -89,6 +91,10 @@ public class ChannelContentActivity extends AppCompatActivity
                                        .add( R.id.channel_detail_container, channelContentFragment )
                                        .commit();
         }
+    }
+
+    public ChannelUsersTracker getUsersTracker() {
+        return usersTracker;
     }
 
     @Override
