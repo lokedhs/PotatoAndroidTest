@@ -16,8 +16,8 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.Collator;
+import java.util.*;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder>
 {
@@ -37,6 +37,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         this.context = context;
         this.cid = cid;
         this.userTracker = userTracker;
+        loadStateFromUserTracker();
     }
 
     @Override
@@ -95,52 +96,32 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         return position == 0 || position == activeUsers.size() + 1 ? VIEW_TYPE_HEADER : VIEW_TYPE_USER;
     }
 
-    public void loadUsers() {
-        PotatoApplication app = PotatoApplication.getInstance( context );
-        Call<LoadUsersResult> call = app.getPotatoApi().loadUsers( app.getApiKey(), cid );
-        call.enqueue( new Callback<LoadUsersResult>()
-        {
-            @Override
-            public void onResponse( Response<LoadUsersResult> response, Retrofit retrofit ) {
-                if( response.isSuccess() ) {
-                    updateUsers( response.body().members );
-                }
-                else {
-                    Log.wtf( "Error code from server" );
-                }
-            }
-
-            @Override
-            public void onFailure( Throwable t ) {
-                Log.wtf( "Error loading users", t );
-            }
-        } );
-    }
-
-    private void updateUsers( List<User> users ) {
-        for( User u : users ) {
-            String uid = u.id;
-            UserWrapper w = findUserFromList( uid, activeUsers );
-            if( w == null ) {
-                w = findUserFromList( uid, inactiveUsers );
-            }
-            if( w != null ) {
-                w.fillInFromUser( u );
+    private void loadStateFromUserTracker() {
+        activeUsers.clear();
+        inactiveUsers.clear();
+        for( Map.Entry<String, ChannelUsersTracker.UserDescriptor> e : userTracker.getUsers().entrySet() ) {
+            String uid = e.getKey();
+            ChannelUsersTracker.UserDescriptor d = e.getValue();
+            UserWrapper u = new UserWrapper( uid, d.getName() );
+            if( d.isActive() ) {
+                activeUsers.add( u );
             }
             else {
-                inactiveUsers.add( new UserWrapper( u ) );
+                inactiveUsers.add( u );
             }
         }
-        notifyDataSetChanged();
-    }
 
-    private UserWrapper findUserFromList( String uid, List<UserWrapper> users ) {
-        for( UserWrapper w : users ) {
-            if( w.getId().equals( uid ) ) {
-                return w;
+        final Collator collator = Collator.getInstance();
+        Comparator<? super UserWrapper> comparator = new Comparator<UserWrapper>()
+        {
+            @Override
+            public int compare( UserWrapper o1, UserWrapper o2 ) {
+                return collator.compare( o1.getName(), o2.getName() );
             }
-        }
-        return null;
+        };
+        Collections.sort( activeUsers, comparator);
+        Collections.sort( inactiveUsers, comparator );
+        notifyDataSetChanged();
     }
 
     public abstract class ViewHolder extends RecyclerView.ViewHolder
@@ -185,12 +166,12 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
         @Override
         public void activeUserListSync() {
-            Log.i( "In UserListAdapter: got sync" );
+            loadStateFromUserTracker();
         }
 
         @Override
         public void userUpdated( String uid ) {
-
+            loadStateFromUserTracker();
         }
     }
 }

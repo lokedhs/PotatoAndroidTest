@@ -42,7 +42,6 @@ public class UserListFragment extends Fragment
         RecyclerView recyclerView = (RecyclerView)view.findViewById( R.id.user_list_recycler_view );
         UserListAdapter userListAdapter = new UserListAdapter( getContext(), cid, ChannelUsersTracker.findEnclosingUserTracker( this  ) );
         recyclerView.setAdapter( userListAdapter );
-        userListAdapter.loadUsers();
 
         return view;
     }

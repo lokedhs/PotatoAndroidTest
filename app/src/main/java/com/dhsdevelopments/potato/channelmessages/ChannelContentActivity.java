@@ -58,7 +58,7 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
 //        drawer.setDrawerListener( toggle );
 //        toggle.syncState();
 
-        usersTracker = ChannelUsersTracker.findForChannel( channelId );
+        usersTracker = ChannelUsersTracker.findForChannel( this, channelId );
 
         UserListFragment userListFragment = UserListFragment.newInstance( channelId );
         getSupportFragmentManager()

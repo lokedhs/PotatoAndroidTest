@@ -1,30 +1,52 @@
 package com.dhsdevelopments.potato.userlist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
+import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult;
+import com.dhsdevelopments.potato.clientapi.users.User;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ChannelUsersTracker
 {
+    private Context context;
     private String cid;
     private Map<String, UserDescriptor> users = new HashMap<>();
     private Set<UserActivityListener> listeners = new CopyOnWriteArraySet<>();
 
-    private ChannelUsersTracker( String cid ) {
+    private ChannelUsersTracker( Context context, String cid ) {
+        this.context = context;
         this.cid = cid;
+        loadUsers();
     }
 
-    public static ChannelUsersTracker findForChannel( String cid ) {
-        return new ChannelUsersTracker( cid );
+    public Map<String, UserDescriptor> getUsers() {
+        return users;
+    }
+
+    public static ChannelUsersTracker findForChannel( Context context, String cid ) {
+        return new ChannelUsersTracker( context, cid );
+    }
+
+    public static ChannelUsersTracker findEnclosingUserTracker( Fragment fragment ) {
+        FragmentActivity activity = fragment.getActivity();
+        if( activity instanceof HasUserTracker ) {
+            return ((HasUserTracker)activity).getUsersTracker();
+        }
+        else {
+            return null;
+        }
     }
 
     public void processIncoming( Intent intent ) {
@@ -78,21 +100,25 @@ public class ChannelUsersTracker
         for( String uid : uids ) {
             processAddRemove( uid, true, false );
         }
-
-        // Fire sync event
-        for( UserActivityListener l : listeners ) {
-            l.activeUserListSync();
-        }
+        fireUserListSync();
     }
 
-
-    public static ChannelUsersTracker findEnclosingUserTracker( Fragment fragment ) {
-        FragmentActivity activity = fragment.getActivity();
-        if( activity instanceof HasUserTracker ) {
-            return ((HasUserTracker)activity).getUsersTracker();
+    private void updateUsers( List<User> members ) {
+        for( User u : members ) {
+            UserDescriptor d = users.get( u.id );
+            if( d == null ) {
+                users.put( u.id, new UserDescriptor( u.description, false ) );
+            }
+            else {
+                d.name = u.description;
+            }
         }
-        else {
-            return null;
+        fireUserListSync();
+    }
+
+    private void fireUserListSync() {
+        for( UserActivityListener l : listeners ) {
+            l.activeUserListSync();
         }
     }
 
@@ -104,7 +130,29 @@ public class ChannelUsersTracker
         listeners.remove( listener );
     }
 
-    private class UserDescriptor
+    public void loadUsers() {
+        PotatoApplication app = PotatoApplication.getInstance( context );
+        Call<LoadUsersResult> call = app.getPotatoApi().loadUsers( app.getApiKey(), cid );
+        call.enqueue( new Callback<LoadUsersResult>()
+        {
+            @Override
+            public void onResponse( Response<LoadUsersResult> response, Retrofit retrofit ) {
+                if( response.isSuccess() ) {
+                    updateUsers( response.body().members );
+                }
+                else {
+                    Log.wtf( "Error code from server" );
+                }
+            }
+
+            @Override
+            public void onFailure( Throwable t ) {
+                Log.wtf( "Error loading users", t );
+            }
+        } );
+    }
+
+    class UserDescriptor
     {
         private String name;
         private boolean active;
@@ -112,6 +160,14 @@ public class ChannelUsersTracker
         public UserDescriptor( String name, boolean active ) {
             this.name = name;
             this.active = active;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isActive() {
+            return active;
         }
     }
 

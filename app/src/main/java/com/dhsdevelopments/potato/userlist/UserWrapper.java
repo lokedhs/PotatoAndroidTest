@@ -7,13 +7,9 @@ public class UserWrapper
     private String id;
     private String name;
 
-    public UserWrapper( User user ) {
-        id = user.id;
-        fillInFromUser( user );
-    }
-
-    public void fillInFromUser( User user ) {
-        name = user.description;
+    public UserWrapper( String id, String name ) {
+        this.id = id;
+        this.name = name;
     }
 
     public String getId() {
