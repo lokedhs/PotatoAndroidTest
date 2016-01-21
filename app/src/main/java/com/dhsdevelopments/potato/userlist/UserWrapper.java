@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato.channelmessages;
+package com.dhsdevelopments.potato.userlist;
 
 import com.dhsdevelopments.potato.clientapi.users.User;
 

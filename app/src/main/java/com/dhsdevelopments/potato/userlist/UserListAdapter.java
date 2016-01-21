@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato.channelmessages;
+package com.dhsdevelopments.potato.userlist;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +21,9 @@ import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder>
 {
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_USER = 1;
+
     private Context context;
     private String cid;
 
@@ -34,26 +37,45 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
-        View view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.user_list_element, parent, false );
-        return new ViewHolder( view );
+        switch( viewType ) {
+            case VIEW_TYPE_HEADER:
+                return new HeaderViewHolder( LayoutInflater.from( parent.getContext() ).inflate( R.layout.user_list_header, parent, false ) );
+            case VIEW_TYPE_USER:
+                return new UserElementViewHolder( LayoutInflater.from( parent.getContext() ).inflate( R.layout.user_list_element, parent, false ) );
+            default:
+                throw new IllegalArgumentException( "Unexpected viewType: " + viewType );
+        }
     }
 
     @Override
     public void onBindViewHolder( ViewHolder holder, int position ) {
-        int activeLength = activeUsers.size();
-        UserWrapper user;
-        if( position < activeLength ) {
-            user = activeUsers.get( position );
+        if( position == 0 ) {
+            ((HeaderViewHolder)holder).setHeaderTitle( "Active" );
+        }
+        else if( position == activeUsers.size() + 1 ) {
+            ((HeaderViewHolder)holder).setHeaderTitle( "Inactive" );
         }
         else {
-            user = inactiveUsers.get( position - activeLength );
+            int activeLength = activeUsers.size();
+            UserWrapper user;
+            if( position <= activeLength ) {
+                user = activeUsers.get( position - 1 );
+            }
+            else {
+                user = inactiveUsers.get( position - activeLength - 2 );
+            }
+            ((UserElementViewHolder)holder).fillInUser( user );
         }
-        holder.fillInUser( user );
     }
 
     @Override
     public int getItemCount() {
-        return activeUsers.size() + inactiveUsers.size();
+        return activeUsers.size() + inactiveUsers.size() + 2;
+    }
+
+    @Override
+    public int getItemViewType( int position ) {
+        return position == 0 || position == activeUsers.size() + 1 ? VIEW_TYPE_HEADER : VIEW_TYPE_USER;
     }
 
     public void loadUsers() {
@@ -104,12 +126,33 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         return null;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public abstract class ViewHolder extends RecyclerView.ViewHolder
+    {
+        public ViewHolder( View itemView ) {
+            super( itemView );
+        }
+    }
+
+    private class HeaderViewHolder extends ViewHolder
+    {
+        private final TextView headerText;
+
+        public HeaderViewHolder( View view ) {
+            super( view);
+            headerText = (TextView)view.findViewById( R.id.header_text );
+        }
+
+        public void setHeaderTitle( String title ) {
+            headerText.setText( title );
+        }
+    }
+
+    private class UserElementViewHolder extends ViewHolder
     {
         private UserWrapper user;
         private TextView userDescriptionView;
 
-        public ViewHolder( View itemView ) {
+        public UserElementViewHolder( View itemView ) {
             super( itemView );
             userDescriptionView = (TextView)itemView.findViewById( R.id.user_description_view );
         }

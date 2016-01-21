@@ -13,7 +13,7 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:theme="@style/Drawer"
-        tools:context="com.dhsdevelopments.potato.channelmessages.UserListFragment">
+        tools:context=".userlist.UserListFragment">
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                                             xmlns:app="http://schemas.android.com/apk/res-auto"

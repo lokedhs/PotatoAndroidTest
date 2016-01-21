@@ -1,14 +1,12 @@
-package com.dhsdevelopments.potato.channelmessages;
+package com.dhsdevelopments.potato.userlist;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.dhsdevelopments.potato.R;
 
 public class UserListFragment extends Fragment
