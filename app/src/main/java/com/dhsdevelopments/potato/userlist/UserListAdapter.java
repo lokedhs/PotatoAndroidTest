@@ -43,8 +43,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
                 return collator.compare( o1.getName(), o2.getName() );
             }
         };
-
-        loadStateFromUserTracker();
     }
 
     @Override
@@ -52,6 +50,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         super.onAttachedToRecyclerView( recyclerView );
         listener = new ActivityListener();
         userTracker.addUserActivityListener( listener );
+        loadStateFromUserTracker();
     }
 
     @Override
