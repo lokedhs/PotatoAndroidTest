@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import com.dhsdevelopments.potato.userlist.UserListFragment;
 
 /**
@@ -54,12 +55,9 @@ public class ChannelContentActivity extends AppCompatActivity
 //        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
 //        drawer.setDrawerListener( toggle );
 //        toggle.syncState();
-//////////////////////////
-//        RecyclerView recyclerView = (RecyclerView)findViewById( R.id.user_list_recycler_view );
-//        UserListAdapter userListAdapter = new UserListAdapter( this, channelId );
-//        recyclerView.setAdapter( userListAdapter );
-//        userListAdapter.loadUsers();
-//////////////////////////
+
+        ChannelUsersTracker usersTracker = ChannelUsersTracker.findForChannel( channelId );
+
         UserListFragment userListFragment = UserListFragment.newInstance( channelId );
         getSupportFragmentManager()
                  .beginTransaction()

@@ -21,7 +21,6 @@ import java.io.InterruptedIOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ChannelSubscriptionService extends Service
 {
@@ -31,6 +30,14 @@ public class ChannelSubscriptionService extends Service
 
     public static final String ACTION_MESSAGE_RECEIVED = "com.dhsdevelopments.potato.MESSAGE_RECEIVED";
     public static final String EXTRA_MESSAGE = "com.dhsdevelopments.potato.message";
+
+    public static final String ACTION_CHANNEL_USERS_UPDATE = "com.dhsdevelopments.potato.CHANNEL_USERS_UPDATED";
+    public static final String EXTRA_CHANNEL_USERS_SYNC_USERS = "com.dhsdevelopments.potato.sync_users";
+    public static final String EXTRA_CHANNEL_USERS_USER_ID = "com.dhsdevelopments.potato.update_user";
+    public static final String EXTRA_CHANNEL_USERS_TYPE = "com.dhsdevelopments.potato.update_user_add_type";
+    public static final String USER_UPDATE_TYPE_SYNC = "sync";
+    public static final String USER_UPDATE_TYPE_ADD = "add";
+    public static final String USER_UPDATE_TYPE_REMOVE = "remove";
 
     private Receiver receiverThread = null;
 
@@ -94,6 +101,29 @@ public class ChannelSubscriptionService extends Service
                 intent.putExtra( EXTRA_MESSAGE, msg );
                 sendBroadcast( intent );
             }
+            else if( n.isStateUpdate() ) {
+                Intent intent = new Intent( ACTION_CHANNEL_USERS_UPDATE );
+                intent.putExtra( EXTRA_CHANNEL_ID, n.channel );
+                switch( n.addType ) {
+                    case "sync":
+                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, n.userStateSyncMembers.toArray( new String[n.userStateSyncMembers.size()] ) );
+                        sendBroadcast( intent );
+                        break;
+                    case "add":
+                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_ADD );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, n.userStateUser );
+                        sendBroadcast( intent );
+                        break;
+                    case "remove":
+                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_REMOVE );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, n.userStateUser );
+                        sendBroadcast( intent );
+                        break;
+                    default:
+                        Log.w( "Unexpected addType: " + n.addType );
+                }
+            }
         }
     }
 
@@ -135,7 +165,7 @@ public class ChannelSubscriptionService extends Service
 
             try {
                 while( !isShutdown() && !interrupted() ) {
-                    Call<PotatoNotificationResult> call = api.channelUpdates( apiKey, cid, "content", getEventId() );
+                    Call<PotatoNotificationResult> call = api.channelUpdates( apiKey, cid, "content,state", getEventId() );
                     synchronized( this ) {
                         outstandingCall = call;
                     }
@@ -243,7 +273,7 @@ public class ChannelSubscriptionService extends Service
             if( getEventId() == null ) {
                 throw new IllegalStateException( "eventId is null" );
             }
-            Call<ChannelUpdatesUpdateResult> call = api.channelUpdatesUpdate( apiKey, getEventId(), "add", cid, "content" );
+            Call<ChannelUpdatesUpdateResult> call = api.channelUpdatesUpdate( apiKey, getEventId(), "add", cid, "content,state" );
             call.enqueue( new Callback<ChannelUpdatesUpdateResult>()
             {
                 @Override

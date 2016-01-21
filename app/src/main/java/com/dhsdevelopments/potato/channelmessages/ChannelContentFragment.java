@@ -88,9 +88,16 @@ public class ChannelContentFragment extends Fragment
     }
 
     private void handleBroadcastMessage( Intent intent ) {
-        Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
-        if( msg.channel.equals( cid ) ) {
-            adapter.newMessage( msg );
+        switch( intent.getAction() ) {
+            case ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED:
+                Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
+                if( msg.channel.equals( cid ) ) {
+                    adapter.newMessage( msg );
+                }
+                break;
+//            case ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE:
+//                channelUsersTracker.processIncoming( intent );
+//                break;
         }
     }
 

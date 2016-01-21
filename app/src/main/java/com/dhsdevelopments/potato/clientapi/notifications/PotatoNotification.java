@@ -4,6 +4,7 @@ import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class PotatoNotification implements Serializable
 {
@@ -13,15 +14,30 @@ public class PotatoNotification implements Serializable
     @SerializedName( "c" )
     public Message message;
 
+    @SerializedName( "add-type" )
+    public String addType;
+
+    @SerializedName( "user" )
+    public String userStateUser;
+
+    @SerializedName( "users" )
+    public List<String> userStateSyncMembers;
+
+    @SerializedName( "channel" )
+    public String channel;
+
     public boolean isMessage() {
         return type.equals( "m" );
+    }
+
+    public boolean isStateUpdate() {
+        return type.equals( "cu" );
     }
 
     @Override
     public String toString() {
         return "PotatoNotification[" +
                        "type='" + type + '\'' +
-                       ", message=" + message +
                        ']';
     }
 }
