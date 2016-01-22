@@ -118,15 +118,21 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
     public boolean onOptionsItemSelected( MenuItem item ) {
         int id = item.getItemId();
         if( id == android.R.id.home ) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             navigateUpTo( new Intent( this, ChannelListActivity.class ) );
             return true;
         }
-        return super.onOptionsItemSelected( item );
+        else if( id == R.id.menu_option_show_users ) {
+            DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
+            if( drawer.isDrawerOpen( GravityCompat.END ) ) {
+                drawer.closeDrawer( GravityCompat.END );
+            }
+            else {
+                drawer.openDrawer( GravityCompat.END );
+            }
+            return true;
+        }
+        else {
+            return super.onOptionsItemSelected( item );
+        }
     }
 }
