@@ -2,14 +2,13 @@ package com.dhsdevelopments.potato.channelmessages;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
@@ -98,6 +97,17 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
     public boolean onCreateOptionsMenu( Menu menu ) {
         getMenuInflater().inflate( R.menu.channel_content_toolbar_menu, menu );
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
+        if( drawer.isDrawerOpen( GravityCompat.END ) ) {
+            drawer.closeDrawer( GravityCompat.END );
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     public ChannelUsersTracker getUsersTracker() {
