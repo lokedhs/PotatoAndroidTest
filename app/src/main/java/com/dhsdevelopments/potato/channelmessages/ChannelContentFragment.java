@@ -57,6 +57,7 @@ public class ChannelContentFragment extends Fragment
     private BroadcastReceiver receiver;
     private ChannelContentAdapter adapter;
     private RecyclerView.AdapterDataObserver observer;
+    private UserNameSuggestAdapter userNameSuggestAdapter;
 
     public ChannelContentFragment() {
     }
@@ -167,7 +168,9 @@ public class ChannelContentFragment extends Fragment
                 }
             }
         } );
-        messageInput.setAdapter( new UserNameSuggestAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ) ) );
+
+        userNameSuggestAdapter = new UserNameSuggestAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ) );
+        messageInput.setAdapter( userNameSuggestAdapter );
         messageInput.setTokenizer( new UserNameTokeniser() );
 
         final InputMethodManager imm = (InputMethodManager)getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
@@ -182,6 +185,13 @@ public class ChannelContentFragment extends Fragment
         } );
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        userNameSuggestAdapter.shutdown();
+        adapter.unregisterAdapterDataObserver( observer );
+        super.onDestroyView();
     }
 
     private void sendMessage( final EditText messageInput ) {
@@ -223,11 +233,5 @@ public class ChannelContentFragment extends Fragment
 
     private void displaySnackbarMessage( View view, String message ) {
         Snackbar.make( view, message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
-    }
-
-    @Override
-    public void onDestroyView() {
-        adapter.unregisterAdapterDataObserver( observer );
-        super.onDestroyView();
     }
 }
