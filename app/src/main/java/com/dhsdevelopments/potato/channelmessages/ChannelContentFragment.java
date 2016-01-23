@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
@@ -24,6 +25,8 @@ import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
+import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter;
+import com.dhsdevelopments.potato.editor.UserNameTokeniser;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;
@@ -149,7 +152,7 @@ public class ChannelContentFragment extends Fragment
         };
         adapter.registerAdapterDataObserver( observer );
 
-        final EditText messageInput = (EditText)rootView.findViewById( R.id.message_input_field );
+        final MultiAutoCompleteTextView messageInput = (MultiAutoCompleteTextView)rootView.findViewById( R.id.message_input_field );
         messageInput.setImeActionLabel( "Send", KeyEvent.KEYCODE_ENTER );
         messageInput.setOnKeyListener( new View.OnKeyListener()
         {
@@ -164,6 +167,8 @@ public class ChannelContentFragment extends Fragment
                 }
             }
         } );
+        messageInput.setAdapter( new UserNameSuggestAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ) ) );
+        messageInput.setTokenizer( new UserNameTokeniser() );
 
         final InputMethodManager imm = (InputMethodManager)getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
         Button sendButton = (Button)rootView.findViewById( R.id.send_button );

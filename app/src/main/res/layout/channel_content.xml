@@ -19,7 +19,7 @@
             android:layout_alignParentEnd="true"
             android:layout_above="@+id/message_input_field"
             app:layoutManager="LinearLayoutManager"/>
-    <EditText
+    <MultiAutoCompleteTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/message_input_field"
@@ -31,9 +31,8 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="»"
+            android:text="@string/post_button_text"
             android:id="@+id/send_button" android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/message_input_field" android:layout_alignBottom="@+id/message_input_field"
-    />
+            android:layout_alignTop="@+id/message_input_field" android:layout_alignBottom="@+id/message_input_field"/>
 </RelativeLayout>

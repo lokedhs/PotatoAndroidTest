@@ -152,7 +152,7 @@ public class ChannelUsersTracker
         } );
     }
 
-    class UserDescriptor
+    public class UserDescriptor
     {
         private String name;
         private boolean active;
