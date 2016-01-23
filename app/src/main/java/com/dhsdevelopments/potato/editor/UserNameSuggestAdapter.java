@@ -8,45 +8,41 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
-import java.text.Collator;
 import java.util.*;
 
 public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
 {
-    private UserTrackerListener listener;
-    private LayoutInflater inflater;
+    private Context context;
     private ChannelUsersTracker usersTracker;
+
+    private LayoutInflater inflater;
     private List<UserSuggestion> users = null;
-    private Comparator<UserSuggestion> userSuggestionComparator;
+    private UserNameSuggestFilter filter;
 
     public UserNameSuggestAdapter( Context context, ChannelUsersTracker usersTracker ) {
+        this.context = context;
         this.usersTracker = usersTracker;
+
+        filter = new UserNameSuggestFilter( context, usersTracker, this );
         inflater = (LayoutInflater)context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        listener = new UserTrackerListener();
+    }
 
-        final Collator collator = Collator.getInstance();
-        userSuggestionComparator = new Comparator<UserSuggestion>()
-        {
-            @Override
-            public int compare( UserSuggestion o1, UserSuggestion o2 ) {
-                return collator.compare( o1.name, o2.name );
-            }
-        };
-
-        usersTracker.addUserActivityListener( listener );
+    public void shutdown() {
+        filter.shutdown();
     }
 
     @Override
     public int getCount() {
-        return getUserSuggestions().size();
+        return users.size();
     }
 
     @Override
     public Object getItem( int position ) {
-        return getUserSuggestions().get( position );
+        return users.get( position );
     }
 
     @Override
@@ -64,55 +60,20 @@ public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
             v = inflater.inflate( R.layout.user_name_suggest_line, parent, false );
         }
 
-        UserSuggestion userSuggestion = getUserSuggestions().get( position );
+        UserSuggestion userSuggestion = users.get( position );
         TextView textView = (TextView)v.findViewById( R.id.user_name_suggest_name );
-        textView.setText( userSuggestion.name );
+        textView.setText( userSuggestion.getName() );
         return v;
     }
 
     @Override
     public Filter getFilter() {
-        return null;
+        return filter;
     }
 
-    private List<UserSuggestion> getUserSuggestions() {
-        if( users == null ) {
-            Map<String, ChannelUsersTracker.UserDescriptor> userlist = usersTracker.getUsers();
-            users = new ArrayList<>( userlist.size() );
-            for( Map.Entry<String, ChannelUsersTracker.UserDescriptor> u : userlist.entrySet() ) {
-                users.add( new UserSuggestion( u.getKey(), u.getValue().getName() ) );
-            }
-            Collections.sort( users, userSuggestionComparator );
-        }
-        return users;
-    }
-
-    private void clearAndNotify() {
-        users = null;
+    void setSuggestionList( List<UserSuggestion> users) {
+        this.users = users;
+        Log.i( "Setting suggestion list: " + users );
         notifyDataSetChanged();
-    }
-
-    private class UserTrackerListener implements ChannelUsersTracker.UserActivityListener
-    {
-        @Override
-        public void activeUserListSync() {
-            clearAndNotify();
-        }
-
-        @Override
-        public void userUpdated( String uid ) {
-            clearAndNotify();
-        }
-    }
-
-    private static class UserSuggestion
-    {
-        private String id;
-        private String name;
-
-        public UserSuggestion( String id, String name ) {
-            this.id = id;
-            this.name = name;
-        }
     }
 }

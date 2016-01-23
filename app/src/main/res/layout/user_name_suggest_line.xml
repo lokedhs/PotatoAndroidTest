@@ -11,5 +11,5 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
-            android:id="@+id/user_name_suggest_name"/>
+            android:id="@+id/user_name_suggest_name" android:padding="@dimen/abc_action_bar_content_inset_material"/>
 </LinearLayout>
