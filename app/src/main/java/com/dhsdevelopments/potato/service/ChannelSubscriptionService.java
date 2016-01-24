@@ -9,9 +9,7 @@ import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
-import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification;
-import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
-import com.dhsdevelopments.potato.clientapi.notifications.UserStateUpdateUser;
+import com.dhsdevelopments.potato.clientapi.notifications.*;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -96,33 +94,34 @@ public class ChannelSubscriptionService extends Service
     private void processNewNotifications( List<PotatoNotification> notifications ) {
         for( PotatoNotification n : notifications ) {
             Log.i( "Processing notification: " + n );
-            if( n.isMessage() ) {
-                Message msg = n.message;
+            if( n instanceof MessageNotification ) {
+                Message msg = ((MessageNotification)n).message;
                 Intent intent = new Intent( ACTION_MESSAGE_RECEIVED );
                 intent.putExtra( EXTRA_MESSAGE, msg );
                 sendBroadcast( intent );
             }
-            else if( n.isStateUpdate() ) {
+            else if( n instanceof StateUpdateNotification ) {
+                StateUpdateNotification update = (StateUpdateNotification)n;
                 Intent intent = new Intent( ACTION_CHANNEL_USERS_UPDATE );
-                intent.putExtra( EXTRA_CHANNEL_ID, n.channel );
-                switch( n.addType ) {
+                intent.putExtra( EXTRA_CHANNEL_ID, update.channel );
+                switch( update.addType ) {
                     case "sync":
                         intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray( n.userStateSyncMembers ) );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray( update.userStateSyncMembers ) );
                         sendBroadcast( intent );
                         break;
                     case "add":
                         intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_ADD );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, n.userStateUser );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
                         sendBroadcast( intent );
                         break;
                     case "remove":
                         intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_REMOVE );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, n.userStateUser );
+                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
                         sendBroadcast( intent );
                         break;
                     default:
-                        Log.w( "Unexpected addType: " + n.addType );
+                        Log.w( "Unexpected addType: " + update.addType );
                 }
             }
         }

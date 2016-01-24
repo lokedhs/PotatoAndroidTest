@@ -136,7 +136,7 @@ public class ChannelContentFragment extends Fragment
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
-        View rootView = inflater.inflate( R.layout.channel_content, container, false );
+        View rootView = inflater.inflate( R.layout.fragment_channel_content, container, false );
         final RecyclerView messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
 
         LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );

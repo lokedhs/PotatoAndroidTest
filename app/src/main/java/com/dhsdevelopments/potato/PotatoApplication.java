@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.dhsdevelopments.potato.clientapi.MessageElementTypeAdapter;
+import com.dhsdevelopments.potato.clientapi.NotificationTypeAdapter;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.MessageElement;
+import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -47,6 +49,7 @@ public class PotatoApplication extends Application
         Gson gson = new GsonBuilder()
                             .setDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" )
                             .registerTypeAdapter( MessageElement.class, new MessageElementTypeAdapter() )
+                            .registerTypeAdapter( PotatoNotification.class, new NotificationTypeAdapter() )
                             .create();
         OkHttpClient httpClient = new OkHttpClient();
         if( timeout > 0 ) {
