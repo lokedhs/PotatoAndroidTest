@@ -45,7 +45,7 @@ public class ChannelUsersTracker
             return ((HasUserTracker)activity).getUsersTracker();
         }
         else {
-            return null;
+            throw new IllegalStateException( "No tracker registered" );
         }
     }
 
@@ -150,6 +150,16 @@ public class ChannelUsersTracker
                 Log.wtf( "Error loading users", t );
             }
         } );
+    }
+
+    public String getNameForUid( String uid ) {
+        UserDescriptor user = getUsers().get( uid );
+        if( user == null ) {
+            return "unknown";
+        }
+        else {
+            return user.getName();
+        }
     }
 
     public class UserDescriptor

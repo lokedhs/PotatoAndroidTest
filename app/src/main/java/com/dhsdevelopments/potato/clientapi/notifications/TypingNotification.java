@@ -12,4 +12,13 @@ public class TypingNotification extends PotatoNotification
 
     @SerializedName( "add-type" )
     public String addType;
+
+    @Override
+    public String toString() {
+        return "TypingNotification[" +
+                       "userId='" + userId + '\'' +
+                       ", channelId='" + channelId + '\'' +
+                       ", addType='" + addType + '\'' +
+                       ']';
+    }
 }

@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
@@ -37,6 +38,8 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 import java.io.IOException;
+import java.text.Collator;
+import java.util.*;
 
 /**
  * A fragment representing a single Channel detail screen.
@@ -60,8 +63,19 @@ public class ChannelContentFragment extends Fragment
     private ChannelContentAdapter adapter;
     private RecyclerView.AdapterDataObserver observer;
     private UserNameSuggestAdapter userNameSuggestAdapter;
+    private Map<String,String> typingUsers = new HashMap<>();
+    private Comparator<String> caseInsensitiveStringComparator;
+    private TextView typingTextView;
 
     public ChannelContentFragment() {
+        final Collator collator = Collator.getInstance();
+        caseInsensitiveStringComparator = new Comparator<String>()
+        {
+            @Override
+            public int compare( String o1, String o2 ) {
+                return collator.compare( o1, o2 );
+            }
+        };
     }
 
     @Override
@@ -85,6 +99,7 @@ public class ChannelContentFragment extends Fragment
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED  );
         intentFilter.addAction( ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE );
+        intentFilter.addAction( ChannelSubscriptionService.ACTION_TYPING );
         getContext().registerReceiver( receiver, intentFilter );
 
         adapter = new ChannelContentAdapter( getContext(), cid );
@@ -100,17 +115,87 @@ public class ChannelContentFragment extends Fragment
         Log.i( "received broadcast message of type " + intent.getAction() );
         switch( intent.getAction() ) {
             case ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED:
-                Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
-                if( msg.channel.equals( cid ) ) {
-                    adapter.newMessage( msg );
-                }
+                processMessagePostedNotification( intent );
                 break;
             case ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE:
-                ChannelUsersTracker tracker = ChannelUsersTracker.findEnclosingUserTracker( this );
-                if( tracker != null ) {
-                    tracker.processIncoming( intent );
-                }
+                processChannelUsersNotification( intent );
                 break;
+            case ChannelSubscriptionService.ACTION_TYPING:
+                processTypingNotification( intent );
+                break;
+
+        }
+    }
+
+    private void processMessagePostedNotification( Intent intent ) {
+        Message msg = (Message)intent.getSerializableExtra( ChannelSubscriptionService.EXTRA_MESSAGE );
+        if( msg.channel.equals( cid ) ) {
+            adapter.newMessage( msg );
+        }
+    }
+
+    private void processChannelUsersNotification( Intent intent ) {
+        ChannelUsersTracker tracker = ChannelUsersTracker.findEnclosingUserTracker( this );
+        if( tracker != null ) {
+            tracker.processIncoming( intent );
+        }
+    }
+
+    private void processTypingNotification( Intent intent ) {
+        Log.i( "typing on channel: " + intent.getStringExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID ) );
+        Log.i( "to match         : " + cid );
+        if( !intent.getStringExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID ).equals( cid ) ) {
+            // Only process messages on this channel
+            return;
+        }
+
+        String uid = intent.getStringExtra( ChannelSubscriptionService.EXTRA_USER_ID );
+        String mode = intent.getStringExtra( ChannelSubscriptionService.EXTRA_TYPING_MODE );
+        Log.i( "uid=" + uid + ", mode=" + mode );
+        switch( mode ) {
+            case ChannelSubscriptionService.TYPING_MODE_ADD:
+                ChannelUsersTracker tracker = ChannelUsersTracker.findEnclosingUserTracker( this );
+                typingUsers.put( uid, tracker.getNameForUid( uid ) );
+                break;
+            case ChannelSubscriptionService.TYPING_MODE_REMOVE:
+                typingUsers.remove( uid );
+                break;
+            default:
+                Log.w( "Unexpected typing mode in broadcast message: " + mode );
+                break;
+        }
+
+        refreshTypingNotifier();
+    }
+
+    private void refreshTypingNotifier() {
+        if( typingUsers.isEmpty() ) {
+            typingTextView.setVisibility( View.INVISIBLE );
+        }
+        else {
+            List<String> users = new ArrayList<>( typingUsers.values() );
+            Collections.sort( users, caseInsensitiveStringComparator );
+
+            StringBuilder buf = new StringBuilder();
+            int numUsers = users.size();
+            if( numUsers == 1 ) {
+                buf.append( users.get( 0 ) );
+                buf.append( " is typing" );
+            }
+            else {
+                for( int i = 0 ; i < numUsers - 1 ; i++ ) {
+                    buf.append( users.get( i ) );
+                    if( i < numUsers - 2 ) {
+                        buf.append( ", " );
+                    }
+                }
+                buf.append( " and " );
+                buf.append( users.get( numUsers - 1 ) );
+                buf.append( " are typing" );
+            }
+
+            typingTextView.setText( buf.toString() );
+            typingTextView.setVisibility( View.VISIBLE );
         }
     }
 
@@ -122,6 +207,8 @@ public class ChannelContentFragment extends Fragment
         intent.putExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid );
         getContext().startService( intent );
         adapter.loadMessages();
+
+        refreshTypingNotifier();
     }
 
     @Override
@@ -134,8 +221,7 @@ public class ChannelContentFragment extends Fragment
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState ) {
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.fragment_channel_content, container, false );
         final RecyclerView messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
 
@@ -186,6 +272,8 @@ public class ChannelContentFragment extends Fragment
                 imm.hideSoftInputFromWindow( messageInput.getWindowToken(), 0 );
             }
         } );
+
+        typingTextView = (TextView)rootView.findViewById( R.id.typing_text_view );
 
         return rootView;
     }
