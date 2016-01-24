@@ -2,6 +2,7 @@
   <dictionary name="elias">
     <words>
       <w>snackbar</w>
+      <w>tokeniser</w>
     </words>
   </dictionary>
 </component>

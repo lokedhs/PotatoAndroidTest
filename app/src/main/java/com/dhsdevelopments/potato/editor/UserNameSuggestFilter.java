@@ -45,11 +45,24 @@ class UserNameSuggestFilter extends Filter
             return null;
         }
 
-        String textLower = text.toString().toLowerCase();
+        if( text.charAt( 0 ) != '@' ) {
+            Log.w( "Attempt to filter a string which does not start with @: \"" + text + "\"" );
+            return null;
+        }
+
+        if( text.length() < 2 ) {
+            return null;
+        }
+
+        String textLower = text.toString().substring( 1 ).toLowerCase();
         List<UserSuggestion> result = new ArrayList<>();
         for( UserSuggestion s : getUsers() ) {
-            if( s.getName().toLowerCase().startsWith( textLower ) ) {
-                result.add( s );
+            String[] parts = s.getName().toLowerCase().split( "\\W+" );
+            for( String part : parts ) {
+                if( part.startsWith( textLower ) ) {
+                    result.add( s );
+                    break;
+                }
             }
         }
 

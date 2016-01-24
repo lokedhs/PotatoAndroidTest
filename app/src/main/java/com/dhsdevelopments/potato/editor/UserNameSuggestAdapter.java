@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato.editor;
 
 import android.content.Context;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
 
     @Override
     public Object getItem( int position ) {
-        return users.get( position );
+        return users.get( position ).getId();
     }
 
     @Override

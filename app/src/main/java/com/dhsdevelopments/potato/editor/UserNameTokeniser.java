@@ -1,10 +1,21 @@
 package com.dhsdevelopments.potato.editor;
 
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.widget.MultiAutoCompleteTextView;
 import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
 public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
 {
+    private ChannelUsersTracker userTracker;
+
+    public UserNameTokeniser( ChannelUsersTracker userTracker ) {
+        this.userTracker = userTracker;
+    }
+
     @Override
     public int findTokenStart( CharSequence text, int cursor ) {
         if( cursor == 0 ) {
@@ -15,7 +26,7 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
         while( true ) {
             int codePoint = Character.codePointAt( text, w );
             if( codePoint == '@' && (w == 0 || Character.isSpaceChar( Character.codePointBefore( text, w ) )) ) {
-                return Character.offsetByCodePoints( text, w, 1 );
+                return w;
             }
             else if( !isTokenCharacter( codePoint ) ) {
                 return cursor;
@@ -28,7 +39,6 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
             w = Character.offsetByCodePoints( text, w, -1 );
         }
 
-        Log.i( "Returning token start: " + cursor );
         return cursor;
     }
 
@@ -46,7 +56,15 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
 
     @Override
     public CharSequence terminateToken( CharSequence text ) {
-        Log.i( "Terminate token called: '" + text + "'" );
-        return text;
+        Log.i( "Terminate token called: '" + text + "', type: " + text.getClass().getName() );
+        String uid = text.toString();
+        ChannelUsersTracker.UserDescriptor u = userTracker.getUsers().get( uid );
+        String name = u == null ? uid : u.getName();
+
+        Spannable s = new SpannableString( name );
+        s.setSpan( new StyleSpan( Typeface.BOLD ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        s.setSpan( new UidSpan( uid ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        return s;
+
     }
 }

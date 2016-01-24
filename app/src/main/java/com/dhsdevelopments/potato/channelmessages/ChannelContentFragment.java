@@ -169,9 +169,10 @@ public class ChannelContentFragment extends Fragment
             }
         } );
 
-        userNameSuggestAdapter = new UserNameSuggestAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ) );
+        ChannelUsersTracker userTracker = ChannelUsersTracker.findEnclosingUserTracker( this );
+        userNameSuggestAdapter = new UserNameSuggestAdapter( getContext(), userTracker );
         messageInput.setAdapter( userNameSuggestAdapter );
-        messageInput.setTokenizer( new UserNameTokeniser() );
+        messageInput.setTokenizer( new UserNameTokeniser( userTracker ) );
 
         final InputMethodManager imm = (InputMethodManager)getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
         Button sendButton = (Button)rootView.findViewById( R.id.send_button );
