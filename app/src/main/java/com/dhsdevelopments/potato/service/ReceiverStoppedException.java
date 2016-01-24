@@ -2,7 +2,7 @@ package com.dhsdevelopments.potato.service;
 
 import java.io.InterruptedIOException;
 
-public class ReceiverStoppedException extends Exception
+class ReceiverStoppedException extends Exception
 {
     public ReceiverStoppedException() {
     }

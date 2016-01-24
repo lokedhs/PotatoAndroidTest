@@ -38,6 +38,12 @@ public class ChannelSubscriptionService extends Service
     public static final String USER_UPDATE_TYPE_ADD = "add";
     public static final String USER_UPDATE_TYPE_REMOVE = "remove";
 
+    public static final String ACTION_TYPING = "com.dhsdevelopments.potato.TYPING_UPDATED";
+    public static final String EXTRA_TYPING_MODE = "com.dhsdevelopments.potato.typing_mode";
+    public static final String EXTRA_USER_ID = "com.dhsdevelopments.potato.user_id";
+    public static final String TYPING_MODE_ADD = "add";
+    public static final String TYPING_MODE_REMOVE = "remove";
+
     private Receiver receiverThread = null;
 
     public ChannelSubscriptionService() {
@@ -95,35 +101,64 @@ public class ChannelSubscriptionService extends Service
         for( PotatoNotification n : notifications ) {
             Log.i( "Processing notification: " + n );
             if( n instanceof MessageNotification ) {
-                Message msg = ((MessageNotification)n).message;
-                Intent intent = new Intent( ACTION_MESSAGE_RECEIVED );
-                intent.putExtra( EXTRA_MESSAGE, msg );
-                sendBroadcast( intent );
+                processMessageNotification( (MessageNotification)n );
             }
             else if( n instanceof StateUpdateNotification ) {
-                StateUpdateNotification update = (StateUpdateNotification)n;
-                Intent intent = new Intent( ACTION_CHANNEL_USERS_UPDATE );
-                intent.putExtra( EXTRA_CHANNEL_ID, update.channel );
-                switch( update.addType ) {
-                    case "sync":
-                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray( update.userStateSyncMembers ) );
-                        sendBroadcast( intent );
-                        break;
-                    case "add":
-                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_ADD );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
-                        sendBroadcast( intent );
-                        break;
-                    case "remove":
-                        intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_REMOVE );
-                        intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
-                        sendBroadcast( intent );
-                        break;
-                    default:
-                        Log.w( "Unexpected addType: " + update.addType );
-                }
+                processStateUpdateNotification( (StateUpdateNotification)n );
             }
+            else if( n instanceof TypingNotification ) {
+                processTypingNotification( (TypingNotification)n );
+            }
+        }
+    }
+
+    private void processMessageNotification( MessageNotification notification ) {
+        Message msg = notification.message;
+        Intent intent = new Intent( ACTION_MESSAGE_RECEIVED );
+        intent.putExtra( EXTRA_MESSAGE, msg );
+        sendBroadcast( intent );
+    }
+
+    private void processStateUpdateNotification( StateUpdateNotification update ) {
+        Intent intent = new Intent( ACTION_CHANNEL_USERS_UPDATE );
+        intent.putExtra( EXTRA_CHANNEL_ID, update.channel );
+        switch( update.addType ) {
+            case "sync":
+                intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC );
+                intent.putExtra( EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray( update.userStateSyncMembers ) );
+                sendBroadcast( intent );
+                break;
+            case "add":
+                intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_ADD );
+                intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
+                sendBroadcast( intent );
+                break;
+            case "remove":
+                intent.putExtra( EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_REMOVE );
+                intent.putExtra( EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser );
+                sendBroadcast( intent );
+                break;
+            default:
+                Log.w( "Unexpected addType: " + update.addType );
+        }
+    }
+
+    private void processTypingNotification( TypingNotification typingNotification ) {
+        Intent intent = new Intent( ACTION_TYPING );
+        intent.putExtra( EXTRA_CHANNEL_ID, typingNotification.channelId );
+        intent.putExtra( EXTRA_USER_ID, typingNotification.userId );
+        intent.putExtra( EXTRA_TYPING_MODE, typingModeFromJson( typingNotification.addType ) );
+        sendBroadcast( intent );
+    }
+
+    private String typingModeFromJson( String addType ) {
+        switch( addType ) {
+            case "begin":
+                return TYPING_MODE_ADD;
+            case "end":
+                return TYPING_MODE_REMOVE;
+            default:
+                throw new IllegalStateException( "Unexpected typing mode from server: \"" + addType + "\"" );
         }
     }
 

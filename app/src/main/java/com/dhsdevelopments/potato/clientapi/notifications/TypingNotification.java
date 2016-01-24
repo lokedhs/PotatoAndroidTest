@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class TypingNotification extends PotatoNotification
 {
     @SerializedName( "user" )
-    public String user;
+    public String userId;
 
     @SerializedName( "channel" )
     public String channelId;
