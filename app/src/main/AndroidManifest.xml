@@ -75,14 +75,9 @@
             </intent-filter>
         </service>
         <service
-                android:name=".service.PotatoService"
-                android:enabled="true"
-                android:exported="true">
-        </service>
-        <service
                 android:name=".service.ChannelSubscriptionService"
                 android:enabled="true"
-                android:exported="true">
+                android:exported="true" android:permission="com.dhsdevelopmens.potato.CHANNEL_SUBSCRIPTION_SERVIVE_PERMISSION">
         </service>
     </application>
 
