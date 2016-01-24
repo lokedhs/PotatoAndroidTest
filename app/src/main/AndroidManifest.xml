@@ -77,7 +77,7 @@
         <service
                 android:name=".service.ChannelSubscriptionService"
                 android:enabled="true"
-                android:exported="true" android:permission="com.dhsdevelopmens.potato.CHANNEL_SUBSCRIPTION_SERVIVE_PERMISSION">
+                android:exported="true" android:permission="com.dhsdevelopmens.potato.CHANNEL_SUBSCRIPTION_SERVICE_PERMISSION">
         </service>
     </application>
 
