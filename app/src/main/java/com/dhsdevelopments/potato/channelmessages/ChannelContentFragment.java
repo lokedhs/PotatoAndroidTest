@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
+import com.dhsdevelopments.potato.editor.UidSpan;
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter;
 import com.dhsdevelopments.potato.editor.UserNameTokeniser;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
@@ -202,7 +204,7 @@ public class ChannelContentFragment extends Fragment
             PotatoApplication app = PotatoApplication.getInstance( getContext() );
             PotatoApi api = app.getPotatoApi();
             String apiKey = app.getApiKey();
-            Call<SendMessageResult> call = api.sendMessage( apiKey, cid, new SendMessageRequest( text.toString() ) );
+            Call<SendMessageResult> call = api.sendMessage( apiKey, cid, new SendMessageRequest( convertUidRefs( text ) ) );
             call.enqueue( new Callback<SendMessageResult>()
             {
                 @Override
@@ -229,6 +231,36 @@ public class ChannelContentFragment extends Fragment
             } );
 
             messageInput.setText( "" );
+        }
+    }
+
+    private String convertUidRefs( CharSequence text ) {
+        if( text instanceof Spanned ) {
+            Spanned spannedText = (Spanned)text;
+
+            StringBuilder buf = new StringBuilder();
+            int length = spannedText.length();
+            UidSpan[] spans = spannedText.getSpans( 0, length, UidSpan.class );
+            int pos = 0;
+            for( UidSpan span : spans ) {
+                int start = spannedText.getSpanStart( span );
+                if( start > pos ) {
+                    buf.append( spannedText.subSequence( pos, start ) );
+                }
+                buf.append( "\uDB80\uDC01user:" );
+                buf.append( span.getUid() );
+                buf.append( ":" );
+                buf.append( span.getName() );
+                buf.append( "\uDB80\uDC01" );
+                pos = spannedText.getSpanEnd( span );
+            }
+            if( pos < length ) {
+                buf.append( spannedText.subSequence( pos, length ) );
+            }
+            return buf.toString();
+        }
+        else {
+            return text.toString();
         }
     }
 

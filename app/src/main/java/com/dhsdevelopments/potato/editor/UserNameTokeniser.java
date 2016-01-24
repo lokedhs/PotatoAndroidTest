@@ -63,8 +63,7 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
 
         Spannable s = new SpannableString( name );
         s.setSpan( new StyleSpan( Typeface.BOLD ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
-        s.setSpan( new UidSpan( uid ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        s.setSpan( new UidSpan( uid, name ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         return s;
-
     }
 }
