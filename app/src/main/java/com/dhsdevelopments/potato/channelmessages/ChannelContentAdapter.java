@@ -1,17 +1,24 @@
 package com.dhsdevelopments.potato.channelmessages;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
+import com.dhsdevelopments.potato.clientapi.message.MessageImage;
+import com.dhsdevelopments.potato.imagecache.ImageCache;
+import com.dhsdevelopments.potato.imagecache.LoadImageCallback;
+import com.dhsdevelopments.potato.imagecache.StorageType;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -25,13 +32,13 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 {
     private static final int VIEW_TYPE_PLAIN_MESSAGE = 0;
     private static final int VIEW_TYPE_EXTRA_CONTENT = 1;
-    private static final int NUM_VIEW_TYPES = 2;
 
     private Context context;
     private String cid;
 
     private MessageFormat dateFormat;
     private SimpleDateFormat isoDateFormat;
+    private ImageCache imageCache;
 
     private List<MessageWrapper> messages = new ArrayList<>();
 
@@ -42,6 +49,18 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
         dateFormat = new MessageFormat( context.getResources().getString( R.string.message_entry_date_label ) );
         isoDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
         isoDateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+    }
+
+    @Override
+    public void onAttachedToRecyclerView( RecyclerView recyclerView ) {
+        super.onAttachedToRecyclerView( recyclerView );
+        imageCache = new ImageCache( context );
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView( RecyclerView recyclerView ) {
+        imageCache.close();
+        super.onDetachedFromRecyclerView( recyclerView );
     }
 
     public void setMessages( List<Message> messages ) {
@@ -96,7 +115,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     @Override
     public int getItemViewType( int position ) {
         MessageWrapper m = messages.get( position );
-        if( m.getExtraHtml() == null ) {
+        if( m.getExtraHtml() == null && m.getImage() == null ) {
             return VIEW_TYPE_PLAIN_MESSAGE;
         }
         else {
@@ -164,17 +183,49 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 
     public class ViewHolderExtraContent extends ViewHolder
     {
+        private ImageView imageView;
         private TextView htmlContentView;
+        private long imageLoadIndex = 0;
 
         public ViewHolderExtraContent( View itemView ) {
             super( itemView );
+            imageView = (ImageView)itemView.findViewById( R.id.message_image );
             htmlContentView = (TextView)itemView.findViewById( R.id.extra_content_html );
         }
 
         @Override
         public void fillInView( MessageWrapper message ) {
             super.fillInView( message );
-            htmlContentView.setText( Html.fromHtml( message.getExtraHtml() ) );
+
+            if( message.getExtraHtml() != null ) {
+                htmlContentView.setText( Html.fromHtml( message.getExtraHtml() ) );
+                htmlContentView.setVisibility( View.VISIBLE );
+            }
+            else {
+                htmlContentView.setText( "" );
+                htmlContentView.setVisibility( View.GONE );
+            }
+
+            MessageImage messageImage = message.getImage();
+            final long refIndex = ++imageLoadIndex;
+            if( messageImage != null ) {
+                imageView.setVisibility( View.GONE );
+                LoadImageCallback callback = new LoadImageCallback()
+                {
+                    @Override
+                    public void bitmapLoaded( Bitmap bitmap ) {
+                        if( imageLoadIndex == refIndex ) {
+                            imageView.setImageDrawable( new BitmapDrawable( context.getResources(), bitmap ) );
+                            imageView.setVisibility( View.VISIBLE );
+                        }
+                    }
+                };
+                imageCache.loadImageFromApi( messageImage.file, 256, 256, StorageType.LONG, callback );
+            }
+            else {
+                imageView.setImageDrawable( null );
+                imageView.setVisibility( View.GONE );
+            }
         }
     }
 }

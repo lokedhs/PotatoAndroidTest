@@ -32,6 +32,14 @@ public class Log
         android.util.Log.i( LOG_TAG, message, e );
     }
 
+    public static void d( String message ) {
+        android.util.Log.d( LOG_TAG, message );
+    }
+
+    public static void d( String message, Throwable e ) {
+        android.util.Log.d( LOG_TAG, message, e );
+    }
+
     public static void wtf( String message ) {
         android.util.Log.e( LOG_TAG, message );
         throw new RuntimeException( message );

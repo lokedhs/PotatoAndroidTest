@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.channelmessages;
 
 import com.dhsdevelopments.potato.clientapi.message.Message;
 import com.dhsdevelopments.potato.clientapi.message.MessageElement;
+import com.dhsdevelopments.potato.clientapi.message.MessageImage;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
@@ -51,5 +52,9 @@ public class MessageWrapper
 
     public String getExtraHtml() {
         return msg.extraHtml;
+    }
+
+    public MessageImage getImage() {
+        return msg.messageImage;
     }
 }

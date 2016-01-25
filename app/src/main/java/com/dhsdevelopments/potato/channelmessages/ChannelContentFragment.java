@@ -30,6 +30,7 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import com.dhsdevelopments.potato.editor.UidSpan;
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter;
 import com.dhsdevelopments.potato.editor.UserNameTokeniser;
+import com.dhsdevelopments.potato.imagecache.ImageCache;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;

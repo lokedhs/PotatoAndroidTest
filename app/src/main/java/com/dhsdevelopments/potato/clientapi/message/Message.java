@@ -44,6 +44,9 @@ public class Message implements Serializable
     @SerializedName( "star_users" )
     public List<String> starUsers;
 
+    @SerializedName( "image" )
+    public MessageImage messageImage;
+
     @Override
     public String toString() {
         return "Message[" +

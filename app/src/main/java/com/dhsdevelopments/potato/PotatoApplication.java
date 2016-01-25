@@ -3,12 +3,14 @@ package com.dhsdevelopments.potato;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import com.dhsdevelopments.potato.clientapi.MessageElementTypeAdapter;
 import com.dhsdevelopments.potato.clientapi.NotificationTypeAdapter;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
 import com.dhsdevelopments.potato.clientapi.message.MessageElement;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification;
+import com.dhsdevelopments.potato.imagecache.ImageCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -19,9 +21,17 @@ import java.util.concurrent.TimeUnit;
 
 public class PotatoApplication extends Application
 {
+    private static final long IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS;
+    private static final long IMAGE_CACHE_PURGE_CUTOFF_SHORT = DateHelper.HOUR_MILLIS;
+
+    private SQLiteDatabase cacheDatabase = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        ImageCache imageCache = new ImageCache( this );
+        imageCache.purge( IMAGE_CACHE_PURGE_CUTOFF_LONG, IMAGE_CACHE_PURGE_CUTOFF_SHORT );
     }
 
     public static PotatoApplication getInstance( Context context ) {
@@ -61,5 +71,13 @@ public class PotatoApplication extends Application
                                     .client( httpClient )
                                     .build();
         return retrofit.create( PotatoApi.class );
+    }
+
+    public SQLiteDatabase getCacheDatabase() {
+        if( cacheDatabase == null ) {
+            StorageHelper storageHelper = new StorageHelper( this );
+            cacheDatabase = storageHelper.getWritableDatabase();
+        }
+        return cacheDatabase;
     }
 }
