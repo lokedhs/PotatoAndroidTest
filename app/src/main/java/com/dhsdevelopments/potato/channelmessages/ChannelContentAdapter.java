@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.channelmessages;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,10 @@ import java.util.*;
 
 public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>
 {
+    private static final int VIEW_TYPE_PLAIN_MESSAGE = 0;
+    private static final int VIEW_TYPE_EXTRA_CONTENT = 1;
+    private static final int NUM_VIEW_TYPES = 2;
+
     private Context context;
     private String cid;
 
@@ -68,8 +73,14 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 
     @Override
     public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
-        View view = LayoutInflater.from( parent.getContext() ).inflate( R.layout.message, parent, false );
-        return new ViewHolder( view );
+        switch( viewType ) {
+            case VIEW_TYPE_PLAIN_MESSAGE:
+                return new ViewHolder( LayoutInflater.from( parent.getContext() ).inflate( R.layout.message_basic, parent, false ) );
+            case VIEW_TYPE_EXTRA_CONTENT:
+                return new ViewHolderExtraContent( LayoutInflater.from( parent.getContext() ).inflate( R.layout.message_extra_html, parent, false ) );
+            default:
+                throw new IllegalStateException( "Unexpected viewType: " + viewType );
+        }
     }
 
     @Override
@@ -80,6 +91,17 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    @Override
+    public int getItemViewType( int position ) {
+        MessageWrapper m = messages.get( position );
+        if( m.getExtraHtml() == null ) {
+            return VIEW_TYPE_PLAIN_MESSAGE;
+        }
+        else {
+            return VIEW_TYPE_EXTRA_CONTENT;
+        }
     }
 
     /**
@@ -137,6 +159,22 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             senderView.setText( message.getSenderName() );
             dateView.setText( message.getCreatedDateFormatted() );
             contentView.setText( message.getMarkupContent() );
+        }
+    }
+
+    public class ViewHolderExtraContent extends ViewHolder
+    {
+        private TextView htmlContentView;
+
+        public ViewHolderExtraContent( View itemView ) {
+            super( itemView );
+            htmlContentView = (TextView)itemView.findViewById( R.id.extra_content_html );
+        }
+
+        @Override
+        public void fillInView( MessageWrapper message ) {
+            super.fillInView( message );
+            htmlContentView.setText( Html.fromHtml( message.getExtraHtml() ) );
         }
     }
 }

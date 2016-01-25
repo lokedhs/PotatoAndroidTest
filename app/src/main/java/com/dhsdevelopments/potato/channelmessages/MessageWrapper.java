@@ -10,16 +10,12 @@ import java.util.Date;
 
 public class MessageWrapper
 {
-    private String messageId;
-    private String senderName;
+    private Message msg;
     private Date createdDate;
     private String createdDateFormatted;
-    private MessageElement content;
 
     public MessageWrapper( Message msg, DateFormat isoDateFormat, MessageFormat dateFormat ) {
-        this.messageId = msg.id;
-        this.senderName = msg.fromName;
-        this.content = msg.text;
+        this.msg = msg;
 
         Date date;
         try {
@@ -28,16 +24,13 @@ public class MessageWrapper
         catch( ParseException e ) {
             throw new IllegalStateException( "Unable to parse date format from server: '" + this.createdDate + "'", e );
         }
+
         this.createdDate = date;
         this.createdDateFormatted = dateFormat.format( new Object[] { date } );
     }
 
-    public String getMessageId() {
-        return messageId;
-    }
-
     public String getSenderName() {
-        return senderName;
+        return msg.fromName;
     }
 
     public Date getCreatedDate() {
@@ -49,14 +42,14 @@ public class MessageWrapper
     }
 
     public MessageElement getContent() {
-        return content;
+        return msg.text;
     }
 
     public CharSequence getMarkupContent() {
-        return content.getSpannable();
+        return msg.text.getSpannable();
     }
 
-    public void setContent( MessageElement content ) {
-        this.content = content;
+    public String getExtraHtml() {
+        return msg.extraHtml;
     }
 }
