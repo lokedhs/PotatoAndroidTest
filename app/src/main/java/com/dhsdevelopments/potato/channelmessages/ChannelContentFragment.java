@@ -63,7 +63,7 @@ public class ChannelContentFragment extends Fragment
     private ChannelContentAdapter adapter;
     private RecyclerView.AdapterDataObserver observer;
     private UserNameSuggestAdapter userNameSuggestAdapter;
-    private Map<String,String> typingUsers = new HashMap<>();
+    private Map<String, String> typingUsers = new HashMap<>();
     private Comparator<String> caseInsensitiveStringComparator;
     private TextView typingTextView;
 
@@ -97,7 +97,7 @@ public class ChannelContentFragment extends Fragment
             }
         };
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED  );
+        intentFilter.addAction( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED );
         intentFilter.addAction( ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE );
         intentFilter.addAction( ChannelSubscriptionService.ACTION_TYPING );
         getContext().registerReceiver( receiver, intentFilter );

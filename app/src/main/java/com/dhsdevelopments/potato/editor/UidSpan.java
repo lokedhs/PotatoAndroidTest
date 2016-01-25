@@ -17,4 +17,12 @@ public class UidSpan
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "UidSpan[" +
+                       "uid='" + uid + '\'' +
+                       ", name='" + name + '\'' +
+                       ']';
+    }
 }

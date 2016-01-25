@@ -1,8 +1,10 @@
 package com.dhsdevelopments.potato.editor;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
 import android.widget.MultiAutoCompleteTextView;
 import com.dhsdevelopments.potato.Log;
@@ -62,7 +64,7 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
         String name = u == null ? uid : u.getName();
 
         Spannable s = new SpannableString( name );
-        s.setSpan( new StyleSpan( Typeface.BOLD ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        s.setSpan( new BackgroundColorSpan( Color.rgb( 210, 210, 210 ) ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         s.setSpan( new UidSpan( uid, name ), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         return s;
     }
