@@ -14,4 +14,9 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
     <style name="Drawer" parent="android:Theme.Material.Light.Panel"/>
+    <style name="message_style">
+        <item name="android:background">#f0f0f0</item>
+        <item name="android:layout_marginTop">3sp</item>
+        <item name="android:layout_marginBottom">3sp</item>
+    </style>
 </resources>
