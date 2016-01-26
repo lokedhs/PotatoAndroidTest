@@ -22,7 +22,6 @@ import com.dhsdevelopments.potato.userlist.UserListFragment;
  */
 public class ChannelContentActivity extends AppCompatActivity implements HasUserTracker
 {
-
     private ChannelUsersTracker usersTracker;
 
     @Override

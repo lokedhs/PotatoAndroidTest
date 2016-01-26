@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
+import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
 /**
  * An activity representing a list of Channels. This activity
@@ -19,13 +21,18 @@ import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ChannelListActivity extends AppCompatActivity
+public class ChannelListActivity extends AppCompatActivity implements HasUserTracker
 {
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean twoPane;
+
+    /**
+     * In two pane mode, this activity needs to hold the channel users tracker for the selected channel.
+     */
+    private ChannelUsersTracker usersTracker;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -67,4 +74,12 @@ public class ChannelListActivity extends AppCompatActivity
         return twoPane;
     }
 
+    public void setActiveChannel( String channelId ) {
+        usersTracker = ChannelUsersTracker.findForChannel( this, channelId );
+    }
+
+    @Override
+    public ChannelUsersTracker getUsersTracker() {
+        return usersTracker;
+    }
 }

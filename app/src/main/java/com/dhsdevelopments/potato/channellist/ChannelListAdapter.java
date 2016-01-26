@@ -92,6 +92,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
                 @Override
                 public void onClick( View v ) {
                     if( parent.isTwoPane() ) {
+                        parent.setActiveChannel( item.getId() );
+
                         Bundle arguments = new Bundle();
                         arguments.putString( ChannelContentFragment.ARG_CHANNEL_ID, item.getId() );
                         arguments.putString( ChannelContentFragment.ARG_CHANNEL_NAME, item.getName() );
