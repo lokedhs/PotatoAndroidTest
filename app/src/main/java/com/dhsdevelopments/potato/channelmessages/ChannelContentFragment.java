@@ -30,7 +30,6 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import com.dhsdevelopments.potato.editor.UidSpan;
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter;
 import com.dhsdevelopments.potato.editor.UserNameTokeniser;
-import com.dhsdevelopments.potato.imagecache.ImageCache;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;
@@ -67,6 +66,7 @@ public class ChannelContentFragment extends Fragment
     private Map<String, String> typingUsers = new HashMap<>();
     private Comparator<String> caseInsensitiveStringComparator;
     private TextView typingTextView;
+    private int lastVisibleItem;
 
     public ChannelContentFragment() {
         final Collator collator = Collator.getInstance();
@@ -226,7 +226,7 @@ public class ChannelContentFragment extends Fragment
         View rootView = inflater.inflate( R.layout.fragment_channel_content, container, false );
         final RecyclerView messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );
+        final LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );
         messageListView.setLayoutManager( layoutManager );
 
         messageListView.setAdapter( adapter );
@@ -235,12 +235,30 @@ public class ChannelContentFragment extends Fragment
         {
             @Override
             public void onItemRangeInserted( int positionStart, int itemCount ) {
-                if( adapter.getItemCount() == positionStart + itemCount ) {
-                    messageListView.scrollToPosition( positionStart + itemCount - 1 );
+                // Only scroll if the message was inserted at the bottom, and we're already looking at
+                // the bottom element.
+                int numItems = adapter.getItemCount();
+                if( lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount ) {
+                    messageListView.scrollToPosition( numItems - 1 );
                 }
+            }
+
+            @Override
+            public void onItemRangeChanged( int positionStart, int itemCount ) {
+                // After a change, we want to ensure that we can still see the bottom element that
+                // was visible before the change.
+                // TODO: Implement this stuff
             }
         };
         adapter.registerAdapterDataObserver( observer );
+
+        messageListView.addOnScrollListener( new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled( RecyclerView recyclerView, int dx, int dy ) {
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            }
+        } );
 
         final MultiAutoCompleteTextView messageInput = (MultiAutoCompleteTextView)rootView.findViewById( R.id.message_input_field );
         messageInput.setImeActionLabel( "Send", KeyEvent.KEYCODE_ENTER );
