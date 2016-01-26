@@ -10,15 +10,20 @@ import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.LoginActivity;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
+import com.dhsdevelopments.potato.messages.RegistrationIntentService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class PotatoActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener
 {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        checkGooglePlayApis();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         String apiKey = prefs.getString( getString( R.string.pref_apikey ), "" );
@@ -29,26 +34,35 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
         }
         else {
             Log.i( "got key: " + apiKey );
-//            GoogleApiClient client = new GoogleApiClient.Builder( this )
-//                    .addApi( Drive.API )
-//                    .addOnConnectionFailedListener( this )
-//                    .build();
-//            client.connect();
-            GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
-            int result = availability.isGooglePlayServicesAvailable( this );
-            if( result != ConnectionResult.SUCCESS ) {
-                if( availability.isUserResolvableError( result ) ) {
-                    Dialog dialog = availability.getErrorDialog( this, result, 0 );
-                    dialog.show();
-                }
-                else {
-                    throw new RuntimeException( "google apis not available" );
-                }
-            }
         }
 
         startActivity( new Intent( this, ChannelListActivity.class ) );
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkGooglePlayApis();
+    }
+
+    private void checkGooglePlayApis() {
+        GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+        int result = availability.isGooglePlayServicesAvailable( this );
+        if( result != ConnectionResult.SUCCESS ) {
+            if( availability.isUserResolvableError( result ) ) {
+                Dialog dialog = availability.getErrorDialog( this, result, 0 );
+                dialog.show();
+            }
+            else {
+                throw new RuntimeException( "google apis not available" );
+            }
+        }
+        else {
+            Intent intent = new Intent( this, RegistrationIntentService.class );
+            intent.setAction( RegistrationIntentService.ACTION_REGISTER );
+            startService( intent );
+        }
     }
 
     @Override

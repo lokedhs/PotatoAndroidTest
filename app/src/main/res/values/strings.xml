@@ -15,4 +15,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="post_button_text">»</string>
     <string name="message_image_description">Attached image</string>
+    <string name="gcm_sender_id">274254878033</string>
 </resources>

@@ -1,44 +1,13 @@
 {
   "project_info": {
-    "project_id": "pristine-nebula-679",
-    "project_number": "830842559844",
-    "name": "Potato"
+    "project_id": "potato-android-test",
+    "project_number": "274254878033",
+    "name": "Potato Android Test"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "",
-        "client_id": "android:com.dhsdevelopments.potato.androidclient2",
-        "client_type": 1,
-        "android_client_info": {
-          "package_name": "com.dhsdevelopments.potato.androidclient2"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:830842559844:android:0ae39dde4686480b",
+        "mobilesdk_app_id": "1:274254878033:android:0ae39dde4686480b",
         "client_id": "android:com.dhsdevelopments.potato",
         "client_type": 1,
         "android_client_info": {

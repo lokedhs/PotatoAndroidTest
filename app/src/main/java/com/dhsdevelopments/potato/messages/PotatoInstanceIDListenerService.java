@@ -3,15 +3,17 @@ package com.dhsdevelopments.potato.messages;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import com.dhsdevelopments.potato.Log;
+import com.google.android.gms.iid.InstanceIDListenerService;
 
-public class PotatoInstanceIDListenerService extends Service
+public class PotatoInstanceIDListenerService extends InstanceIDListenerService
 {
-    public PotatoInstanceIDListenerService() {
-    }
-
     @Override
-    public IBinder onBind( Intent intent ) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException( "Not yet implemented" );
+    public void onTokenRefresh() {
+        Log.d( "Got token refresh message" );
+
+        Intent intent = new Intent( this, RegistrationIntentService.class );
+        intent.setAction( RegistrationIntentService.ACTION_REGISTER );
+        startService( intent );
     }
 }
