@@ -18,5 +18,6 @@
         <item name="android:background">#f0f0f0</item>
         <item name="android:layout_marginTop">3sp</item>
         <item name="android:layout_marginBottom">3sp</item>
+        <item name="android:elevation">1sp</item>
     </style>
 </resources>
