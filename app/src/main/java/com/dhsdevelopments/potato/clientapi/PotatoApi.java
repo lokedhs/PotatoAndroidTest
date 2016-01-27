@@ -1,6 +1,8 @@
 package com.dhsdevelopments.potato.clientapi;
 
 import com.dhsdevelopments.potato.clientapi.channel.Domain;
+import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest;
+import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult;
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
@@ -42,4 +44,8 @@ public interface PotatoApi
     @GET( "channel/{cid}/users" )
     Call<LoadUsersResult> loadUsers( @Header( "API-token" ) String apiKey,
                                      @Path( "cid" ) String channelId );
+
+    @POST( "register-gcm" )
+    Call<GcmRegistrationResult> registerGcm( @Header( "API-token" ) String apiKey,
+                                             @Body GcmRegistrationRequest request );
 }

@@ -1,17 +1,28 @@
 package com.dhsdevelopments.potato.messages;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.os.Bundle;
+import com.dhsdevelopments.potato.Log;
+import com.google.android.gms.gcm.GcmListenerService;
 
-public class PotatoGcmListenerService extends Service
+public class PotatoGcmListenerService extends GcmListenerService
 {
     public PotatoGcmListenerService() {
     }
 
     @Override
-    public IBinder onBind( Intent intent ) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException( "Not yet implemented" );
+    public void onCreate() {
+        super.onCreate();
+        Log.d( "PotatoGcmListenerService created" );
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d( "PotatoGcmListenerService destroyed" );
+        super.onDestroy();
+    }
+
+    @Override
+    public void onMessageReceived( String from, Bundle data ) {
+        Log.d( "GCM message. from=" + from + ", data=" + data );
     }
 }

@@ -149,7 +149,7 @@ public class ImageCache
         OkHttpClient client = new OkHttpClient();
         Request.Builder builder = new Request.Builder();
         if( apiKey != null ) {
-            builder.url( "http://potato.dhsdevelopments.com/api/1.0" + urlString );
+            builder.url( PotatoApplication.API_URL_PREFIX + urlString );
             builder.addHeader( "API-token", apiKey );
         }
         else {
