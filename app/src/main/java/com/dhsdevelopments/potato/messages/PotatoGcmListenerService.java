@@ -41,7 +41,6 @@ public class PotatoGcmListenerService extends GcmListenerService
 
         Intent intent = new Intent( this, ChannelContentActivity.class );
         intent.putExtra( ChannelContentFragment.ARG_CHANNEL_ID, channelId );
-        intent.putExtra( ChannelContentFragment.ARG_CHANNEL_NAME, "Unknown" );
         PendingIntent pendingIntent = PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_ONE_SHOT );
 
         NotificationCompat.Builder builder = new android.support.v7.app.NotificationCompat.Builder( this )

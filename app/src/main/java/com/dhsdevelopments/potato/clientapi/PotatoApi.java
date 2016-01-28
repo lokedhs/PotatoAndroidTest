@@ -48,4 +48,8 @@ public interface PotatoApi
     @POST( "register-gcm" )
     Call<GcmRegistrationResult> registerGcm( @Header( "API-token" ) String apiKey,
                                              @Body GcmRegistrationRequest request );
+
+    @POST("channel/{cid}/clear-notifications")
+    Call<ClearNotificationsResult> clearNotificationsForChannel( @Header( "API-token" ) String apiKey,
+                                                                 @Path("cid") String channelId );
 }
