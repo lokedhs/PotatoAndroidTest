@@ -38,15 +38,13 @@ class ChannelEntry
         return groupName;
     }
 
-    static List<ChannelEntry> makeFromChannelTree( List<Domain> domains ) {
+    static List<ChannelEntry> makeFromChannelTree( Domain d ) {
         List<ChannelEntry> result = new ArrayList<>();
-        for( Domain d : domains ) {
-            String domainName = d.getName();
-            for( Group g : d.getGroups() ) {
-                String groupName = g.getName();
-                for( Channel c : g.getChannels() ) {
-                    result.add( new ChannelEntry( c.getId(), domainName, groupName, c.getName() ) );
-                }
+        String domainName = d.getName();
+        for( Group g : d.getGroups() ) {
+            String groupName = g.getName();
+            for( Channel c : g.getChannels() ) {
+                result.add( new ChannelEntry( c.getId(), domainName, groupName, c.getName() ) );
             }
         }
         return result;

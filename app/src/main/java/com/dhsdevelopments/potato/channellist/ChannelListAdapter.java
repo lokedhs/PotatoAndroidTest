@@ -26,6 +26,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 {
     private ChannelListActivity parent;
     private List<ChannelEntry> values = Collections.emptyList();
+    private List<Domain> channelTree = null;
 
     public ChannelListAdapter( ChannelListActivity parent ) {
         this.parent = parent;
@@ -61,8 +62,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
         {
             @Override
             public void onResponse( Response<List<Domain>> response, Retrofit retrofit ) {
-                values = ChannelEntry.makeFromChannelTree( response.body() );
-                notifyDataSetChanged();
+                channelTree = response.body();
+                parent.channelTreeLoaded( channelTree );
             }
 
             @Override
@@ -71,6 +72,16 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             }
         } );
 
+    }
+
+    public void selectDomain( String domainId ) {
+        for( Domain d : channelTree ) {
+            if( d.getId().equals( domainId ) ) {
+                values = ChannelEntry.makeFromChannelTree( d );
+                notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder
@@ -85,7 +96,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
         }
 
         public void fillInChannelEntry( final ChannelEntry item ) {
-            contentView.setText( item.getName() + " (" + item.getDomainName() + ")" );
+            contentView.setText( item.getName() );
 
             view.setOnClickListener( new View.OnClickListener()
             {

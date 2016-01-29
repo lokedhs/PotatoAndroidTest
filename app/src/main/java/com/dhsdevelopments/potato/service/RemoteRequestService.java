@@ -23,12 +23,26 @@ public class RemoteRequestService extends IntentService
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS";
+    public static final String ACTION_REQUEST_DOMAINS = "com.dhsdevelopments.potato.REQUEST_DOMAINS";
     public static final String EXTRA_CHANNEL_ID = "channelId";
 
     public static void markNotificationsForChannel( Context context, String cid ) {
+        makeAndStartIntent( context, ACTION_MARK_NOTIFICATIONS, EXTRA_CHANNEL_ID, cid );
+    }
+
+    private static void makeAndStartIntent( Context context, String action, Object... extraElements ) {
         Intent intent = new Intent( context, RemoteRequestService.class );
-        intent.setAction( ACTION_MARK_NOTIFICATIONS );
-        intent.putExtra( EXTRA_CHANNEL_ID, cid );
+        intent.setAction( action );
+        for( int i = 0 ; i < extraElements.length ; i += 2 ) {
+            String key = (String)extraElements[i];
+            Object value = extraElements[i + 1];
+            if( value instanceof String ) {
+                intent.putExtra( key, (String)value );
+            }
+            else {
+                throw new IllegalArgumentException( "Unexpected value type: " + value.getClass().getName() );
+            }
+        }
         context.startService( intent );
     }
 
@@ -53,7 +67,7 @@ public class RemoteRequestService extends IntentService
             Call<ClearNotificationsResult> call = app.getPotatoApi().clearNotificationsForChannel( app.getApiKey(), cid );
             Response<ClearNotificationsResult> result = call.execute();
             if( result.isSuccess() ) {
-                if( "ok".equals( result.body().result) ) {
+                if( "ok".equals( result.body().result ) ) {
                     Log.d( "Notifications cleared for channel: " + cid );
                 }
                 else {
@@ -65,7 +79,7 @@ public class RemoteRequestService extends IntentService
             }
         }
         catch( IOException e ) {
-            Log.e( "Exception when clering notifications", e );
+            Log.e( "Exception when clearing notifications", e );
         }
     }
 }
