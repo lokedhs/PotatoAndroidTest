@@ -14,12 +14,14 @@ class ChannelEntry
     private String domainName;
     private String groupName;
     private String name;
+    private boolean privateChannel;
 
-    ChannelEntry( String id, String domainName, String groupName, String channelName ) {
+    ChannelEntry( String id, String domainName, String groupName, String channelName, boolean privateChannel ) {
         this.id = id;
         this.domainName = domainName;
         this.groupName = groupName;
         this.name = channelName;
+        this.privateChannel = privateChannel;
     }
 
     public String getId() {
@@ -38,15 +40,7 @@ class ChannelEntry
         return groupName;
     }
 
-    static List<ChannelEntry> makeFromChannelTree( Domain d ) {
-        List<ChannelEntry> result = new ArrayList<>();
-        String domainName = d.getName();
-        for( Group g : d.getGroups() ) {
-            String groupName = g.getName();
-            for( Channel c : g.getChannels() ) {
-                result.add( new ChannelEntry( c.getId(), domainName, groupName, c.getName() ) );
-            }
-        }
-        return result;
+    public boolean isPrivateChannel() {
+        return privateChannel;
     }
 }

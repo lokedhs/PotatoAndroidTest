@@ -1,12 +1,19 @@
 package com.dhsdevelopments.potato.clientapi.channel;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 @SuppressWarnings( "unused" )
 public class Domain
 {
+    @SerializedName( "id" )
     private String id;
+
+    @SerializedName( "name" )
     private String name;
+
+    @SerializedName( "groups" )
     private List<Group> groups;
 
     public String getId() {

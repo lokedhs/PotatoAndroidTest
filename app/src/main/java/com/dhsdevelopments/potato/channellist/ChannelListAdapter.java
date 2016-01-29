@@ -13,19 +13,26 @@ import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment;
+import com.dhsdevelopments.potato.clientapi.channel.Channel;
 import com.dhsdevelopments.potato.clientapi.channel.Domain;
+import com.dhsdevelopments.potato.clientapi.channel.Group;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.ViewHolder>
 {
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_CHANNEL = 1;
+
     private ChannelListActivity parent;
-    private List<ChannelEntry> values = Collections.emptyList();
+    private List<ChannelEntry> publicChannels = Collections.emptyList();
+    private List<ChannelEntry> privateChannels = Collections.emptyList();
     private List<Domain> channelTree = null;
 
     public ChannelListAdapter( ChannelListActivity parent ) {
@@ -40,19 +47,71 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
-        View view = LayoutInflater.from( parent.getContext() )
-                                  .inflate( R.layout.channel_list_content, parent, false );
-        return new ViewHolder( view );
+        LayoutInflater layoutInflater = LayoutInflater.from( parent.getContext() );
+        switch( viewType ) {
+            case VIEW_TYPE_HEADER:
+                return new HeaderViewHolder( layoutInflater.inflate( R.layout.channel_list_header, parent, false ) );
+            case VIEW_TYPE_CHANNEL:
+                return new ChannelViewHolder( layoutInflater.inflate( R.layout.channel_list_content, parent, false ) );
+            default:
+                throw new RuntimeException( "Unexpected view type=" + viewType );
+        }
+    }
+
+    @Override
+    public int getItemViewType( int position ) {
+        if( publicChannels.isEmpty() ) {
+            return position == 0 ? VIEW_TYPE_HEADER : VIEW_TYPE_CHANNEL;
+        }
+        else {
+            if( position == 0 || (!privateChannels.isEmpty() && position == publicChannels.size() + 1) ) {
+                return VIEW_TYPE_HEADER;
+            }
+            else {
+                return VIEW_TYPE_CHANNEL;
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder( final ViewHolder holder, int position ) {
-        holder.fillInChannelEntry( values.get( position ) );
+        Log.d( "Binding view holder for position " + position + ", type=" + holder.getClass().getName() );
+        if( publicChannels.isEmpty() ) {
+            if( position == 0 ) {
+                ((HeaderViewHolder)holder).setTitle( "Conversations" );
+            }
+            else {
+                ((ChannelViewHolder)holder).fillInChannelEntry( privateChannels.get( position - 1 ) );
+            }
+        }
+        else {
+            if( position == 0 ) {
+                ((HeaderViewHolder)holder).setTitle( "Channels" );
+            }
+            else if( position < publicChannels.size() + 1 ) {
+                ((ChannelViewHolder)holder).fillInChannelEntry( publicChannels.get( position - 1 ) );
+            }
+            else if( !privateChannels.isEmpty() ) {
+                if( position == publicChannels.size() + 1 ) {
+                    ((HeaderViewHolder)holder).setTitle( "Conversations" );
+                }
+                else {
+                    ((ChannelViewHolder)holder).fillInChannelEntry( privateChannels.get( position - publicChannels.size() - 2 ) );
+                }
+            }
+        }
     }
 
     @Override
     public int getItemCount() {
-        return values.size();
+        int total = 0;
+        if( !publicChannels.isEmpty() ) {
+            total += publicChannels.size() + 1;
+        }
+        if( !privateChannels.isEmpty() ) {
+            total += privateChannels.size() + 1;
+        }
+        return total;
     }
 
     private void loadItems() {
@@ -77,19 +136,55 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     public void selectDomain( String domainId ) {
         for( Domain d : channelTree ) {
             if( d.getId().equals( domainId ) ) {
-                values = ChannelEntry.makeFromChannelTree( d );
+                publicChannels = new ArrayList<>();
+                privateChannels = new ArrayList<>();
+
+                String domainName = d.getName();
+                for( Group g : d.getGroups() ) {
+                    String groupName = g.getName();
+                    for( Channel c : g.getChannels() ) {
+                        ChannelEntry e = new ChannelEntry( c.getId(), domainName, groupName, c.getName(), c.isPrivateChannel() );
+                        if( e.isPrivateChannel() ) {
+                            privateChannels.add( e );
+                        }
+                        else {
+                            publicChannels.add( e );
+                        }
+                    }
+                }
                 notifyDataSetChanged();
-                break;
             }
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public abstract class ViewHolder extends RecyclerView.ViewHolder
     {
-        public View view;
-        public TextView contentView;
+        public ViewHolder( View itemView ) {
+            super( itemView );
+        }
+    }
 
-        public ViewHolder( View view ) {
+    public class HeaderViewHolder extends ViewHolder
+    {
+        private TextView titleView;
+
+        public HeaderViewHolder( View view ) {
+            super( view );
+            this.titleView = (TextView)view.findViewById( R.id.header_title_text );
+            Log.i( "Created header view. titleView=" + titleView );
+        }
+
+        public void setTitle( String title ) {
+            titleView.setText( title );
+        }
+    }
+
+    public class ChannelViewHolder extends ViewHolder
+    {
+        private View view;
+        private TextView contentView;
+
+        public ChannelViewHolder( View view ) {
             super( view );
             this.view = view;
             contentView = (TextView)view.findViewById( R.id.content );
