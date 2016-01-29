@@ -3,10 +3,15 @@ package com.dhsdevelopments.potato.channellist;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
@@ -43,16 +48,6 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         setSupportActionBar( toolbar );
         toolbar.setTitle( getTitle() );
 
-        FloatingActionButton fab = (FloatingActionButton)findViewById( R.id.fab );
-        fab.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick( View view ) {
-                Snackbar.make( view, "Replace with your own action", Snackbar.LENGTH_LONG )
-                        .setAction( "Action", null ).show();
-            }
-        } );
-
         View recyclerView = findViewById( R.id.channel_list );
         assert recyclerView != null;
         setupRecyclerView( (RecyclerView)recyclerView );
@@ -64,6 +59,37 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
             // activity should be in two-pane mode.
             twoPane = true;
         }
+
+        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_list_drawer_layout );
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
+        drawer.setDrawerListener( toggle );
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView)findViewById( R.id.channel_list_nav_view );
+        navigationView.setNavigationItemSelectedListener( new NavigationView.OnNavigationItemSelectedListener()
+        {
+            @Override
+            public boolean onNavigationItemSelected( MenuItem item ) {
+                return handleNavigationItemSelected( item );
+            }
+        } );
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_list_drawer_layout );
+        if( drawer.isDrawerOpen( GravityCompat.START ) ) {
+            drawer.closeDrawer( GravityCompat.START );
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
+    private boolean handleNavigationItemSelected( MenuItem item ) {
+        DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_list_drawer_layout );
+        drawer.closeDrawer( GravityCompat.START );
+        return true;
     }
 
     private void setupRecyclerView( @NonNull RecyclerView recyclerView ) {
