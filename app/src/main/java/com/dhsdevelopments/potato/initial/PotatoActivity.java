@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.LoginActivity;
@@ -23,8 +24,6 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        checkGooglePlayApis();
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         String apiKey = prefs.getString( getString( R.string.pref_apikey ), "" );
         if( apiKey.equals( "" ) ) {
@@ -34,10 +33,10 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
         }
         else {
             Log.i( "got key: " + apiKey );
+            checkGooglePlayApis();
+            startActivity( new Intent( this, ChannelListActivity.class ) );
+            finish();
         }
-
-        startActivity( new Intent( this, ChannelListActivity.class ) );
-        finish();
     }
 
     @Override
@@ -66,7 +65,7 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     @Override
-    public void onConnectionFailed( ConnectionResult connectionResult ) {
+    public void onConnectionFailed( @NonNull ConnectionResult connectionResult ) {
         Log.e( "Did not find the google apis" );
         throw new RuntimeException( "google apis not available" );
     }
