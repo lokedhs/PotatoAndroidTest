@@ -14,10 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
-import com.dhsdevelopments.potato.clientapi.channel.Domain;
+import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
+import com.dhsdevelopments.potato.clientapi.channel2.Domain;
 import com.dhsdevelopments.potato.settings.SettingsActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
@@ -34,6 +36,7 @@ import java.util.List;
 public class ChannelListActivity extends AppCompatActivity implements HasUserTracker
 {
     public static final String EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id";
+    public static final String EXTRA_DOMAIN_NAME = "com.dhsdevelopments.potato.domain_name";
 
     private String selectedDomainId = null;
 
@@ -126,11 +129,19 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     }
 
     private void selectDomain( String domainId ) {
+        String domainName = null;
         selectedDomainId = domainId;
         int n = domainsMenu.size();
         for( int i = 0 ; i < n ; i++ ) {
             MenuItem item = domainsMenu.getItem( i );
-            item.setChecked( item.getIntent().getStringExtra( EXTRA_DOMAIN_ID ).equals( domainId ) );
+            boolean isSelectedDomain = item.getIntent().getStringExtra( EXTRA_DOMAIN_ID ).equals( domainId );
+            if( isSelectedDomain ) {
+                domainName = item.getIntent().getStringExtra( EXTRA_DOMAIN_NAME );
+            }
+            item.setChecked( isSelectedDomain );
+        }
+        if( domainName != null ) {
+            setTitle( domainName );
         }
         channelListAdapter.selectDomain( domainId );
     }
@@ -153,16 +164,23 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         return usersTracker;
     }
 
-    public void channelTreeLoaded( List<Domain> channelTree ) {
-        if( !channelTree.isEmpty() ) {
-            domainsMenu.clear();
-            for( Domain d : channelTree ) {
-                MenuItem item = domainsMenu.add( d.getName() );
-                Intent intent = new Intent();
-                intent.putExtra( EXTRA_DOMAIN_ID, d.getId() );
-                item.setIntent( intent );
+    public void channelTreeLoaded( ChannelsResult channelTree ) {
+        Log.d( "Got channel result: " + channelTree );
+        domainsMenu.clear();
+        for( Domain d : channelTree.domains ) {
+            MenuItem item = domainsMenu.add( d.name );
+            Intent intent = new Intent();
+            intent.putExtra( EXTRA_DOMAIN_ID, d.id );
+            intent.putExtra( EXTRA_DOMAIN_NAME, d.name );
+            item.setIntent( intent );
+        }
+        if( selectedDomainId == null ) {
+            if( !channelTree.domains.isEmpty() ) {
+                selectDomain( channelTree.domains.get( 0 ).id );
             }
-            selectDomain( selectedDomainId != null ? selectedDomainId : channelTree.get( 0 ).getId() );
+        }
+        else {
+            selectDomain( selectedDomainId );
         }
     }
 }

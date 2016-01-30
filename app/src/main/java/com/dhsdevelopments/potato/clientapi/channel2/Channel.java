@@ -22,6 +22,9 @@ public class Channel
     @SerializedName( "unread_count" )
     public int unreadCount;
 
+    @SerializedName( "private_user" )
+    public String privateUser;
+
     @Override
     public String toString() {
         return "Channel[" +
@@ -31,6 +34,7 @@ public class Channel
                        ", groupId='" + groupId + '\'' +
                        ", groupType='" + groupType + '\'' +
                        ", unreadCount=" + unreadCount +
+                       ", privateUser='" + privateUser + '\'' +
                        ']';
     }
 }

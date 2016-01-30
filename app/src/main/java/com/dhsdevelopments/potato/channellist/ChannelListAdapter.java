@@ -13,9 +13,9 @@ import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment;
-import com.dhsdevelopments.potato.clientapi.channel.Channel;
-import com.dhsdevelopments.potato.clientapi.channel.Domain;
-import com.dhsdevelopments.potato.clientapi.channel.Group;
+import com.dhsdevelopments.potato.clientapi.channel2.Channel;
+import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
+import com.dhsdevelopments.potato.clientapi.channel2.Domain;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -33,7 +33,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     private ChannelListActivity parent;
     private List<ChannelEntry> publicChannels = Collections.emptyList();
     private List<ChannelEntry> privateChannels = Collections.emptyList();
-    private List<Domain> channelTree = null;
+    private ChannelsResult channelTree = null;
 
     public ChannelListAdapter( ChannelListActivity parent ) {
         this.parent = parent;
@@ -116,11 +116,11 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
     private void loadItems() {
         PotatoApplication app = PotatoApplication.getInstance( parent );
-        Call<List<Domain>> call = app.getPotatoApi().getChannels( app.getApiKey() );
-        call.enqueue( new Callback<List<Domain>>()
+        Call<ChannelsResult> call = app.getPotatoApi().getChannels2( app.getApiKey() );
+        call.enqueue( new Callback<ChannelsResult>()
         {
             @Override
-            public void onResponse( Response<List<Domain>> response, Retrofit retrofit ) {
+            public void onResponse( Response<ChannelsResult> response, Retrofit retrofit ) {
                 channelTree = response.body();
                 parent.channelTreeLoaded( channelTree );
             }
@@ -134,22 +134,19 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     }
 
     public void selectDomain( String domainId ) {
-        for( Domain d : channelTree ) {
-            if( d.getId().equals( domainId ) ) {
+        for( Domain d : channelTree.domains ) {
+            if( d.id.equals( domainId ) ) {
                 publicChannels = new ArrayList<>();
                 privateChannels = new ArrayList<>();
 
-                String domainName = d.getName();
-                for( Group g : d.getGroups() ) {
-                    String groupName = g.getName();
-                    for( Channel c : g.getChannels() ) {
-                        ChannelEntry e = new ChannelEntry( c.getId(), domainName, groupName, c.getName(), c.isPrivateChannel() );
-                        if( e.isPrivateChannel() ) {
-                            privateChannels.add( e );
-                        }
-                        else {
-                            publicChannels.add( e );
-                        }
+                String domainName = d.name;
+                for( Channel c : d.channels ) {
+                    ChannelEntry e = new ChannelEntry( c.id, domainName, c.name, c.privateUser != null );
+                    if( e.isPrivateChannel() ) {
+                        privateChannels.add( e );
+                    }
+                    else {
+                        publicChannels.add( e );
                     }
                 }
                 notifyDataSetChanged();
