@@ -33,11 +33,6 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".channellist.ChannelListActivity"/>
         </activity>
-        <activity
-                android:name=".initial.ChannelMainActivity"
-                android:label="@string/title_activity_channel_main"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
         <activity android:name=".initial.PotatoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
