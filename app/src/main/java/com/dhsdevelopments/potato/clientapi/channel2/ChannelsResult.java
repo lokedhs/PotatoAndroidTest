@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ChannelsResult
 {
-    @SerializedName( "channels" )
-    public List<Channel> channels;
+    @SerializedName( "domains" )
+    public List<Domain> domains;
 
     @Override
     public String toString() {
         return "ChannelsResult[" +
-                       "channels=" + channels +
+                       "domains=" + domains +
                        ']';
     }
 }
