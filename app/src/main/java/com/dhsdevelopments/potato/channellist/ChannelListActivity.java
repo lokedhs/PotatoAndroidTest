@@ -1,6 +1,8 @@
 package com.dhsdevelopments.potato.channellist;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,11 +17,14 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import com.dhsdevelopments.potato.Log;
+import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
 import com.dhsdevelopments.potato.clientapi.channel2.Domain;
+import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.settings.SettingsActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
@@ -90,6 +95,8 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
         drawer.setDrawerListener( toggle );
         toggle.syncState();
+
+        updateDomainList();
     }
 
     @Override
@@ -164,23 +171,24 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         return usersTracker;
     }
 
-    public void channelTreeLoaded( ChannelsResult channelTree ) {
-        Log.d( "Got channel result: " + channelTree );
+    public void updateDomainList() {
+        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
+
         domainsMenu.clear();
-        for( Domain d : channelTree.domains ) {
-            MenuItem item = domainsMenu.add( d.name );
-            Intent intent = new Intent();
-            intent.putExtra( EXTRA_DOMAIN_ID, d.id );
-            intent.putExtra( EXTRA_DOMAIN_NAME, d.name );
-            item.setIntent( intent );
-        }
-        if( selectedDomainId == null ) {
-            if( !channelTree.domains.isEmpty() ) {
-                selectDomain( channelTree.domains.get( 0 ).id );
+
+        try( Cursor result = db.query( StorageHelper.DOMAINS_TABLE,
+                                       new String[] { StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME },
+                                       null, null, null, null, StorageHelper.DOMAINS_NAME ) ) {
+            while( result.moveToNext() ) {
+                String domainId = result.getString( 0 );
+                String domainName = result.getString( 1 );
+
+                MenuItem item = domainsMenu.add( domainName );
+                Intent intent = new Intent();
+                intent.putExtra( EXTRA_DOMAIN_ID, domainId );
+                intent.putExtra( EXTRA_DOMAIN_NAME, domainName );
+                item.setIntent( intent );
             }
-        }
-        else {
-            selectDomain( selectedDomainId );
         }
     }
 }

@@ -2,6 +2,8 @@ package com.dhsdevelopments.potato.channellist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,11 +13,13 @@ import android.widget.TextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment;
 import com.dhsdevelopments.potato.clientapi.channel2.Channel;
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
 import com.dhsdevelopments.potato.clientapi.channel2.Domain;
+import com.dhsdevelopments.potato.service.RemoteRequestService;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -33,7 +37,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     private ChannelListActivity parent;
     private List<ChannelEntry> publicChannels = Collections.emptyList();
     private List<ChannelEntry> privateChannels = Collections.emptyList();
-    private ChannelsResult channelTree = null;
 
     public ChannelListAdapter( ChannelListActivity parent ) {
         this.parent = parent;
@@ -115,39 +118,31 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     }
 
     private void loadItems() {
-        PotatoApplication app = PotatoApplication.getInstance( parent );
-        Call<ChannelsResult> call = app.getPotatoApi().getChannels2( app.getApiKey() );
-        call.enqueue( new Callback<ChannelsResult>()
-        {
-            @Override
-            public void onResponse( Response<ChannelsResult> response, Retrofit retrofit ) {
-                channelTree = response.body();
-                parent.channelTreeLoaded( channelTree );
-            }
-
-            @Override
-            public void onFailure( Throwable t ) {
-                Log.wtf( "Got error from server", t );
-            }
-        } );
-
+        RemoteRequestService.loadChannelList( parent );
     }
 
     public void selectDomain( String domainId ) {
-        for( Domain d : channelTree.domains ) {
-            if( d.id.equals( domainId ) ) {
-                publicChannels = new ArrayList<>();
-                privateChannels = new ArrayList<>();
-
-                String domainName = d.name;
-                for( Channel c : d.channels ) {
-                    ChannelEntry e = new ChannelEntry( c.id, domainName, c.name, c.privateUser != null );
-                    if( e.isPrivateChannel() ) {
-                        privateChannels.add( e );
-                    }
-                    else {
-                        publicChannels.add( e );
-                    }
+        SQLiteDatabase db = PotatoApplication.getInstance( parent ).getCacheDatabase();
+        try( Cursor result = db.query( StorageHelper.CHANNELS_TABLE,
+                                       new String[] { StorageHelper.CHANNELS_ID,
+                                                      StorageHelper.CHANNELS_NAME,
+                                                      StorageHelper.CHANNELS_PRIVATE,
+                                                      StorageHelper.CHANNELS_UNREAD },
+                                       StorageHelper.CHANNELS_DOMAIN + " = ?", new String[] { domainId },
+                                       null, null, StorageHelper.CHANNELS_NAME, null ) ) {
+            publicChannels = new ArrayList<>();
+            privateChannels = new ArrayList<>();
+            while( result.moveToNext() ) {
+                String cid = result.getString( 0 );
+                String name = result.getString( 1 );
+                String privateUser = result.getString( 2 );
+                int unread = result.getInt( 3 );
+                ChannelEntry e = new ChannelEntry( cid, name, privateUser != null, unread );
+                if( e.isPrivateChannel() ) {
+                    privateChannels.add( e );
+                }
+                else {
+                    publicChannels.add( e );
                 }
                 notifyDataSetChanged();
             }

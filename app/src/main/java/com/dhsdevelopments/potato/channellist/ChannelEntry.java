@@ -11,15 +11,15 @@ import java.util.List;
 class ChannelEntry
 {
     private String id;
-    private String domainName;
     private String name;
     private boolean privateChannel;
+    private int unread;
 
-    ChannelEntry( String id, String domainName, String channelName, boolean privateChannel ) {
+    ChannelEntry( String id, String channelName, boolean privateChannel, int unread ) {
         this.id = id;
-        this.domainName = domainName;
         this.name = channelName;
         this.privateChannel = privateChannel;
+        this.unread = unread;
     }
 
     public String getId() {
@@ -30,11 +30,11 @@ class ChannelEntry
         return name;
     }
 
-    public String getDomainName() {
-        return domainName;
-    }
-
     public boolean isPrivateChannel() {
         return privateChannel;
+    }
+
+    public int getUnread() {
+        return unread;
     }
 }
