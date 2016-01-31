@@ -28,6 +28,8 @@ public class PotatoApplication extends Application
     private static final long IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS;
     private static final long IMAGE_CACHE_PURGE_CUTOFF_SHORT = DateHelper.HOUR_MILLIS;
 
+    public static final String PREF_DEFAULT_DOMAIN_ID = "com.dhsdevelopments.potato.PREF_DEFAULT_DOMAIN";
+
     private SQLiteDatabase cacheDatabase = null;
 
     @Override

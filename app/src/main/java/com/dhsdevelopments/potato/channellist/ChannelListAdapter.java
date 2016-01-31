@@ -122,31 +122,35 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     }
 
     public void selectDomain( String domainId ) {
-        SQLiteDatabase db = PotatoApplication.getInstance( parent ).getCacheDatabase();
-        try( Cursor result = db.query( StorageHelper.CHANNELS_TABLE,
-                                       new String[] { StorageHelper.CHANNELS_ID,
-                                                      StorageHelper.CHANNELS_NAME,
-                                                      StorageHelper.CHANNELS_PRIVATE,
-                                                      StorageHelper.CHANNELS_UNREAD },
-                                       StorageHelper.CHANNELS_DOMAIN + " = ?", new String[] { domainId },
-                                       null, null, StorageHelper.CHANNELS_NAME, null ) ) {
-            publicChannels = new ArrayList<>();
-            privateChannels = new ArrayList<>();
-            while( result.moveToNext() ) {
-                String cid = result.getString( 0 );
-                String name = result.getString( 1 );
-                String privateUser = result.getString( 2 );
-                int unread = result.getInt( 3 );
-                ChannelEntry e = new ChannelEntry( cid, name, privateUser != null, unread );
-                if( e.isPrivateChannel() ) {
-                    privateChannels.add( e );
+        publicChannels = new ArrayList<>();
+        privateChannels = new ArrayList<>();
+
+        if( domainId != null ) {
+            SQLiteDatabase db = PotatoApplication.getInstance( parent ).getCacheDatabase();
+            try( Cursor result = db.query( StorageHelper.CHANNELS_TABLE,
+                                           new String[] { StorageHelper.CHANNELS_ID,
+                                                          StorageHelper.CHANNELS_NAME,
+                                                          StorageHelper.CHANNELS_PRIVATE,
+                                                          StorageHelper.CHANNELS_UNREAD },
+                                           StorageHelper.CHANNELS_DOMAIN + " = ?", new String[] { domainId },
+                                           null, null, StorageHelper.CHANNELS_NAME, null ) ) {
+                while( result.moveToNext() ) {
+                    String cid = result.getString( 0 );
+                    String name = result.getString( 1 );
+                    String privateUser = result.getString( 2 );
+                    int unread = result.getInt( 3 );
+                    ChannelEntry e = new ChannelEntry( cid, name, privateUser != null, unread );
+                    if( e.isPrivateChannel() ) {
+                        privateChannels.add( e );
+                    }
+                    else {
+                        publicChannels.add( e );
+                    }
                 }
-                else {
-                    publicChannels.add( e );
-                }
-                notifyDataSetChanged();
             }
         }
+
+        notifyDataSetChanged();
     }
 
     public abstract class ViewHolder extends RecyclerView.ViewHolder

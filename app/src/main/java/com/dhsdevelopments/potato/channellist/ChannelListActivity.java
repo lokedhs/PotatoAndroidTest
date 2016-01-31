@@ -1,9 +1,12 @@
 package com.dhsdevelopments.potato.channellist;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -43,6 +46,8 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     public static final String EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id";
     public static final String EXTRA_DOMAIN_NAME = "com.dhsdevelopments.potato.domain_name";
 
+    private static final String STATE_SELECTED_DOMAIN_ID = "selectedDomain";
+
     private String selectedDomainId = null;
 
     /**
@@ -63,7 +68,14 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_channel_list );
 
-        selectedDomainId = getIntent().getStringExtra( EXTRA_DOMAIN_ID );
+        Log.i( "saved instance state: " + savedInstanceState );
+        if( savedInstanceState != null ) {
+            selectedDomainId = savedInstanceState.getString( STATE_SELECTED_DOMAIN_ID );
+        }
+        else {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+            selectedDomainId = prefs.getString( PotatoApplication.PREF_DEFAULT_DOMAIN_ID, null );
+        }
 
         Toolbar toolbar = (Toolbar)findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );
@@ -100,6 +112,12 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     }
 
     @Override
+    protected void onSaveInstanceState( Bundle outState ) {
+        super.onSaveInstanceState( outState );
+        outState.putString( STATE_SELECTED_DOMAIN_ID, selectedDomainId );
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_list_drawer_layout );
         if( drawer.isDrawerOpen( GravityCompat.START ) ) {
@@ -128,29 +146,31 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     private void checkMenuAndSwitchToDomain( MenuItem item ) {
         Intent intent = item.getIntent();
         if( intent != null ) {
-            String domainId = intent.getStringExtra( EXTRA_DOMAIN_ID );
-            if( domainId != null ) {
-                selectDomain( domainId );
-            }
+            selectedDomainId = intent.getStringExtra( EXTRA_DOMAIN_ID );
+            activateSelectedDomain();
         }
     }
 
-    private void selectDomain( String domainId ) {
-        String domainName = null;
-        selectedDomainId = domainId;
-        int n = domainsMenu.size();
-        for( int i = 0 ; i < n ; i++ ) {
-            MenuItem item = domainsMenu.getItem( i );
-            boolean isSelectedDomain = item.getIntent().getStringExtra( EXTRA_DOMAIN_ID ).equals( domainId );
-            if( isSelectedDomain ) {
-                domainName = item.getIntent().getStringExtra( EXTRA_DOMAIN_NAME );
+    private void activateSelectedDomain() {
+        if( selectedDomainId != null ) {
+            String domainName = null;
+            int n = domainsMenu.size();
+            for( int i = 0 ; i < n ; i++ ) {
+                MenuItem item = domainsMenu.getItem( i );
+                boolean isSelectedDomain = item.getIntent().getStringExtra( EXTRA_DOMAIN_ID ).equals( selectedDomainId );
+                if( isSelectedDomain ) {
+                    domainName = item.getIntent().getStringExtra( EXTRA_DOMAIN_NAME );
+                }
+                item.setChecked( isSelectedDomain );
             }
-            item.setChecked( isSelectedDomain );
+            setTitle( domainName == null ? "No domain selected" : domainName );
+            if( domainName == null ) {
+                // If we get here, the user has been removed from the currently selected domain, so we'll
+                // simply clear the selected domain.
+                selectedDomainId = null;
+            }
+            channelListAdapter.selectDomain( selectedDomainId );
         }
-        if( domainName != null ) {
-            setTitle( domainName );
-        }
-        channelListAdapter.selectDomain( domainId );
     }
 
     private void setupRecyclerView( @NonNull RecyclerView recyclerView ) {
