@@ -31,7 +31,7 @@ public class RemoteRequestService extends IntentService
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS";
     public static final String ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS";
-    public static final String EXTRA_CHANNEL_ID = "channelId";
+    public static final String EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id";
 
     public static final String ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED";
 

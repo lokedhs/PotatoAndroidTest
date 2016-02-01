@@ -84,4 +84,6 @@
     <string name="unread_notifications_title">Notify when channel is unread</string>
     <string name="unread_notifications_summary">Show a notification when you have unread messages in this channel.
     </string>
+    <string name="setting_display_notifications">Display notifications</string>
+    <string name="setting_notify_unread">Notifications on unread</string>
 </resources>

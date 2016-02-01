@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class StorageHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public static final String IMAGE_CACHE_TABLE = "imagecache";
     public static final String IMAGE_CACHE_NAME = "name";
@@ -26,6 +26,11 @@ public class StorageHelper extends SQLiteOpenHelper
     public static final String CHANNELS_UNREAD = "unread";
     public static final String CHANNELS_PRIVATE = "private_user";
 
+    public static final String CHANNEL_CONFIG_TABLE = "channel_config";
+    public static final String CHANNEL_CONFIG_ID = "id";
+    public static final String CHANNEL_CONFIG_SHOW_NOTIFICATIONS = "show_notification";
+    public static final String CHANNEL_CONFIG_NOTIFY_UNREAD = "show_unread";
+
     public StorageHelper( Context context ) {
         super( context, "potatoData", null, DATABASE_VERSION );
     }
@@ -40,12 +45,16 @@ public class StorageHelper extends SQLiteOpenHelper
                             IMAGE_CACHE_CAN_DELETE + " boolean" +
                             ")" );
         createChannelTables( db );
+        createChannelConfigTable( db );
     }
 
     @Override
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
         if( oldVersion < 2 ) {
             createChannelTables( db );
+        }
+        if( oldVersion < 3 ) {
+            createChannelConfigTable( db );
         }
     }
 
@@ -61,6 +70,14 @@ public class StorageHelper extends SQLiteOpenHelper
                             CHANNELS_UNREAD + " text not null, " +
                             CHANNELS_PRIVATE + " text null, " +
                             "foreign key (domain) references " + DOMAINS_TABLE + "(" + DOMAINS_ID + ")" +
+                            ")" );
+    }
+
+    private void createChannelConfigTable( SQLiteDatabase db ) {
+        db.execSQL( "create table " + CHANNEL_CONFIG_TABLE + " (" +
+                            CHANNEL_CONFIG_ID + " text primary key, " +
+                            CHANNEL_CONFIG_SHOW_NOTIFICATIONS + " boolean not null, " +
+                            CHANNEL_CONFIG_NOTIFY_UNREAD + " boolean not null" +
                             ")" );
     }
 }
