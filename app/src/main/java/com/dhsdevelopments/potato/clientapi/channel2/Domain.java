@@ -12,6 +12,9 @@ public class Domain
     @SerializedName( "name" )
     public String name;
 
+    @SerializedName( "domain-type" )
+    public String type;
+
     @SerializedName( "channels" )
     public List<Channel> channels;
 
@@ -20,6 +23,7 @@ public class Domain
         return "Domain[" +
                        "id='" + id + '\'' +
                        ", name='" + name + '\'' +
+                       ", type='" + type + '\'' +
                        ", channels=" + channels +
                        ']';
     }

@@ -114,19 +114,21 @@ public class RemoteRequestService extends IntentService
                     db.delete( StorageHelper.DOMAINS_TABLE, null, null );
 
                     for( Domain d : result.body().domains ) {
-                        ContentValues values = new ContentValues();
-                        values.put( StorageHelper.DOMAINS_ID, d.id );
-                        values.put( StorageHelper.DOMAINS_NAME, d.name );
-                        db.insert( StorageHelper.DOMAINS_TABLE, null, values );
+                        if( !d.type.equals( "PRIVATE" ) ) {
+                            ContentValues values = new ContentValues();
+                            values.put( StorageHelper.DOMAINS_ID, d.id );
+                            values.put( StorageHelper.DOMAINS_NAME, d.name );
+                            db.insert( StorageHelper.DOMAINS_TABLE, null, values );
 
-                        for( Channel c : d.channels ) {
-                            ContentValues channelValues = new ContentValues();
-                            channelValues.put( StorageHelper.CHANNELS_ID, c.id );
-                            channelValues.put( StorageHelper.CHANNELS_DOMAIN, d.id );
-                            channelValues.put( StorageHelper.CHANNELS_NAME, c.name );
-                            channelValues.put( StorageHelper.CHANNELS_UNREAD, c.unreadCount );
-                            channelValues.put( StorageHelper.CHANNELS_PRIVATE, c.privateUser );
-                            db.insert( StorageHelper.CHANNELS_TABLE, null, channelValues );
+                            for( Channel c : d.channels ) {
+                                ContentValues channelValues = new ContentValues();
+                                channelValues.put( StorageHelper.CHANNELS_ID, c.id );
+                                channelValues.put( StorageHelper.CHANNELS_DOMAIN, d.id );
+                                channelValues.put( StorageHelper.CHANNELS_NAME, c.name );
+                                channelValues.put( StorageHelper.CHANNELS_UNREAD, c.unreadCount );
+                                channelValues.put( StorageHelper.CHANNELS_PRIVATE, c.privateUser );
+                                db.insert( StorageHelper.CHANNELS_TABLE, null, channelValues );
+                            }
                         }
                     }
 

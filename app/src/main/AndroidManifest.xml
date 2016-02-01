@@ -36,7 +36,6 @@
         <activity android:name=".initial.PotatoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -88,9 +87,7 @@
                 android:name=".settings.SettingsActivity"
                 android:label="@string/title_activity_settings">
         </activity>
-        <activity android:name=".domainlist.SelectDomainActivity">
-        </activity>
-        <activity android:name=".channelmessages.settings.ChannelSettingsActivity">
+        <activity android:name=".channelmessages.settings.ChannelSettingsActivity" android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
