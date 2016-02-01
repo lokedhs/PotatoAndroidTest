@@ -1,11 +1,9 @@
 package com.dhsdevelopments.potato.channellist;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -25,13 +22,9 @@ import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
-import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
-import com.dhsdevelopments.potato.clientapi.channel2.Domain;
 import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.settings.SettingsActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
-
-import java.util.List;
 
 /**
  * An activity representing a list of Channels. This activity
@@ -62,6 +55,7 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     private ChannelUsersTracker usersTracker;
     private ChannelListAdapter channelListAdapter;
     private SubMenu domainsMenu;
+    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -107,8 +101,39 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle( this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close );
         drawer.setDrawerListener( toggle );
         toggle.syncState();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        receiver = new BroadcastReceiver()
+        {
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                handleBroadcastMessage( intent );
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction( RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED );
+        registerReceiver( receiver, intentFilter );
 
         updateDomainList();
+        RemoteRequestService.loadChannelList( this );
+    }
+
+    private void handleBroadcastMessage( Intent intent ) {
+        switch( intent.getAction() ) {
+            case RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED:
+                updateDomainList();
+                break;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver( receiver );
+        super.onStop();
     }
 
     @Override
@@ -210,5 +235,7 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
                 item.setIntent( intent );
             }
         }
+
+        activateSelectedDomain();
     }
 }

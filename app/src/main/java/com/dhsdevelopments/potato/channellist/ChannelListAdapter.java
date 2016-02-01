@@ -16,14 +16,6 @@ import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment;
-import com.dhsdevelopments.potato.clientapi.channel2.Channel;
-import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
-import com.dhsdevelopments.potato.clientapi.channel2.Domain;
-import com.dhsdevelopments.potato.service.RemoteRequestService;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +37,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
     @Override
     public void onAttachedToRecyclerView( RecyclerView recyclerView ) {
         super.onAttachedToRecyclerView( recyclerView );
-        loadItems();
     }
 
     @Override
@@ -115,10 +106,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             total += privateChannels.size() + 1;
         }
         return total;
-    }
-
-    private void loadItems() {
-        RemoteRequestService.loadChannelList( parent );
     }
 
     public void selectDomain( String domainId ) {

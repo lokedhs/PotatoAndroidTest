@@ -33,7 +33,7 @@ public class RemoteRequestService extends IntentService
     public static final String ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS";
     public static final String EXTRA_CHANNEL_ID = "channelId";
 
-    private static final String ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED";
+    public static final String ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED";
 
     public static void markNotificationsForChannel( Context context, String cid ) {
         makeAndStartIntent( context, ACTION_MARK_NOTIFICATIONS, EXTRA_CHANNEL_ID, cid );
