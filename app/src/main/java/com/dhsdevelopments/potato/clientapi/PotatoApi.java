@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.clientapi;
 
-import com.dhsdevelopments.potato.clientapi.channel.Domain;
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest;
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult;
@@ -12,13 +11,8 @@ import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult;
 import retrofit.Call;
 import retrofit.http.*;
 
-import java.util.List;
-
 public interface PotatoApi
 {
-    @GET( "channels" )
-    Call<List<Domain>> getChannels( @Header( "API-token" ) String apiKey );
-
     @GET("channels2")
     Call<ChannelsResult> getChannels2( @Header( "API-token" ) String apiKey );
 

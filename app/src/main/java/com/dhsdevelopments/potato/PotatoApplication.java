@@ -1,10 +1,10 @@
 package com.dhsdevelopments.potato;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
 import com.dhsdevelopments.potato.clientapi.MessageElementTypeAdapter;
 import com.dhsdevelopments.potato.clientapi.NotificationTypeAdapter;
 import com.dhsdevelopments.potato.clientapi.PotatoApi;
@@ -19,7 +19,7 @@ import retrofit.Retrofit;
 
 import java.util.concurrent.TimeUnit;
 
-public class PotatoApplication extends Application
+public class PotatoApplication extends MultiDexApplication
 {
     public static final String SERVER_URL_PREFIX = "http://10.0.2.2:8080/";
     //public static final String SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/";

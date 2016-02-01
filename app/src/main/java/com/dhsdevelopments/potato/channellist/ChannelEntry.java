@@ -1,13 +1,5 @@
 package com.dhsdevelopments.potato.channellist;
 
-import com.dhsdevelopments.potato.Log;
-import com.dhsdevelopments.potato.clientapi.channel.Channel;
-import com.dhsdevelopments.potato.clientapi.channel.Domain;
-import com.dhsdevelopments.potato.clientapi.channel.Group;
-
-import java.util.ArrayList;
-import java.util.List;
-
 class ChannelEntry
 {
     private String id;
