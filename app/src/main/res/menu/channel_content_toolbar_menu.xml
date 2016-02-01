@@ -3,6 +3,10 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_option_show_users"
           android:icon="@android:drawable/ic_menu_send"
-          android:title="Users"
+          android:title="@string/menu_show_users"
           app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_option_channel_prefs"
+          android:icon="@android:drawable/ic_menu_preferences"
+          android:title="@string/menu_channel_prefs"
+          app:showAsAction="never"/>
 </menu>

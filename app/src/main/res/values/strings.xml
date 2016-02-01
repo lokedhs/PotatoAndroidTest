@@ -75,4 +75,13 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="menu_show_users">Users</string>
+    <string name="menu_channel_prefs">Channel settings</string>
+    <string name="show_notifications_title">Show notifications</string>
+    <string name="show_notifications_summary">Notify me when a someone messages me directly on this channel, or if
+        someone mentions any of the keywords.
+    </string>
+    <string name="unread_notifications_title">Notify when channel is unread</string>
+    <string name="unread_notifications_summary">Show a notification when you have unread messages in this channel.
+    </string>
 </resources>

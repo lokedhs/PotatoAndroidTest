@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
+import com.dhsdevelopments.potato.channelmessages.settings.ChannelSettingsActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import com.dhsdevelopments.potato.userlist.UserListFragment;
 
@@ -128,6 +129,10 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
             else {
                 drawer.openDrawer( GravityCompat.END );
             }
+            return true;
+        }
+        else if( id == R.id.menu_option_channel_prefs ) {
+            startActivity( new Intent( this, ChannelSettingsActivity.class ) );
             return true;
         }
         else {
