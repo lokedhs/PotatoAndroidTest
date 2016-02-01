@@ -33,7 +33,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
         try(Cursor result = db.query( StorageHelper.CHANNEL_CONFIG_TABLE,
                                   new String[] { StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS,
                                                  StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD },
-                                  "where " + StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId },
+                                  StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId },
                                   null, null, null, null ) ) {
             if( result.moveToNext() ) {
                 showNotifications = result.getInt( 0 ) != 0;

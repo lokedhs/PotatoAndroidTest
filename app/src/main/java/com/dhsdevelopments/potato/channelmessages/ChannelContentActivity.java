@@ -24,13 +24,14 @@ import com.dhsdevelopments.potato.userlist.UserListFragment;
 public class ChannelContentActivity extends AppCompatActivity implements HasUserTracker
 {
     private ChannelUsersTracker usersTracker;
+    private String channelId;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         Intent intent = getIntent();
-        String channelId = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_ID );
+        channelId = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_ID );
         String channelName = intent.getStringExtra( ChannelContentFragment.ARG_CHANNEL_NAME );
 
         setContentView( R.layout.activity_channel_content );
@@ -132,7 +133,9 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
             return true;
         }
         else if( id == R.id.menu_option_channel_prefs ) {
-            startActivity( new Intent( this, ChannelSettingsActivity.class ) );
+            Intent intent = new Intent( this, ChannelSettingsActivity.class );
+            intent.putExtra( ChannelSettingsActivity.EXTRA_CHANNEL_ID, channelId );
+            startActivity( intent );
             return true;
         }
         else {
