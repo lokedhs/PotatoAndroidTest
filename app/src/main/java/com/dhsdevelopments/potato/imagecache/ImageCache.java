@@ -121,7 +121,7 @@ public class ImageCache
         return true;
     }
 
-    public static File copyUrlToFile( File cacheDirCopy, String urlString, String tmpFilePrefix, String apiKey ) throws IOException {
+    public static File copyUrlToFile( File cacheDirCopy, String urlString, String tmpFilePrefix, String apiKey ) throws IOException, FileDownloadFailedException {
         StringBuilder buf = new StringBuilder();
         if( tmpFilePrefix != null ) {
             buf.append( tmpFilePrefix );
@@ -158,8 +158,14 @@ public class ImageCache
         Request req = builder.build();
         Response response = client.newCall( req ).execute();
         if( !response.isSuccessful() ) {
-            Log.w( "Unable to load url: " + response.message() );
-            return null;
+            if( response.code() == 404 ) {
+                // Simply return null here since we want to cache the 404's
+                return null;
+            }
+            else {
+                Log.w( "Unable to load url: " + response.message() );
+                throw new FileDownloadFailedException( "Got error response from server. code=" + response.code() + ", message=" + response.message() );
+            }
         }
 
         InputStream in = null;
@@ -374,7 +380,7 @@ public class ImageCache
                         cachedFile = copyUrlToFile( cacheDirCopy, queueEntry.url, null, queueEntry.apiKey );
                         addCacheEntryToDatabase( queueEntry.url, cachedFile, queueEntry.storageType, false );
                     }
-                    catch( IOException e ) {
+                    catch( IOException | FileDownloadFailedException e ) {
                         Log.w( "failed to load image: '" + queueEntry.url + "'", e );
                         cachedFile = null;
                     }
@@ -389,15 +395,10 @@ public class ImageCache
                         removeOldFile( queueEntry.url, cachedFile );
                     }
                 }
-                if( bitmap == null ) {
-                    // TODO: should delete the broken file at this point?
-                    //markFileAsNotAvailable = true;
-                }
-                else {
-                    publishProgress( new BackgroundLoadResult( queueEntry.url,
-                                                               queueEntry.bitmapCacheEntry,
-                                                               bitmap ) );
-                }
+
+                publishProgress( new BackgroundLoadResult( queueEntry.url,
+                                                           queueEntry.bitmapCacheEntry,
+                                                           bitmap ) );
             }
 
             synchronized( bitmapCache ) {
@@ -446,7 +447,12 @@ public class ImageCache
             Log.d( "before calling callbacks. n=" + callbacksCopy.size() + ", bm=" + bitmap );
             if( bitmap != null ) {
                 for( LoadImageCallback callback : callbacksCopy ) {
-                    callback.bitmapLoaded( bitmap );
+                    if( bitmap == null ) {
+                        callback.bitmapNotFound();
+                    }
+                    else {
+                        callback.bitmapLoaded( bitmap );
+                    }
                 }
             }
         }

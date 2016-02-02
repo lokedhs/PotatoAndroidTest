@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PotatoAndroidTest</string>
+    <string name="app_name">Potato</string>
     <string name="title_channel_detail">Channel Detail</string>
     <string name="title_activity_channel_main">ChannelMainActivity</string>
 
@@ -11,8 +11,6 @@
     <string name="post_message_hint">Send a message</string>
     <string name="message_entry_date_label">{0,date,medium}, {0,time,short}</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="post_button_text">»</string>
     <string name="message_image_description">Attached image</string>
     <string name="gcm_sender_id">274254878033</string>

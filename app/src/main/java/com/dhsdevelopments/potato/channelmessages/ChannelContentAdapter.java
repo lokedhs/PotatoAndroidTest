@@ -1,8 +1,11 @@
 package com.dhsdevelopments.potato.channelmessages;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -185,15 +188,26 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             dateView.setText( message.getCreatedDateFormatted() );
             contentView.setText( message.getMarkupContent() );
 
+            final Resources resources = context.getResources();
+            int imageWidth = resources.getDimensionPixelSize( R.dimen.chat_image_width );
+            int imageHeight = resources.getDimensionPixelSize( R.dimen.chat_image_height );
+
             updateIndex++;
             final long oldUpdateIndex = updateIndex;
-            imageCache.loadImageFromApi( "/users/" + message.getSender() + "/image", 128, 128, StorageType.LONG,
+            imageCache.loadImageFromApi( "/users/" + message.getSender() + "/image", imageWidth, imageHeight, StorageType.LONG,
                                          new LoadImageCallback()
                                          {
                                              @Override
                                              public void bitmapLoaded( Bitmap bitmap ) {
                                                  if( updateIndex == oldUpdateIndex ) {
-                                                     imageView.setImageDrawable( new BitmapDrawable( context.getResources(), bitmap ) );
+                                                     imageView.setImageDrawable( new BitmapDrawable( resources, bitmap ) );
+                                                 }
+                                             }
+
+                                             @Override
+                                             public void bitmapNotFound() {
+                                                 if( updateIndex == oldUpdateIndex ) {
+                                                     imageView.setImageDrawable( new ColorDrawable( Color.GREEN ) );
                                                  }
                                              }
                                          } );
@@ -237,6 +251,11 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                             imageView.setImageDrawable( new BitmapDrawable( context.getResources(), bitmap ) );
                             imageView.setVisibility( View.VISIBLE );
                         }
+                    }
+
+                    @Override
+                    public void bitmapNotFound() {
+                        // Do nothing
                     }
                 };
                 imageCache.loadImageFromApi( messageImage.file, 256, 256, StorageType.LONG, callback );
