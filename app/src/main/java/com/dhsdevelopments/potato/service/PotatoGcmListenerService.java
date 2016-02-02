@@ -32,6 +32,23 @@ public class PotatoGcmListenerService extends GcmListenerService
     public void onMessageReceived( String from, Bundle data ) {
         Log.d( "GCM message. from=" + from + ", data=" + data );
 
+        String messageType = data.getString( "potato_message_type" );
+        if( messageType == null ) {
+            Log.e( "Missing message_type in notification" );
+        }
+        else {
+            switch( messageType ) {
+                case "message":
+                    processMessage( data );
+                    break;
+                case "unread":
+                    processUnread( data );
+                    break;
+            }
+        }
+    }
+
+    private void processMessage( Bundle data ) {
         String messageId = data.getString( "message_id" );
         String notificationType = data.getString( "notification_type" );
         String text = data.getString( "text" );
@@ -44,13 +61,19 @@ public class PotatoGcmListenerService extends GcmListenerService
         PendingIntent pendingIntent = PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_ONE_SHOT );
 
         NotificationCompat.Builder builder = new android.support.v7.app.NotificationCompat.Builder( this )
-                .setSmallIcon( android.R.drawable.ic_dialog_alert )
-                .setContentTitle( "Message from " + senderName )
-                .setContentText( text )
-                .setAutoCancel( true )
-                .setContentIntent( pendingIntent );
+                                                     .setSmallIcon( android.R.drawable.ic_dialog_alert )
+                                                     .setContentTitle( "Message from " + senderName )
+                                                     .setContentText( text )
+                                                     .setAutoCancel( true )
+                                                     .setContentIntent( pendingIntent );
 
         NotificationManager mgr = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
         mgr.notify( 0, builder.build() );
+    }
+
+    private void processUnread( Bundle data ) {
+        String cid = data.getString( "channel" );
+        int unreadCount = Integer.parseInt( data.getString( "unread" ) );
+        Log.d( "Got unread notification: cid=" + cid + ", unreadCount=" + unreadCount );
     }
 }
