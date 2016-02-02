@@ -1,20 +1,11 @@
 package com.dhsdevelopments.potato.userlist;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.dhsdevelopments.potato.Log;
-import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
-import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult;
-import com.dhsdevelopments.potato.clientapi.users.User;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 import java.text.Collator;
 import java.util.*;

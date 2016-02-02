@@ -1,9 +1,9 @@
 package com.dhsdevelopments.potato.imagecache;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import android.graphics.Bitmap;
 
 class BitmapCacheEntry
 {

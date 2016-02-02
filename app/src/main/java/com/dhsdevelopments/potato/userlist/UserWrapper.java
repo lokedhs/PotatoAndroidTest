@@ -1,7 +1,5 @@
 package com.dhsdevelopments.potato.userlist;
 
-import com.dhsdevelopments.potato.clientapi.users.User;
-
 public class UserWrapper
 {
     private String id;

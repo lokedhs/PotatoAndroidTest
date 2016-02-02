@@ -2,7 +2,6 @@ package com.dhsdevelopments.potato.messages;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.dhsdevelopments.potato.Log;
@@ -12,7 +11,6 @@ import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest;
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.google.gson.Gson;
 import retrofit.Call;
 import retrofit.Response;
 

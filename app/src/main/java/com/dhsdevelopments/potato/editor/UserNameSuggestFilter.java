@@ -1,9 +1,6 @@
 package com.dhsdevelopments.potato.editor;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.provider.ContactsContract;
 import android.widget.Filter;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;

@@ -1,14 +1,14 @@
 package com.dhsdevelopments.potato;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
-import android.content.Context;
-import android.content.res.Resources;
 
 public class DateHelper
 {

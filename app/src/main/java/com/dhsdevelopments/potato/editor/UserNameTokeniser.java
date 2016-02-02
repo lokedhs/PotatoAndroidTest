@@ -1,11 +1,9 @@
 package com.dhsdevelopments.potato.editor;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
-import android.text.style.StyleSpan;
 import android.widget.MultiAutoCompleteTextView;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;

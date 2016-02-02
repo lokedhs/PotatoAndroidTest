@@ -1,7 +1,6 @@
 package com.dhsdevelopments.potato.editor;
 
 import android.content.Context;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 
-import java.util.*;
+import java.util.List;
 
 public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
 {
