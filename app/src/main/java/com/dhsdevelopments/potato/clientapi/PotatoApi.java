@@ -7,6 +7,8 @@ import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
+import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest;
+import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationResult;
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult;
 import retrofit.Call;
 import retrofit.http.*;
@@ -50,4 +52,9 @@ public interface PotatoApi
     @POST("channel/{cid}/clear-notifications")
     Call<ClearNotificationsResult> clearNotificationsForChannel( @Header( "API-token" ) String apiKey,
                                                                  @Path("cid") String channelId );
+
+    @POST("channel/{cid}/unread-notification")
+    Call<UpdateUnreadNotificationResult> updateUnreadNotification( @Header( "API-token" ) String apiKey,
+                                                                   @Path("cid") String channelId,
+                                                                   @Body UpdateUnreadNotificationRequest request );
 }

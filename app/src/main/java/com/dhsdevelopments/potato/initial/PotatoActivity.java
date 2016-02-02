@@ -11,7 +11,7 @@ import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.LoginActivity;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
-import com.dhsdevelopments.potato.messages.RegistrationIntentService;
+import com.dhsdevelopments.potato.service.RegistrationIntentService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;

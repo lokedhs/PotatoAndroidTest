@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato.messages;
+package com.dhsdevelopments.potato.service;
 
 import android.content.Intent;
 import com.dhsdevelopments.potato.Log;

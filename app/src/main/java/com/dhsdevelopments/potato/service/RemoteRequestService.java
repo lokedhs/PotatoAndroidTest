@@ -8,11 +8,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
+import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.clientapi.ClearNotificationsResult;
 import com.dhsdevelopments.potato.clientapi.channel2.Channel;
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
 import com.dhsdevelopments.potato.clientapi.channel2.Domain;
+import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest;
+import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationResult;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 import retrofit.Call;
 import retrofit.Response;
 
@@ -27,11 +32,11 @@ import java.io.IOException;
  */
 public class RemoteRequestService extends IntentService
 {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    public static final String ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS";
-    public static final String ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS";
-    public static final String EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id";
+    private static final String ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS";
+    private static final String ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS";
+    private static final String ACTION_UPDATE_UNREAD_SUBSCRIPTION = "com.dhsdevelopments.potato.gcm.UPDATE_UNREAD_SUBSCRIPTION";
+    private static final String EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id";
+    private static final String EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe";
 
     public static final String ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED";
 
@@ -43,6 +48,10 @@ public class RemoteRequestService extends IntentService
         makeAndStartIntent( context, ACTION_LOAD_CHANNEL_LIST );
     }
 
+    public static void updateUnreadSubscriptionState( Context context, String cid, boolean subscribe ) {
+        makeAndStartIntent( context, ACTION_UPDATE_UNREAD_SUBSCRIPTION, EXTRA_CHANNEL_ID, cid, EXTRA_UPDATE_STATE, subscribe );
+    }
+
     private static void makeAndStartIntent( Context context, String action, Object... extraElements ) {
         Intent intent = new Intent( context, RemoteRequestService.class );
         intent.setAction( action );
@@ -51,6 +60,9 @@ public class RemoteRequestService extends IntentService
             Object value = extraElements[i + 1];
             if( value instanceof String ) {
                 intent.putExtra( key, (String)value );
+            }
+            else if( value instanceof Boolean ) {
+                intent.putExtra( key, (Boolean)value );
             }
             else {
                 throw new IllegalArgumentException( "Unexpected value type: " + value.getClass().getName() );
@@ -72,6 +84,9 @@ public class RemoteRequestService extends IntentService
                     break;
                 case ACTION_LOAD_CHANNEL_LIST:
                     loadChannels();
+                    break;
+                case ACTION_UPDATE_UNREAD_SUBSCRIPTION:
+                    updateUnreadSubscription( intent.getStringExtra( EXTRA_CHANNEL_ID ), intent.getBooleanExtra( EXTRA_UPDATE_STATE, false ) );
                     break;
             }
         }
@@ -145,6 +160,29 @@ public class RemoteRequestService extends IntentService
         }
         catch( IOException e ) {
             Log.e( "Exception when loading channels", e );
+        }
+    }
+
+    private void updateUnreadSubscription( String cid, boolean add ) {
+        try {
+            PotatoApplication app = PotatoApplication.getInstance( this );
+            String token = InstanceID.getInstance( this ).getToken( getString( R.string.gcm_sender_id ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null );
+            Call<UpdateUnreadNotificationResult> call = app.getPotatoApi().updateUnreadNotification( app.getApiKey(), cid, new UpdateUnreadNotificationRequest( token, add ) );
+            Response<UpdateUnreadNotificationResult> result = call.execute();
+            if( result.isSuccess() ) {
+                if( "ok".equals( result.body().result ) ) {
+                    Log.d( "Subscription updated successfully" );
+                }
+                else {
+                    Log.e( "Unexpected reply from unread subscription call" );
+                }
+            }
+            else {
+                Log.e( "Got error from server when subscribing to unread: " + result.message() );
+            }
+        }
+        catch( IOException e ) {
+            Log.e( "Exception while updating subscription state" );
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato.messages;
+package com.dhsdevelopments.potato.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import java.io.IOException;
 public class RegistrationIntentService extends IntentService
 {
     public static final String ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER";
+
     public final String PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk";
 
     /**

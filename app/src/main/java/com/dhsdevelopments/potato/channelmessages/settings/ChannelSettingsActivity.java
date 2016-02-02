@@ -14,6 +14,7 @@ import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
+import com.dhsdevelopments.potato.service.RemoteRequestService;
 
 public class ChannelSettingsActivity extends AppCompatActivity
 {
@@ -115,6 +116,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
         finally {
             db.endTransaction();
         }
+        RemoteRequestService.updateUnreadSubscriptionState( this, channelId, notifyUnreadCheckbox.isChecked() );
     }
 
     private void fillInValues( ContentValues values ) {
