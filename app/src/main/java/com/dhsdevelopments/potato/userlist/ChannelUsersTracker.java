@@ -80,7 +80,7 @@ public class ChannelUsersTracker
             d.active = active;
         }
         else {
-            users.put( uid, new UserDescriptor( "noname", active ) );
+            users.put( uid, new UserDescriptor( "noname", null, active ) );
         }
 
         if( fireEvent ) {
@@ -107,7 +107,7 @@ public class ChannelUsersTracker
         for( User u : members ) {
             UserDescriptor d = users.get( u.id );
             if( d == null ) {
-                users.put( u.id, new UserDescriptor( u.description, false ) );
+                users.put( u.id, new UserDescriptor( u.description, u.imageName, false ) );
             }
             else {
                 d.name = u.description;
@@ -162,18 +162,28 @@ public class ChannelUsersTracker
         }
     }
 
+    public String getImageNameForUid( String uid ) {
+        return getUsers().get( uid ).getImageName();
+    }
+
     public class UserDescriptor
     {
         private String name;
+        private String imageName;
         private boolean active;
 
-        public UserDescriptor( String name, boolean active ) {
+        public UserDescriptor( String name, String imageName, boolean active ) {
             this.name = name;
+            this.imageName = imageName;
             this.active = active;
         }
 
         public String getName() {
             return name;
+        }
+
+        public String getImageName() {
+            return imageName;
         }
 
         public boolean isActive() {

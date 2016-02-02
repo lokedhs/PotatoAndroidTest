@@ -12,11 +12,13 @@ import java.util.Date;
 public class MessageWrapper
 {
     private Message msg;
+    private String senderImageName;
     private Date createdDate;
     private String createdDateFormatted;
 
-    public MessageWrapper( Message msg, DateFormat isoDateFormat, MessageFormat dateFormat ) {
+    public MessageWrapper( Message msg, String senderImageName, DateFormat isoDateFormat, MessageFormat dateFormat ) {
         this.msg = msg;
+        this.senderImageName = senderImageName;
 
         Date date;
         try {
@@ -30,8 +32,16 @@ public class MessageWrapper
         this.createdDateFormatted = dateFormat.format( new Object[] { date } );
     }
 
+    public String getSender() {
+        return msg.from;
+    }
+
     public String getSenderName() {
         return msg.fromName;
+    }
+
+    public String getSenderImageName() {
+        return senderImageName;
     }
 
     public Date getCreatedDate() {

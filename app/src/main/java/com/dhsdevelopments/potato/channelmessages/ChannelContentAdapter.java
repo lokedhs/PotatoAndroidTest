@@ -19,6 +19,7 @@ import com.dhsdevelopments.potato.clientapi.message.MessageImage;
 import com.dhsdevelopments.potato.imagecache.ImageCache;
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback;
 import com.dhsdevelopments.potato.imagecache.StorageType;
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -41,9 +42,11 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     private ImageCache imageCache;
 
     private List<MessageWrapper> messages = new ArrayList<>();
+    private ChannelUsersTracker usersTracker;
 
-    public ChannelContentAdapter( Context context, String cid ) {
+    public ChannelContentAdapter( Context context, ChannelUsersTracker usersTracker, String cid ) {
         this.context = context;
+        this.usersTracker = usersTracker;
         this.cid = cid;
 
         dateFormat = new MessageFormat( context.getResources().getString( R.string.message_entry_date_label ) );
@@ -66,7 +69,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     public void setMessages( List<Message> messages ) {
         List<MessageWrapper> result = new ArrayList<>( messages.size() );
         for( Message m : messages ) {
-            result.add( new MessageWrapper( m, isoDateFormat, dateFormat ) );
+            result.add( new MessageWrapper( m, usersTracker.getImageNameForUid( m.from ), isoDateFormat, dateFormat ) );
         }
         this.messages = result;
         notifyDataSetChanged();
@@ -127,7 +130,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
      * Called when a new message is received from the server.
      */
     public void newMessage( Message msg ) {
-        MessageWrapper w = new MessageWrapper( msg, isoDateFormat, dateFormat );
+        MessageWrapper w = new MessageWrapper( msg, usersTracker.getImageNameForUid( msg.from ), isoDateFormat, dateFormat );
         int pos = Collections.binarySearch( messages, w, new Comparator<MessageWrapper>()
         {
             @Override
@@ -165,6 +168,8 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
         private TextView senderView;
         private TextView dateView;
         private TextView contentView;
+        private ImageView imageView;
+        private long updateIndex = 0;
 
         public ViewHolder( View itemView ) {
             super( itemView );
@@ -172,12 +177,30 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             senderView = (TextView)itemView.findViewById( R.id.sender );
             dateView = (TextView)itemView.findViewById( R.id.date );
             contentView = (TextView)itemView.findViewById( R.id.content );
+            imageView = (ImageView)itemView.findViewById( R.id.image );
         }
 
         public void fillInView( MessageWrapper message ) {
             senderView.setText( message.getSenderName() );
             dateView.setText( message.getCreatedDateFormatted() );
             contentView.setText( message.getMarkupContent() );
+
+            updateIndex++;
+            String imageName = message.getSenderImageName();
+            Log.d( "Filling in message, imageName='" + imageName + "'" );
+            if( imageName != null ) {
+                final long oldUpdateIndex = updateIndex;
+                imageCache.loadImageFromApi( imageName, 128, 128, StorageType.LONG,
+                                             new LoadImageCallback()
+                                             {
+                                                 @Override
+                                                 public void bitmapLoaded( Bitmap bitmap ) {
+                                                     if( updateIndex == oldUpdateIndex ) {
+                                                         imageView.setImageDrawable( new BitmapDrawable( bitmap ) );
+                                                     }
+                                                 }
+                                             } );
+            }
         }
     }
 

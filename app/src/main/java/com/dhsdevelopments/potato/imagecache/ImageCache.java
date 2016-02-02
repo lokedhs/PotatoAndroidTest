@@ -298,14 +298,19 @@ public class ImageCache
                 long createdDate = result.getLong( 2 );
                 boolean canDelete = result.getInt( 3 ) != 0;
 
-                File file = new File( cacheDir, fileName );
-                if( !file.exists() ) {
+                if( fileName == null ) {
                     toDelete.add( name );
                 }
-                else if( (canDelete && createdDate < cutoffShort) || (!canDelete && createdDate < cutoffLong) ) {
-                    toDelete.add( name );
-                    if( !file.delete() ) {
-                        Log.w( "could not delete file: " + file );
+                else {
+                    File file = new File( cacheDir, fileName );
+                    if( !file.exists() ) {
+                        toDelete.add( name );
+                    }
+                    else if( (canDelete && createdDate < cutoffShort) || (!canDelete && createdDate < cutoffLong) ) {
+                        toDelete.add( name );
+                        if( !file.delete() ) {
+                            Log.w( "could not delete file: " + file );
+                        }
                     }
                 }
             }

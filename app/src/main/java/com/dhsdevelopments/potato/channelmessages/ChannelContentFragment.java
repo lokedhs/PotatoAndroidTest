@@ -104,7 +104,7 @@ public class ChannelContentFragment extends Fragment
         intentFilter.addAction( ChannelSubscriptionService.ACTION_TYPING );
         getContext().registerReceiver( receiver, intentFilter );
 
-        adapter = new ChannelContentAdapter( getContext(), cid );
+        adapter = new ChannelContentAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ), cid );
     }
 
     @Override
