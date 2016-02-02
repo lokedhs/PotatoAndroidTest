@@ -69,7 +69,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     public void setMessages( List<Message> messages ) {
         List<MessageWrapper> result = new ArrayList<>( messages.size() );
         for( Message m : messages ) {
-            result.add( new MessageWrapper( m, usersTracker.getImageNameForUid( m.from ), isoDateFormat, dateFormat ) );
+            result.add( new MessageWrapper( m, isoDateFormat, dateFormat ) );
         }
         this.messages = result;
         notifyDataSetChanged();
@@ -130,7 +130,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
      * Called when a new message is received from the server.
      */
     public void newMessage( Message msg ) {
-        MessageWrapper w = new MessageWrapper( msg, usersTracker.getImageNameForUid( msg.from ), isoDateFormat, dateFormat );
+        MessageWrapper w = new MessageWrapper( msg, isoDateFormat, dateFormat );
         int pos = Collections.binarySearch( messages, w, new Comparator<MessageWrapper>()
         {
             @Override
@@ -186,21 +186,17 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             contentView.setText( message.getMarkupContent() );
 
             updateIndex++;
-            String imageName = message.getSenderImageName();
-            Log.d( "Filling in message, imageName='" + imageName + "'" );
-            if( imageName != null ) {
-                final long oldUpdateIndex = updateIndex;
-                imageCache.loadImageFromApi( imageName, 128, 128, StorageType.LONG,
-                                             new LoadImageCallback()
-                                             {
-                                                 @Override
-                                                 public void bitmapLoaded( Bitmap bitmap ) {
-                                                     if( updateIndex == oldUpdateIndex ) {
-                                                         imageView.setImageDrawable( new BitmapDrawable( bitmap ) );
-                                                     }
+            final long oldUpdateIndex = updateIndex;
+            imageCache.loadImageFromApi( "/users/" + message.getSender() + "/image", 128, 128, StorageType.LONG,
+                                         new LoadImageCallback()
+                                         {
+                                             @Override
+                                             public void bitmapLoaded( Bitmap bitmap ) {
+                                                 if( updateIndex == oldUpdateIndex ) {
+                                                     imageView.setImageDrawable( new BitmapDrawable( context.getResources(), bitmap ) );
                                                  }
-                                             } );
-            }
+                                             }
+                                         } );
         }
     }
 
