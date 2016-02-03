@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity;
 import com.dhsdevelopments.potato.channelmessages.HasUserTracker;
+import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity;
 import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.settings.SettingsActivity;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
@@ -205,6 +207,29 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
 
     public boolean isTwoPane() {
         return twoPane;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        getMenuInflater().inflate( R.menu.channel_list_toolbar_menu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        switch( item.getItemId() ) {
+            case R.id.menu_option_join_channel:
+                selectAndJoinChannel();
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
+    private void selectAndJoinChannel() {
+        Intent intent = new Intent( this, SelectChannelActivity.class );
+        intent.putExtra( SelectChannelActivity.EXTRA_DOMAIN_ID, selectedDomainId );
+        startActivityForResult( intent, 0, null );
     }
 
     public void setActiveChannel( String channelId ) {
