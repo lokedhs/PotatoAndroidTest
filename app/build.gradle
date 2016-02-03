@@ -26,6 +26,9 @@ android {
         preDexLibraries = false
         javaMaxHeapSize "2g"
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {

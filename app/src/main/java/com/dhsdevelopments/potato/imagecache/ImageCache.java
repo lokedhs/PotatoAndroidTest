@@ -60,19 +60,19 @@ public class ImageCache
         }
     }
 
-    public boolean loadImageFromApi( final String url, final int imageWidth, final int imageHeight, final StorageType storageType, final LoadImageCallback callback ) {
+    public boolean loadImageFromApi( String url, int imageWidth, int imageHeight, StorageType storageType, LoadImageCallback callback ) {
         PotatoApplication app = PotatoApplication.getInstance( context );
         String apiKey = app.getApiKey();
         return loadImageInternal( url, imageWidth, imageHeight, storageType, callback, apiKey );
     }
 
-    public boolean loadImage( final String url, final int imageWidth, final int imageHeight, final StorageType storageType, final LoadImageCallback callback ) {
+    public boolean loadImage( String url, int imageWidth, int imageHeight, StorageType storageType, LoadImageCallback callback ) {
         return loadImageInternal( url, imageWidth, imageHeight, storageType, callback, null );
     }
 
-    private boolean loadImageInternal( final String url, final int imageWidth, final int imageHeight,
-                                       final StorageType storageType, final LoadImageCallback callback,
-                                       final String apiKey ) {
+    private boolean loadImageInternal( String url, int imageWidth, int imageHeight,
+                                       StorageType storageType, LoadImageCallback callback,
+                                       String apiKey ) {
         initialiseIfNeeded();
 
         boolean shouldStartTask = false;
@@ -445,14 +445,12 @@ public class ImageCache
             }
 
             Log.d( "before calling callbacks. n=" + callbacksCopy.size() + ", bm=" + bitmap );
-            if( bitmap != null ) {
-                for( LoadImageCallback callback : callbacksCopy ) {
-                    if( bitmap == null ) {
-                        callback.bitmapNotFound();
-                    }
-                    else {
-                        callback.bitmapLoaded( bitmap );
-                    }
+            for( LoadImageCallback callback : callbacksCopy ) {
+                if( bitmap == null ) {
+                    callback.bitmapNotFound();
+                }
+                else {
+                    callback.bitmapLoaded( bitmap );
                 }
             }
         }

@@ -16,18 +16,12 @@ import java.util.List;
 
 public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
 {
-    private Context context;
-    private ChannelUsersTracker usersTracker;
-
     private LayoutInflater inflater;
     private List<UserSuggestion> users = null;
     private UserNameSuggestFilter filter;
 
     public UserNameSuggestAdapter( Context context, ChannelUsersTracker usersTracker ) {
-        this.context = context;
-        this.usersTracker = usersTracker;
-
-        filter = new UserNameSuggestFilter( context, usersTracker, this );
+        filter = new UserNameSuggestFilter( usersTracker, this );
         inflater = (LayoutInflater)context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     }
 

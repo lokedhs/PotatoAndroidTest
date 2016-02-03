@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.editor;
 
-import android.content.Context;
 import android.widget.Filter;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
@@ -10,7 +9,6 @@ import java.util.*;
 
 class UserNameSuggestFilter extends Filter
 {
-    private Context context;
     private ChannelUsersTracker usersTracker;
     private UserNameSuggestAdapter userNameSuggestAdapter;
 
@@ -18,8 +16,7 @@ class UserNameSuggestFilter extends Filter
     private List<UserSuggestion> users = null;
     private Comparator<UserSuggestion> userSuggestionComparator;
 
-    public UserNameSuggestFilter( Context context, ChannelUsersTracker usersTracker, UserNameSuggestAdapter userNameSuggestAdapter ) {
-        this.context = context;
+    public UserNameSuggestFilter( ChannelUsersTracker usersTracker, UserNameSuggestAdapter userNameSuggestAdapter ) {
         this.usersTracker = usersTracker;
         this.userNameSuggestAdapter = userNameSuggestAdapter;
 
@@ -51,10 +48,10 @@ class UserNameSuggestFilter extends Filter
             return null;
         }
 
-        String textLower = text.toString().substring( 1 ).toLowerCase();
+        String textLower = text.toString().substring( 1 ).toLowerCase( Locale.getDefault() );
         List<UserSuggestion> result = new ArrayList<>();
         for( UserSuggestion s : getUsers() ) {
-            String[] parts = s.getName().toLowerCase().split( "\\W+" );
+            String[] parts = s.getName().toLowerCase( Locale.getDefault() ).split( "\\W+" );
             for( String part : parts ) {
                 if( part.startsWith( textLower ) ) {
                     result.add( s );
