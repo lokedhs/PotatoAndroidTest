@@ -100,15 +100,13 @@ public class ImageCache
                     cacheEntry.addCallback( callback );
                 }
                 else {
-                    Bitmap bitmap = cacheEntry.bitmap;
-                    if( bitmap != null ) {
+                    if( cacheEntry.bitmap != null ) {
                         callback.bitmapLoaded( cacheEntry.bitmap );
-                        return false;
                     }
                     else {
-                        Log.w( "null bitmap with loading = false" );
-                        return true;
+                        callback.bitmapNotFound();
                     }
+                    return false;
                 }
             }
         }
@@ -217,17 +215,18 @@ public class ImageCache
         db.delete( StorageHelper.IMAGE_CACHE_TABLE, StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url } );
     }
 
-    private File findCachedFileInDatabase( SQLiteDatabase dbCopy, File cacheDirCopy, String url ) {
-        dbCopy.beginTransaction();
+    private File findCachedFileInDatabase( SQLiteDatabase db, File cacheDirCopy, String url ) {
+        db.beginTransaction();
         Cursor result = null;
         try {
-            result = dbCopy.query( StorageHelper.IMAGE_CACHE_TABLE,
-                                   new String[] { "filename" },
-                                   StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url },
-                                   null,
-                                   null,
-                                   null );
+            result = db.query( StorageHelper.IMAGE_CACHE_TABLE,
+                               new String[] { "filename" },
+                               StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url },
+                               null,
+                               null,
+                               null );
             if( !result.moveToNext() ) {
+                db.setTransactionSuccessful();
                 return null;
             }
 
@@ -236,13 +235,16 @@ public class ImageCache
             result.close();
             result = null;
 
-            File file = new File( cacheDirCopy, filename );
-            if( !file.exists() ) {
-                deleteCacheEntryFromDatabase( url );
-                file = null;
+            File file = null;
+            if( filename != null ) {
+                file = new File( cacheDirCopy, filename );
+                if( !file.exists() ) {
+                    deleteCacheEntryFromDatabase( url );
+                    file = null;
+                }
             }
 
-            dbCopy.setTransactionSuccessful();
+            db.setTransactionSuccessful();
 
             return file;
         }
@@ -250,7 +252,7 @@ public class ImageCache
             if( result != null ) {
                 result.close();
             }
-            dbCopy.endTransaction();
+            db.endTransaction();
         }
     }
 
@@ -304,18 +306,21 @@ public class ImageCache
                 long createdDate = result.getLong( 2 );
                 boolean canDelete = result.getInt( 3 ) != 0;
 
-                if( fileName == null ) {
+                if( (canDelete && createdDate < cutoffShort) || (!canDelete && createdDate < cutoffLong) ) {
                     toDelete.add( name );
-                }
-                else {
-                    File file = new File( cacheDir, fileName );
-                    if( !file.exists() ) {
-                        toDelete.add( name );
-                    }
-                    else if( (canDelete && createdDate < cutoffShort) || (!canDelete && createdDate < cutoffLong) ) {
-                        toDelete.add( name );
+                    if( fileName != null ) {
+                        File file = new File( cacheDir, fileName );
                         if( !file.delete() ) {
                             Log.w( "could not delete file: " + file );
+                        }
+                    }
+                }
+                else {
+                    // If the file has been deleted from the cache, then we can remove if from the database immediately.
+                    if( fileName != null ) {
+                        File file = new File( cacheDir, fileName );
+                        if( !file.exists() ) {
+                            toDelete.add( name );
                         }
                     }
                 }
