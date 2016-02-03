@@ -5,8 +5,8 @@
           android:icon="@android:drawable/ic_menu_send"
           android:title="@string/menu_show_users"
           app:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_option_channel_prefs"
-          android:icon="@android:drawable/ic_menu_preferences"
-          android:title="@string/menu_channel_prefs"
-          app:showAsAction="never"/>
+    <item android:id="@+id/menu_option_notify_unread"
+          android:title="@string/menu_notify_unread"
+          app:showAsAction="never"
+          android:checkable="true"/>
 </menu>

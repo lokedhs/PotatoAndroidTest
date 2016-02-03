@@ -74,7 +74,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="menu_show_users">Users</string>
-    <string name="menu_channel_prefs">Channel settings</string>
+    <string name="menu_notify_unread">Notify on new messages</string>
     <string name="show_notifications_title">Show notifications</string>
     <string name="show_notifications_summary">Notify me when a someone messages me directly on this channel, or if
         someone mentions any of the keywords.

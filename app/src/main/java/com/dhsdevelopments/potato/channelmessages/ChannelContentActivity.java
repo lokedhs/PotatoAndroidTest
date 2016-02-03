@@ -1,6 +1,9 @@
 package com.dhsdevelopments.potato.channelmessages;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -9,9 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
-import com.dhsdevelopments.potato.channelmessages.settings.ChannelSettingsActivity;
+import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import com.dhsdevelopments.potato.userlist.UserListFragment;
 
@@ -48,9 +53,9 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
 
         UserListFragment userListFragment = UserListFragment.newInstance( channelId );
         getSupportFragmentManager()
-                 .beginTransaction()
-                 .replace( R.id.user_list_container, userListFragment )
-                 .commit();
+                .beginTransaction()
+                .replace( R.id.user_list_container, userListFragment )
+                .commit();
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -80,12 +85,6 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
     }
 
     @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        getMenuInflater().inflate( R.menu.channel_content_toolbar_menu, menu );
-        return true;
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
         if( drawer.isDrawerOpen( GravityCompat.END ) ) {
@@ -96,35 +95,86 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         }
     }
 
-    public ChannelUsersTracker getUsersTracker() {
-        return usersTracker;
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        getMenuInflater().inflate( R.menu.channel_content_toolbar_menu, menu );
+
+        MenuItem notifyUnreadOption = menu.findItem( R.id.menu_option_notify_unread );
+        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
+        boolean notifyUnread = false;
+        try( Cursor cursor = queryForChannel( db ) ) {
+            if( cursor.moveToNext() ) {
+                notifyUnread = cursor.getInt( 0 ) != 0;
+            }
+        }
+        notifyUnreadOption.setChecked( notifyUnread );
+
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        int id = item.getItemId();
-        if( id == android.R.id.home ) {
-            navigateUpTo( new Intent( this, ChannelListActivity.class ) );
-            return true;
+        switch( item.getItemId() ) {
+            case android.R.id.home:
+                navigateUpTo( new Intent( this, ChannelListActivity.class ) );
+                return true;
+            case R.id.menu_option_show_users:
+                DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
+                if( drawer.isDrawerOpen( GravityCompat.END ) ) {
+                    drawer.closeDrawer( GravityCompat.END );
+                }
+                else {
+                    drawer.openDrawer( GravityCompat.END );
+                }
+                return true;
+            case R.id.menu_option_notify_unread:
+                boolean notifyUnread = !item.isChecked();
+                item.setChecked( notifyUnread );
+                updateNotifyUnreadSetting( notifyUnread );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
         }
-        else if( id == R.id.menu_option_show_users ) {
-            DrawerLayout drawer = (DrawerLayout)findViewById( R.id.channel_content_drawer_layout );
-            if( drawer.isDrawerOpen( GravityCompat.END ) ) {
-                drawer.closeDrawer( GravityCompat.END );
+    }
+
+    public ChannelUsersTracker getUsersTracker() {
+        return usersTracker;
+    }
+
+    private Cursor queryForChannel( SQLiteDatabase db ) {
+        return db.query( StorageHelper.CHANNEL_CONFIG_TABLE,
+                         new String[] { StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD },
+                         StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId },
+                         null, null, null, null );
+    }
+
+    private void updateNotifyUnreadSetting( boolean notifyUnread ) {
+        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
+        db.beginTransaction();
+        try {
+            boolean hasElement;
+            try( Cursor result = queryForChannel( db ) ) {
+                hasElement = result.moveToNext();
+            }
+
+            if( hasElement ) {
+                ContentValues values = new ContentValues();
+                values.put( StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, notifyUnread ? 1 : 0 );
+                db.update( StorageHelper.CHANNEL_CONFIG_TABLE,
+                           values,
+                           StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId } );
             }
             else {
-                drawer.openDrawer( GravityCompat.END );
+                ContentValues values = new ContentValues();
+                values.put( StorageHelper.CHANNEL_CONFIG_ID, channelId );
+                values.put( StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, notifyUnread ? 1 : 0 );
+                db.insert( StorageHelper.CHANNEL_CONFIG_TABLE, null, values );
             }
-            return true;
+            db.setTransactionSuccessful();
         }
-        else if( id == R.id.menu_option_channel_prefs ) {
-            Intent intent = new Intent( this, ChannelSettingsActivity.class );
-            intent.putExtra( ChannelSettingsActivity.EXTRA_CHANNEL_ID, channelId );
-            startActivity( intent );
-            return true;
+        finally {
+            db.endTransaction();
         }
-        else {
-            return super.onOptionsItemSelected( item );
-        }
+        RemoteRequestService.updateUnreadSubscriptionState( this, channelId, notifyUnread );
     }
 }
