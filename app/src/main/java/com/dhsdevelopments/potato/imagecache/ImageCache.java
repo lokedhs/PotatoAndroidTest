@@ -158,6 +158,9 @@ public class ImageCache
         if( !response.isSuccessful() ) {
             if( response.code() == 404 ) {
                 // Simply return null here since we want to cache the 404's
+                if( !found.delete() ) {
+                    Log.w( "Failed to delete unused temp file: " + found );
+                }
                 return null;
             }
             else {
