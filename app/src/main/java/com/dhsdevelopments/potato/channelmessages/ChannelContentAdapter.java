@@ -258,7 +258,10 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                         // Do nothing
                     }
                 };
-                imageCache.loadImageFromApi( messageImage.file, 256, 256, StorageType.LONG, callback );
+                Resources res = context.getResources();
+                int imageWidth = res.getDimensionPixelSize( R.dimen.message_image_width );
+                int imageHeight = res.getDimensionPixelSize( R.dimen.message_image_height );
+                imageCache.loadImageFromApi( messageImage.file, imageWidth, imageHeight, StorageType.LONG, callback );
             }
             else {
                 imageView.setImageDrawable( null );
