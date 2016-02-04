@@ -70,7 +70,7 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         }
         else {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-            selectedDomainId = prefs.getString( PotatoApplication.PREF_DEFAULT_DOMAIN_ID, null );
+            selectedDomainId = prefs.getString( getResources().getString( R.string.pref_key_default_domain ), null );
         }
 
         Toolbar toolbar = (Toolbar)findViewById( R.id.toolbar );
