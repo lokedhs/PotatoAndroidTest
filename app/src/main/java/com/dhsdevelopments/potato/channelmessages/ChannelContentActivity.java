@@ -167,6 +167,7 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
             else {
                 ContentValues values = new ContentValues();
                 values.put( StorageHelper.CHANNEL_CONFIG_ID, channelId );
+                values.put( StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0 );
                 values.put( StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, notifyUnread ? 1 : 0 );
                 db.insert( StorageHelper.CHANNEL_CONFIG_TABLE, null, values );
             }

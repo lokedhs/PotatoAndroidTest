@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public class PotatoApplication extends MultiDexApplication
 {
-    //public static final String SERVER_URL_PREFIX = "http://10.0.2.2:8080/";
-    public static final String SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/";
+    public static final String SERVER_URL_PREFIX = "http://10.0.2.2:8080/";
+    //public static final String SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/";
     public static final String API_URL_PREFIX = SERVER_URL_PREFIX + "api/1.0";
 
     private static final long IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS;

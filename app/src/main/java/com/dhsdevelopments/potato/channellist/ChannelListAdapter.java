@@ -69,7 +69,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
     @Override
     public void onBindViewHolder( final ViewHolder holder, int position ) {
-        Log.d( "Binding view holder for position " + position + ", type=" + holder.getClass().getName() );
         if( publicChannels.isEmpty() ) {
             if( position == 0 ) {
                 ((HeaderViewHolder)holder).setTitle( "Conversations" );
