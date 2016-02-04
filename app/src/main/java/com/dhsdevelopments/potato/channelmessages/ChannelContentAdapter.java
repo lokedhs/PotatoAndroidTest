@@ -71,8 +71,16 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 
     public void setMessages( List<Message> messages ) {
         List<MessageWrapper> result = new ArrayList<>( messages.size() );
+        int i = 0;
         for( Message m : messages ) {
-            result.add( new MessageWrapper( m, isoDateFormat, dateFormat ) );
+            if( !m.deleted ) {
+                MessageWrapper msg = new MessageWrapper( m, isoDateFormat, dateFormat );
+                result.add( msg );
+                if( i > 0 && shouldHideHeader( result.get( i - 1 ), msg ) ) {
+                    msg.setShouldDisplayHeader( false );
+                }
+                i++;
+            }
         }
         this.messages = result;
         notifyDataSetChanged();
@@ -148,7 +156,13 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             if( pos < 0 ) {
                 int insertionPos = -pos - 1;
                 messages.add( insertionPos, w );
+                updateDisplayStateForPosition( insertionPos );
                 notifyItemInserted( insertionPos );
+
+                int nextPos = insertionPos + 1;
+                if( nextPos < messages.size() && updateDisplayStateForPosition( insertionPos + 1 ) ) {
+                    notifyItemChanged( pos );
+                }
             }
         }
         else {
@@ -157,6 +171,9 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                 if( msg.deleted ) {
                     messages.remove( pos );
                     notifyItemRemoved( pos );
+                    if( updateDisplayStateForPosition( pos ) ) {
+                        notifyItemChanged( pos );
+                    }
                 }
                 else {
                     messages.set( pos, w );
@@ -164,6 +181,28 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                 }
             }
         }
+    }
+
+    boolean shouldHideHeader( MessageWrapper reference, MessageWrapper msg ) {
+        if( !reference.getSender().equals( msg.getSender() ) ) {
+            return false;
+        }
+
+        // Only collapse messages that are sent within 1 minute of each other
+        return msg.getCreatedDate().getTime() - reference.getCreatedDate().getTime() < 60 * 1000;
+    }
+
+    boolean updateDisplayStateForPosition( int pos ) {
+        if( pos < messages.size() ) {
+            MessageWrapper msg = messages.get( pos );
+            boolean shouldDisplay = (pos == 0 || !shouldHideHeader( messages.get( pos - 1 ), msg ));
+            if( (shouldDisplay && !msg.isShouldDisplayHeader())
+                        || (!shouldDisplay && msg.isShouldDisplayHeader()) ) {
+                msg.setShouldDisplayHeader( shouldDisplay );
+                return true;
+            }
+        }
+        return false;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder
@@ -187,6 +226,11 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
             senderView.setText( message.getSenderName() );
             dateView.setText( message.getCreatedDateFormatted() );
             contentView.setText( message.getMarkupContent() );
+
+            int dh = message.isShouldDisplayHeader() ? View.VISIBLE : View.GONE;
+            senderView.setVisibility( dh );
+            dateView.setVisibility( dh );
+            imageView.setVisibility( dh );
 
             final Resources resources = context.getResources();
             int imageWidth = resources.getDimensionPixelSize( R.dimen.chat_image_width );

@@ -14,9 +14,11 @@ public class MessageWrapper
     private Message msg;
     private Date createdDate;
     private String createdDateFormatted;
+    private boolean shouldDisplayHeader;
 
     public MessageWrapper( Message msg, DateFormat isoDateFormat, MessageFormat dateFormat ) {
         this.msg = msg;
+        this.shouldDisplayHeader = true;
 
         Date date;
         try {
@@ -60,5 +62,13 @@ public class MessageWrapper
 
     public MessageImage getImage() {
         return msg.messageImage;
+    }
+
+    public boolean isShouldDisplayHeader() {
+        return shouldDisplayHeader;
+    }
+
+    public void setShouldDisplayHeader( boolean shouldDisplayHeader ) {
+        this.shouldDisplayHeader = shouldDisplayHeader;
     }
 }
