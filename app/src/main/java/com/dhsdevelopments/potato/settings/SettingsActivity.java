@@ -136,6 +136,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             for( DomainDescriptor d : domains ) {
                 names[i] = d.getName();
                 ids[i] = d.getId();
+                i++;
             }
             pref.setEntries( names );
             pref.setEntryValues( ids );
@@ -202,7 +203,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                         index >= 0
                                 ? listPreference.getEntries()[index]
                                 : null );
-
             }
             else if( preference instanceof RingtonePreference ) {
                 // For ringtone preferences, look up the correct display value
