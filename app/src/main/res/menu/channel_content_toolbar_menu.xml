@@ -5,6 +5,10 @@
           android:icon="@android:drawable/ic_menu_send"
           android:title="@string/menu_show_users"
           app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_option_send_image"
+          android:icon="@android:drawable/ic_menu_gallery"
+          android:title="@string/menu_upload_photo"
+          app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_option_notify_unread"
           android:title="@string/menu_notify_unread"
           app:showAsAction="never"

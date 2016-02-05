@@ -218,7 +218,7 @@ public class ImageCache
         db.delete( StorageHelper.IMAGE_CACHE_TABLE, StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url } );
     }
 
-    private File findCachedFileInDatabase( SQLiteDatabase db, File cacheDirCopy, String url ) {
+    private CachedFileResult findCachedFileInDatabase( SQLiteDatabase db, File cacheDirCopy, String url ) {
         db.beginTransaction();
         Cursor result = null;
         try {
@@ -249,7 +249,7 @@ public class ImageCache
 
             db.setTransactionSuccessful();
 
-            return file;
+            return new CachedFileResult( file );
         }
         finally {
             if( result != null ) {
@@ -336,12 +336,6 @@ public class ImageCache
         }
     }
 
-    public void stopAll() {
-        synchronized( bitmapCache ) {
-            loadQueue.clear();
-        }
-    }
-
     private static class BackgroundLoadResult
     {
         private String url;
@@ -380,10 +374,11 @@ public class ImageCache
                     return null;
                 }
 
-                File cachedFile = findCachedFileInDatabase( db, cacheDirCopy, queueEntry.url );
-                Log.d( "cached image file=" + cachedFile + ", for url=" + queueEntry.url );
-                boolean wasCached = cachedFile != null;
-                if( cachedFile == null ) {
+                CachedFileResult result = findCachedFileInDatabase( db, cacheDirCopy, queueEntry.url );
+                Log.d( "cached image file=" + result + ", for url=" + queueEntry.url );
+                boolean wasCached = result != null;
+                File cachedFile;
+                if( !wasCached ) {
                     try {
                         cachedFile = copyUrlToFile( cacheDirCopy, queueEntry.url, null, queueEntry.apiKey );
                         addCacheEntryToDatabase( queueEntry.url, cachedFile, queueEntry.storageType, false );
@@ -392,6 +387,9 @@ public class ImageCache
                         Log.w( "failed to load image: '" + queueEntry.url + "'", e );
                         cachedFile = null;
                     }
+                }
+                else {
+                    cachedFile = result.getFile();
                 }
 
                 Bitmap bitmap = null;

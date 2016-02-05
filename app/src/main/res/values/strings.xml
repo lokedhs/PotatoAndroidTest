@@ -44,4 +44,6 @@
     <string name="setting_display_notifications">Display notifications</string>
     <string name="setting_notify_unread">Notifications on unread</string>
     <string name="pref_key_default_domain">default_domain_id</string>
+    <string name="menu_upload_photo">Upload photo</string>
+    <string name="chooser_title_select_image">Select photo</string>
 </resources>

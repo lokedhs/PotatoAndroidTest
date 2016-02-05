@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -12,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
@@ -28,6 +31,8 @@ import com.dhsdevelopments.potato.userlist.UserListFragment;
  */
 public class ChannelContentActivity extends AppCompatActivity implements HasUserTracker
 {
+    private static final int SELECT_IMAGE_RESULT_CODE = 1;
+
     private ChannelUsersTracker usersTracker;
     private String channelId;
 
@@ -132,9 +137,45 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
                 item.setChecked( notifyUnread );
                 updateNotifyUnreadSetting( notifyUnread );
                 return true;
+            case R.id.menu_option_send_image:
+                sendImage();
+                return true;
             default:
                 return super.onOptionsItemSelected( item );
         }
+    }
+
+    private void sendImage() {
+        Intent intent = new Intent();
+        intent.setAction( Intent.ACTION_GET_CONTENT );
+        intent.setType( "image/*" );
+        startActivityForResult( Intent.createChooser( intent, getString( R.string.chooser_title_select_image ) ), SELECT_IMAGE_RESULT_CODE );
+    }
+
+    @Override
+    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        if( resultCode == RESULT_OK ) {
+            if( requestCode == SELECT_IMAGE_RESULT_CODE ) {
+                Uri uri = data.getData();
+                Log.i( "Selected image: " + getPath( uri ) );
+            }
+        }
+    }
+
+    public String getPath( Uri uri ) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        //CursorLoader loader = new CursorLoader( this, uri, projection, null, null, null );
+
+        // try to retrieve the image from the media store first
+        // this will only work for images selected from gallery
+        Cursor cursor = managedQuery( uri, projection, null, null, null );
+        if( cursor != null ) {
+            int column_index = cursor.getColumnIndexOrThrow( MediaStore.Images.Media.DATA );
+            cursor.moveToFirst();
+            return cursor.getString( column_index );
+        }
+        // this is our fallback here
+        return uri.getPath();
     }
 
     public ChannelUsersTracker getUsersTracker() {
