@@ -13,9 +13,11 @@ import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult;
 import retrofit.Call;
 import retrofit.http.*;
 
+import java.util.Map;
+
 public interface PotatoApi
 {
-    @GET("channels2")
+    @GET( "channels2" )
     Call<ChannelsResult> getChannels2( @Header( "API-token" ) String apiKey );
 
     @GET( "channel/{cid}/history?format=json" )
@@ -41,6 +43,19 @@ public interface PotatoApi
                                          @Path( "cid" ) String channelId,
                                          @Body SendMessageRequest request );
 
+//    @Multipart
+//    @POST( "channel/{cid}/upload" )
+//    Call<SendMessageResult> sendMessageWithFile( @Header( "API-token" ) String apiKey,
+//                                                 @Path( "cid" ) String channelId,
+//                                                 @Part("content") SendMessageRequest request,
+//                                                 @Part("body") RequestBody fileBody );
+
+    @Multipart
+    @POST( "channel/{cid}/upload" )
+    Call<SendMessageResult> sendMessageWithFile( @Header( "API-token" ) String apiKey,
+                                                 @Path( "cid" ) String channelId,
+                                                 @PartMap Map<String, Object> params );
+
     @GET( "channel/{cid}/users" )
     Call<LoadUsersResult> loadUsers( @Header( "API-token" ) String apiKey,
                                      @Path( "cid" ) String channelId );
@@ -49,12 +64,12 @@ public interface PotatoApi
     Call<GcmRegistrationResult> registerGcm( @Header( "API-token" ) String apiKey,
                                              @Body GcmRegistrationRequest request );
 
-    @POST("channel/{cid}/clear-notifications")
+    @POST( "channel/{cid}/clear-notifications" )
     Call<ClearNotificationsResult> clearNotificationsForChannel( @Header( "API-token" ) String apiKey,
-                                                                 @Path("cid") String channelId );
+                                                                 @Path( "cid" ) String channelId );
 
-    @POST("channel/{cid}/unread-notification")
+    @POST( "channel/{cid}/unread-notification" )
     Call<UpdateUnreadNotificationResult> updateUnreadNotification( @Header( "API-token" ) String apiKey,
-                                                                   @Path("cid") String channelId,
+                                                                   @Path( "cid" ) String channelId,
                                                                    @Body UpdateUnreadNotificationRequest request );
 }

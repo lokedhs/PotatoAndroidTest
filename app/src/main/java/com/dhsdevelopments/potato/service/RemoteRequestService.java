@@ -5,15 +5,21 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.webkit.MimeTypeMap;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.clientapi.ClearNotificationsResult;
+import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody;
 import com.dhsdevelopments.potato.clientapi.channel2.Channel;
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
 import com.dhsdevelopments.potato.clientapi.channel2.Domain;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest;
+import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult;
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest;
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationResult;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -22,6 +28,8 @@ import retrofit.Call;
 import retrofit.Response;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -35,8 +43,10 @@ public class RemoteRequestService extends IntentService
     private static final String ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS";
     private static final String ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS";
     private static final String ACTION_UPDATE_UNREAD_SUBSCRIPTION = "com.dhsdevelopments.potato.gcm.UPDATE_UNREAD_SUBSCRIPTION";
+    private static final String ACTION_SEND_MESSAGE_WITH_IMAGE = "com.dhsdevelopments.potato.gcm.SEND_MESSAGE_WITH_IMAGE";
     private static final String EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id";
     private static final String EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe";
+    private static final String EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image";
 
     public static final String ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED";
 
@@ -52,6 +62,10 @@ public class RemoteRequestService extends IntentService
         makeAndStartIntent( context, ACTION_UPDATE_UNREAD_SUBSCRIPTION, EXTRA_CHANNEL_ID, cid, EXTRA_UPDATE_STATE, subscribe );
     }
 
+    public static void sendMessageWithImage( Context context, String cid, Uri imageUri ) {
+        makeAndStartIntent( context, ACTION_SEND_MESSAGE_WITH_IMAGE, EXTRA_CHANNEL_ID, cid, EXTRA_IMAGE_URI, imageUri );
+    }
+
     private static void makeAndStartIntent( Context context, String action, Object... extraElements ) {
         Intent intent = new Intent( context, RemoteRequestService.class );
         intent.setAction( action );
@@ -63,6 +77,9 @@ public class RemoteRequestService extends IntentService
             }
             else if( value instanceof Boolean ) {
                 intent.putExtra( key, (Boolean)value );
+            }
+            else if( value instanceof Parcelable ) {
+                intent.putExtra( key, (Parcelable)value );
             }
             else {
                 throw new IllegalArgumentException( "Unexpected value type: " + value.getClass().getName() );
@@ -80,19 +97,54 @@ public class RemoteRequestService extends IntentService
         if( intent != null ) {
             switch( intent.getAction() ) {
                 case ACTION_MARK_NOTIFICATIONS:
-                    syncNotifications( intent.getStringExtra( EXTRA_CHANNEL_ID ) );
+                    markNotificationsForChannelImpl( intent.getStringExtra( EXTRA_CHANNEL_ID ) );
                     break;
                 case ACTION_LOAD_CHANNEL_LIST:
-                    loadChannels();
+                    loadChannelListImpl();
                     break;
                 case ACTION_UPDATE_UNREAD_SUBSCRIPTION:
-                    updateUnreadSubscription( intent.getStringExtra( EXTRA_CHANNEL_ID ), intent.getBooleanExtra( EXTRA_UPDATE_STATE, false ) );
+                    updateUnreadSubscriptionStateImpl( intent.getStringExtra( EXTRA_CHANNEL_ID ), intent.getBooleanExtra( EXTRA_UPDATE_STATE, false ) );
+                    break;
+                case ACTION_SEND_MESSAGE_WITH_IMAGE:
+                    sendMessageWithImageImpl( intent.getStringExtra( EXTRA_CHANNEL_ID ), (Uri)intent.getParcelableExtra( EXTRA_IMAGE_URI ) );
                     break;
             }
         }
     }
 
-    private void syncNotifications( String cid ) {
+    private void sendMessageWithImageImpl( String cid, Uri imageUri ) {
+        PotatoApplication app = PotatoApplication.getInstance( this );
+        Map<String, Object> map = new HashMap<>();
+
+        map.put( "content", new SendMessageRequest( "Uploaded file from mobile" ) );
+
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType( getContentResolver().getType( imageUri ) );
+        map.put( "body\"; filename=\"file." + (extension != null ? extension : "jpg") + "\" ", new ImageUriRequestBody( this, imageUri ) );
+
+        Log.i( "extension=" + extension + ", type map: " + map.keySet() );
+
+        Call<SendMessageResult> call = app.getPotatoApi().sendMessageWithFile( app.getApiKey(), cid, map );
+        try {
+            Response<SendMessageResult> response = call.execute();
+            if( response.isSuccess() ) {
+                if( "ok".equals( response.body().result ) ) {
+                    Log.i( "Uploaded image, messageId=" + response.body().id );
+                }
+                else {
+                    Log.e( "Got error code from server: " + response.body().result );
+                }
+            }
+            else {
+                Log.e( "HTTP error when uploading image. code=" + response.code() + ", message=" + response.message() );
+            }
+        }
+        catch( IOException e ) {
+            // TODO: We really need a good generic way of handling IO errors
+            Log.e( "Error when uploading image", e );
+        }
+    }
+
+    private void markNotificationsForChannelImpl( String cid ) {
         try {
             PotatoApplication app = PotatoApplication.getInstance( this );
             Call<ClearNotificationsResult> call = app.getPotatoApi().clearNotificationsForChannel( app.getApiKey(), cid );
@@ -114,7 +166,7 @@ public class RemoteRequestService extends IntentService
         }
     }
 
-    private void loadChannels() {
+    private void loadChannelListImpl() {
         try {
             PotatoApplication app = PotatoApplication.getInstance( this );
             Call<ChannelsResult> call = app.getPotatoApi().getChannels2( app.getApiKey() );
@@ -163,7 +215,7 @@ public class RemoteRequestService extends IntentService
         }
     }
 
-    private void updateUnreadSubscription( String cid, boolean add ) {
+    private void updateUnreadSubscriptionStateImpl( String cid, boolean add ) {
         try {
             PotatoApplication app = PotatoApplication.getInstance( this );
             String token = InstanceID.getInstance( this ).getToken( getString( R.string.gcm_sender_id ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null );

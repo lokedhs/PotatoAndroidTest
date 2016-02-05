@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.StorageHelper;
@@ -157,7 +156,7 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         if( resultCode == RESULT_OK ) {
             if( requestCode == SELECT_IMAGE_RESULT_CODE ) {
                 Uri uri = data.getData();
-                Log.i( "Selected image: " + getPath( uri ) );
+                RemoteRequestService.sendMessageWithImage( this, channelId, uri );
             }
         }
     }

@@ -144,8 +144,6 @@ public class ChannelContentFragment extends Fragment
     }
 
     private void processTypingNotification( Intent intent ) {
-        Log.i( "typing on channel: " + intent.getStringExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID ) );
-        Log.i( "to match         : " + cid );
         if( !intent.getStringExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID ).equals( cid ) ) {
             // Only process messages on this channel
             return;
