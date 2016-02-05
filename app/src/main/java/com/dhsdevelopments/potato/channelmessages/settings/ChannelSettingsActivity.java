@@ -116,7 +116,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
         finally {
             db.endTransaction();
         }
-        RemoteRequestService.updateUnreadSubscriptionState( this, channelId, notifyUnreadCheckbox.isChecked() );
+        RemoteRequestService.Companion.updateUnreadSubscriptionState( this, channelId, notifyUnreadCheckbox.isChecked() );
     }
 
     private void fillInValues( ContentValues values ) {

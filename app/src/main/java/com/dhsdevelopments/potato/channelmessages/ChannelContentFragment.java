@@ -210,7 +210,7 @@ public class ChannelContentFragment extends Fragment
 
         refreshTypingNotifier();
 
-        RemoteRequestService.markNotificationsForChannel( getContext(), cid );
+        RemoteRequestService.Companion.markNotificationsForChannel( getContext(), cid );
     }
 
     @Override

@@ -156,7 +156,7 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         if( resultCode == RESULT_OK ) {
             if( requestCode == SELECT_IMAGE_RESULT_CODE ) {
                 Uri uri = data.getData();
-                RemoteRequestService.sendMessageWithImage( this, channelId, uri );
+                RemoteRequestService.Companion.sendMessageWithImage( this, channelId, uri );
             }
         }
     }
@@ -216,6 +216,6 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         finally {
             db.endTransaction();
         }
-        RemoteRequestService.updateUnreadSubscriptionState( this, channelId, notifyUnread );
+        RemoteRequestService.Companion.updateUnreadSubscriptionState( this, channelId, notifyUnread );
     }
 }

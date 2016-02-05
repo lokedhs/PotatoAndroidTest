@@ -121,7 +121,7 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
         registerReceiver( receiver, intentFilter );
 
         updateDomainList();
-        RemoteRequestService.loadChannelList( this );
+        RemoteRequestService.Companion.loadChannelList( this );
     }
 
     private void handleBroadcastMessage( Intent intent ) {
