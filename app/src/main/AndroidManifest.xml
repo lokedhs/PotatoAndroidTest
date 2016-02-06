@@ -80,6 +80,7 @@
         </service>
         <service
                 android:name=".service.RemoteRequestService"
+                android:enabled="true"
                 android:exported="false">
         </service>
 

@@ -4,7 +4,6 @@ import android.app.IntentService
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Parcelable
 import android.support.v4.content.LocalBroadcastManager
@@ -13,22 +12,13 @@ import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
-import com.dhsdevelopments.potato.clientapi.ClearNotificationsResult
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
-import com.dhsdevelopments.potato.clientapi.channel2.Channel
-import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
-import com.dhsdevelopments.potato.clientapi.channel2.Domain
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
-import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
-import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationResult
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
-import retrofit.Call
-import retrofit.Response
-
 import java.io.IOException
-import java.util.HashMap
+import java.util.*
 
 /**
  * An [IntentService] subclass for handling asynchronous task requests in
@@ -67,13 +57,16 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             if (response.isSuccess) {
                 if ("ok" == response.body().result) {
                     Log.i("Uploaded image, messageId=" + response.body().id)
-                } else {
+                }
+                else {
                     Log.e("Got error code from server: " + response.body().result)
                 }
-            } else {
+            }
+            else {
                 Log.e("HTTP error when uploading image. code=" + response.code() + ", message=" + response.message())
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             // TODO: We really need a good generic way of handling IO errors
             Log.e("Error when uploading image", e)
         }
@@ -88,19 +81,24 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             if (result.isSuccess) {
                 if ("ok" == result.body().result) {
                     Log.d("Notifications cleared for channel: " + cid)
-                } else {
+                }
+                else {
                     Log.e("Unexpected result from notification clear request: " + result.body())
                 }
-            } else {
+            }
+            else {
                 Log.e("Unable to clear notifications on server: code=" + result.code() + ", message=" + result.message())
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             Log.e("Exception when clearing notifications", e)
         }
 
     }
 
     private fun loadChannelListImpl() {
+        Log.i("starting load")
+        var loadSuccessful = false
         try {
             val app = PotatoApplication.getInstance(this)
             val call = app.potatoApi.getChannels2(app.apiKey)
@@ -134,18 +132,20 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     }
 
                     db.setTransactionSuccessful()
-                } finally {
+                    loadSuccessful = true;
+                }
+                finally {
                     db.endTransaction()
                 }
-
-                val mgr = LocalBroadcastManager.getInstance(this)
-                val intent = Intent(ACTION_CHANNEL_LIST_UPDATED)
-                mgr.sendBroadcast(intent)
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             Log.e("Exception when loading channels", e)
         }
 
+        Log.i("sending result: " + loadSuccessful)
+        val mgr = LocalBroadcastManager.getInstance(this)
+        mgr.sendBroadcast(Intent(if (loadSuccessful) ACTION_CHANNEL_LIST_UPDATED else ACTION_CHANNEL_LIST_UPDATE_FAIL))
     }
 
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
@@ -157,13 +157,16 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             if (result.isSuccess) {
                 if ("ok" == result.body().result) {
                     Log.d("Subscription updated successfully")
-                } else {
+                }
+                else {
                     Log.e("Unexpected reply from unread subscription call")
                 }
-            } else {
+            }
+            else {
                 Log.e("Got error from server when subscribing to unread: " + result.message())
             }
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             Log.e("Exception while updating subscription state")
         }
     }
@@ -178,6 +181,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
 
         @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
+        @JvmField val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
 
         fun markNotificationsForChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,
@@ -200,19 +204,22 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     EXTRA_IMAGE_URI to imageUri)
         }
 
-        private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String,Any>) {
+        private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {
             val intent = Intent(context, RemoteRequestService::class.java)
             intent.setAction(action)
-            for(v in extraElements) {
+            for (v in extraElements) {
                 val key = v.first
                 val value = v.second
                 if (value is String) {
                     intent.putExtra(key, value)
-                } else if (value is Boolean) {
+                }
+                else if (value is Boolean) {
                     intent.putExtra(key, value)
-                } else if (value is Parcelable) {
+                }
+                else if (value is Parcelable) {
                     intent.putExtra(key, value)
-                } else {
+                }
+                else {
                     throw IllegalArgumentException("Unexpected value type: " + value.javaClass.getName())
                 }
             }

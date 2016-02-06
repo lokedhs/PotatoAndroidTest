@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.userlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import com.dhsdevelopments.potato.Log;
@@ -35,6 +36,7 @@ public class ChannelUsersTracker
         return users;
     }
 
+    @NonNull
     public static ChannelUsersTracker findForChannel( Context context, String cid ) {
         return new ChannelUsersTracker( context, cid );
     }

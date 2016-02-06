@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult;
@@ -116,7 +117,7 @@ public class ChannelSubscriptionService extends Service
         Message msg = notification.message;
         Intent intent = new Intent( ACTION_MESSAGE_RECEIVED );
         intent.putExtra( EXTRA_MESSAGE, msg );
-        sendBroadcast( intent );
+        LocalBroadcastManager.getInstance( this ).sendBroadcast( intent );
     }
 
     private void processStateUpdateNotification( StateUpdateNotification update ) {

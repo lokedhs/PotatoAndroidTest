@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
@@ -102,14 +103,14 @@ public class ChannelContentFragment extends Fragment
         intentFilter.addAction( ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED );
         intentFilter.addAction( ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE );
         intentFilter.addAction( ChannelSubscriptionService.ACTION_TYPING );
-        getContext().registerReceiver( receiver, intentFilter );
+        LocalBroadcastManager.getInstance( getContext() ).registerReceiver( receiver, intentFilter );
 
         adapter = new ChannelContentAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ), cid );
     }
 
     @Override
     public void onDestroy() {
-        getContext().unregisterReceiver( receiver );
+        LocalBroadcastManager.getInstance( getContext() ).unregisterReceiver( receiver );
         super.onDestroy();
     }
 
