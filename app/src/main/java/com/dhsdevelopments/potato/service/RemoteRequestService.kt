@@ -177,10 +177,11 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
 
-        @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
+        val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
 
         fun markNotificationsForChannel(context: Context, cid: String) {
-            makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS, EXTRA_CHANNEL_ID, cid)
+            makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,
+                    EXTRA_CHANNEL_ID to cid)
         }
 
         fun loadChannelList(context: Context) {
@@ -188,20 +189,23 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
 
         fun updateUnreadSubscriptionState(context: Context, cid: String, subscribe: Boolean) {
-            makeAndStartIntent(context, ACTION_UPDATE_UNREAD_SUBSCRIPTION, EXTRA_CHANNEL_ID, cid, EXTRA_UPDATE_STATE, subscribe)
+            makeAndStartIntent(context, ACTION_UPDATE_UNREAD_SUBSCRIPTION,
+                    EXTRA_CHANNEL_ID to cid,
+                    EXTRA_UPDATE_STATE to subscribe)
         }
 
         fun sendMessageWithImage(context: Context, cid: String, imageUri: Uri) {
-            makeAndStartIntent(context, ACTION_SEND_MESSAGE_WITH_IMAGE, EXTRA_CHANNEL_ID, cid, EXTRA_IMAGE_URI, imageUri)
+            makeAndStartIntent(context, ACTION_SEND_MESSAGE_WITH_IMAGE,
+                    EXTRA_CHANNEL_ID to cid,
+                    EXTRA_IMAGE_URI to imageUri)
         }
 
-        private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Any) {
+        private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String,Any>) {
             val intent = Intent(context, RemoteRequestService::class.java)
             intent.setAction(action)
-            var i = 0
-            while (i < extraElements.size) {
-                val key = extraElements[i] as String
-                val value = extraElements[i + 1]
+            for(v in extraElements) {
+                val key = v.first
+                val value = v.second
                 if (value is String) {
                     intent.putExtra(key, value)
                 } else if (value is Boolean) {
@@ -211,7 +215,6 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 } else {
                     throw IllegalArgumentException("Unexpected value type: " + value.javaClass.getName())
                 }
-                i += 2
             }
             context.startService(intent)
         }
