@@ -17,17 +17,27 @@
     
     -->
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                                            xmlns:tools="http://schemas.android.com/tools"
-                                            android:id="@+id/channel_list"
-                                            android:name="androidclient.potato.dhsdevelopments.com.potatoandroidtest.ChannelListFragment"
-                                            android:layout_width="@dimen/item_width"
-                                            android:layout_height="match_parent"
-                                            android:layout_marginLeft="16dp"
-                                            android:layout_marginRight="16dp"
-                                            app:layoutManager="LinearLayoutManager"
-                                            tools:context=".channellist.ChannelListActivity"
-                                            tools:listitem="@layout/channel_list_content"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/channel_list_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            tools:context=".channellist.ChannelListActivity">
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                                                xmlns:tools="http://schemas.android.com/tools"
+                                                android:id="@+id/channel_list"
+                                                android:name="androidclient.potato.dhsdevelopments.com.potatoandroidtest.ChannelListFragment"
+                                                android:layout_width="@dimen/item_width"
+                                                android:layout_height="match_parent"
+                                                android:layout_marginLeft="16dp"
+                                                android:layout_marginRight="16dp"
+                                                app:layoutManager="LinearLayoutManager"
+                                                tools:context=".channellist.ChannelListActivity"
+                                                tools:listitem="@layout/channel_list_content"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <FrameLayout
             android:id="@+id/channel_detail_container"

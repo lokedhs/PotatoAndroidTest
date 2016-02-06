@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
@@ -68,6 +69,8 @@ public class ChannelContentFragment extends Fragment
     private Map<String, String> typingUsers = new HashMap<>();
     private Comparator<String> caseInsensitiveStringComparator;
     private TextView typingTextView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     private int lastVisibleItem;
 
     public ChannelContentFragment() {
@@ -105,7 +108,7 @@ public class ChannelContentFragment extends Fragment
         intentFilter.addAction( ChannelSubscriptionService.ACTION_TYPING );
         LocalBroadcastManager.getInstance( getContext() ).registerReceiver( receiver, intentFilter );
 
-        adapter = new ChannelContentAdapter( getContext(), ChannelUsersTracker.findEnclosingUserTracker( this ), cid );
+        adapter = new ChannelContentAdapter( getContext(), cid );
     }
 
     @Override
@@ -239,9 +242,11 @@ public class ChannelContentFragment extends Fragment
             public void onItemRangeInserted( int positionStart, int itemCount ) {
                 // Only scroll if the message was inserted at the bottom, and we're already looking at
                 // the bottom element.
-                int numItems = adapter.getItemCount();
+                Log.d( "rangeInserted. posStart=" + positionStart + ", count=" + itemCount + ", lastVis=" + lastVisibleItem + ", itemCount=" + adapter.getItemCount() );
+                int numItems = adapter.getItemCount() - 1;
                 if( lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount ) {
-                    messageListView.scrollToPosition( numItems - 1 );
+                    Log.d( "scrolling view to " + (numItems + 1) );
+                    messageListView.scrollToPosition( numItems );
                 }
             }
 
@@ -249,7 +254,7 @@ public class ChannelContentFragment extends Fragment
             public void onItemRangeChanged( int positionStart, int itemCount ) {
                 // After a change, we want to ensure that we can still see the bottom element that
                 // was visible before the change.
-                // TODO: Implement this stuff
+                messageListView.scrollToPosition( lastVisibleItem < adapter.getItemCount() - 1 ? lastVisibleItem + 1 : lastVisibleItem );
             }
         };
         adapter.registerAdapterDataObserver( observer );
@@ -258,7 +263,8 @@ public class ChannelContentFragment extends Fragment
         {
             @Override
             public void onScrolled( RecyclerView recyclerView, int dx, int dy ) {
-                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+                int pos = layoutManager.findLastVisibleItemPosition();
+                lastVisibleItem = (pos == adapter.getItemCount() - 1) ? pos - 1 : pos;
             }
         } );
 
@@ -295,6 +301,16 @@ public class ChannelContentFragment extends Fragment
         } );
 
         typingTextView = (TextView)rootView.findViewById( R.id.typing_text_view );
+
+
+        swipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById( R.id.channel_content_refresh );
+        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh() {
+                adapter.loadMoreMessages();
+            }
+        } );
 
         return rootView;
     }

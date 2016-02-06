@@ -22,7 +22,6 @@ import com.dhsdevelopments.potato.clientapi.message.MessageImage;
 import com.dhsdevelopments.potato.imagecache.ImageCache;
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback;
 import com.dhsdevelopments.potato.imagecache.StorageType;
-import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -36,6 +35,9 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 {
     private static final int VIEW_TYPE_PLAIN_MESSAGE = 0;
     private static final int VIEW_TYPE_EXTRA_CONTENT = 1;
+    private static final int VIEW_TYPE_END_OF_CHANNEL_MARKER = 2;
+
+    private static final int NUM_MESSAGES_PER_LOAD = 20;
 
     private Context context;
     private String cid;
@@ -45,11 +47,9 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     private ImageCache imageCache;
 
     private List<MessageWrapper> messages = new ArrayList<>();
-    private ChannelUsersTracker usersTracker;
 
-    public ChannelContentAdapter( Context context, ChannelUsersTracker usersTracker, String cid ) {
+    public ChannelContentAdapter( Context context, String cid ) {
         this.context = context;
-        this.usersTracker = usersTracker;
         this.cid = cid;
 
         dateFormat = new MessageFormat( context.getResources().getString( R.string.message_entry_date_label ) );
@@ -84,12 +84,11 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
         }
         this.messages = result;
         notifyDataSetChanged();
-        Log.i( "Updated " + this.messages.size() + " messages" );
     }
 
     public void loadMessages() {
         PotatoApplication app = PotatoApplication.getInstance( context );
-        Call<MessageHistoryResult> call = app.getPotatoApi().loadHistoryAsJson( app.getApiKey(), cid, 10 );
+        Call<MessageHistoryResult> call = app.getPotatoApi().loadHistoryAsJson( app.getApiKey(), cid, NUM_MESSAGES_PER_LOAD );
         call.enqueue( new Callback<MessageHistoryResult>()
         {
             @Override
@@ -104,6 +103,10 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
         } );
     }
 
+    public void loadMoreMessages() {
+        Log.w( "Need to load here" );
+    }
+
     @Override
     public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
         switch( viewType ) {
@@ -111,6 +114,8 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                 return new ViewHolder( LayoutInflater.from( parent.getContext() ).inflate( R.layout.message_basic, parent, false ) );
             case VIEW_TYPE_EXTRA_CONTENT:
                 return new ViewHolderExtraContent( LayoutInflater.from( parent.getContext() ).inflate( R.layout.message_extra_html, parent, false ) );
+            case VIEW_TYPE_END_OF_CHANNEL_MARKER:
+                return new EndOfChannelMarkerViewHolder( LayoutInflater.from( parent.getContext() ).inflate( R.layout.message_marker, parent, false ) );
             default:
                 throw new IllegalStateException( "Unexpected viewType: " + viewType );
         }
@@ -118,22 +123,29 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
 
     @Override
     public void onBindViewHolder( ViewHolder holder, int position ) {
-        holder.fillInView( messages.get( position ) );
+        if( position < messages.size() ) {
+            holder.fillInView( messages.get( position ) );
+        }
     }
 
     @Override
     public int getItemCount() {
-        return messages.size();
+        return messages.size() + 1;
     }
 
     @Override
     public int getItemViewType( int position ) {
-        MessageWrapper m = messages.get( position );
-        if( m.getExtraHtml() == null && m.getImage() == null ) {
-            return VIEW_TYPE_PLAIN_MESSAGE;
+        if( position == messages.size() ) {
+            return VIEW_TYPE_END_OF_CHANNEL_MARKER;
         }
         else {
-            return VIEW_TYPE_EXTRA_CONTENT;
+            MessageWrapper m = messages.get( position );
+            if( m.getExtraHtml() == null && m.getImage() == null ) {
+                return VIEW_TYPE_PLAIN_MESSAGE;
+            }
+            else {
+                return VIEW_TYPE_EXTRA_CONTENT;
+            }
         }
     }
 
@@ -311,6 +323,13 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
                 imageView.setImageDrawable( null );
                 imageView.setVisibility( View.GONE );
             }
+        }
+    }
+
+    private class EndOfChannelMarkerViewHolder extends ViewHolder
+    {
+        public EndOfChannelMarkerViewHolder( View view ) {
+            super( view );
         }
     }
 }
