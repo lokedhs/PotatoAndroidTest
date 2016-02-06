@@ -98,7 +98,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
     private fun loadChannelListImpl() {
         Log.i("starting load")
-        var loadSuccessful = false
+        var errorMessage: String? = "error"
         try {
             val app = PotatoApplication.getInstance(this)
             val call = app.potatoApi.getChannels2(app.apiKey)
@@ -132,7 +132,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     }
 
                     db.setTransactionSuccessful()
-                    loadSuccessful = true;
+                    errorMessage = null
                 }
                 finally {
                     db.endTransaction()
@@ -141,11 +141,19 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
         catch (e: IOException) {
             Log.e("Exception when loading channels", e)
+            errorMessage = e.message
         }
 
-        Log.i("sending result: " + loadSuccessful)
         val mgr = LocalBroadcastManager.getInstance(this)
-        mgr.sendBroadcast(Intent(if (loadSuccessful) ACTION_CHANNEL_LIST_UPDATED else ACTION_CHANNEL_LIST_UPDATE_FAIL))
+        val intent: Intent
+        if (errorMessage == null) {
+            intent = Intent(ACTION_CHANNEL_LIST_UPDATED)
+        }
+        else {
+            intent = Intent(ACTION_CHANNEL_LIST_UPDATE_FAIL)
+            intent.putExtra(EXTRA_ERROR_MESSAGE, errorMessage)
+        }
+        mgr.sendBroadcast(intent)
     }
 
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
@@ -182,6 +190,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
         @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         @JvmField val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
+        @JvmField val EXTRA_ERROR_MESSAGE = "com.dhsdevelopments.potato.error_message"
 
         fun markNotificationsForChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,

@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -18,6 +19,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.SubMenu
+import android.view.View
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
@@ -51,6 +53,10 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         findViewById(R.id.channel_list_refresh) as SwipeRefreshLayout
     }
 
+    private val channelListRecyclerView: View by lazy {
+        findViewById(R.id.channel_list)!!
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_channel_list)
@@ -71,7 +77,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         navigationView.setNavigationItemSelectedListener { item -> handleNavigationItemSelected(item) }
         domainsMenu = navigationView.menu.findItem(R.id.nav_domain_menu).subMenu
 
-        val recyclerView = findViewById(R.id.channel_list)!!
+        val recyclerView = channelListRecyclerView
         setupRecyclerView(recyclerView as RecyclerView)
 
         if (findViewById(R.id.channel_detail_container) != null) {
@@ -109,10 +115,15 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
 
     private fun handleBroadcastMessage(intent: Intent) {
         Log.i("got broadcast message: " + intent)
-        if (intent.action == RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED) {
-            updateDomainList()
+        when(intent.action) {
+            RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED -> updateDomainList()
+            RemoteRequestService.ACTION_CHANNEL_LIST_UPDATE_FAIL -> showErrorSnackbar(intent.getStringExtra(RemoteRequestService.EXTRA_ERROR_MESSAGE))
         }
         swipeRefreshLayout.isRefreshing = false
+    }
+
+    private fun showErrorSnackbar(message: String) {
+        Snackbar.make( channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
     }
 
     override fun onStop() {
