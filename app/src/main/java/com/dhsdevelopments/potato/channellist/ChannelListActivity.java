@@ -125,10 +125,8 @@ public class ChannelListActivity extends AppCompatActivity implements HasUserTra
     }
 
     private void handleBroadcastMessage( Intent intent ) {
-        switch( intent.getAction() ) {
-            case RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED:
-                updateDomainList();
-                break;
+        if( intent.getAction().equals( RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED ) ) {
+            updateDomainList();
         }
     }
 

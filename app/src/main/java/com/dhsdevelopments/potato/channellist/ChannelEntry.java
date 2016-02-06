@@ -1,6 +1,6 @@
 package com.dhsdevelopments.potato.channellist;
 
-class ChannelEntry
+public class ChannelEntry
 {
     private String id;
     private String name;

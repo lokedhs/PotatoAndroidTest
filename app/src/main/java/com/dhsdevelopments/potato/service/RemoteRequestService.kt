@@ -177,7 +177,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
 
-        val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
+        @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
 
         fun markNotificationsForChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,
