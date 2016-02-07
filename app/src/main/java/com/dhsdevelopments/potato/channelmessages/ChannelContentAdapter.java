@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -47,6 +48,7 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     private ImageCache imageCache;
 
     private List<MessageWrapper> messages = new ArrayList<>();
+    private boolean isLoading = false;
 
     public ChannelContentAdapter( Context context, String cid ) {
         this.context = context;
@@ -87,18 +89,40 @@ public class ChannelContentAdapter extends RecyclerView.Adapter<ChannelContentAd
     }
 
     public void loadMessages() {
+        if( isLoading ) {
+            Log.w( "Attempt to load messages while loading is in progress" );
+            return;
+        }
+
+        final Handler handler = new Handler();
+
         PotatoApplication app = PotatoApplication.getInstance( context );
         Call<MessageHistoryResult> call = app.getPotatoApi().loadHistoryAsJson( app.getApiKey(), cid, NUM_MESSAGES_PER_LOAD );
+        isLoading = true;
         call.enqueue( new Callback<MessageHistoryResult>()
         {
             @Override
-            public void onResponse( Response<MessageHistoryResult> response, Retrofit retrofit ) {
-                setMessages( response.body().getMessages() );
+            public void onResponse( final Response<MessageHistoryResult> response, Retrofit retrofit ) {
+                handler.post( new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        isLoading = false;
+                        setMessages( response.body().getMessages() );
+                    }
+                } );
             }
 
             @Override
             public void onFailure( Throwable t ) {
-                Log.wtf( "Failed to load message history", t );
+                handler.post( new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        isLoading = false;
+                        Log.e( "Failed to load messages" );
+                    }
+                }  );
             }
         } );
     }
