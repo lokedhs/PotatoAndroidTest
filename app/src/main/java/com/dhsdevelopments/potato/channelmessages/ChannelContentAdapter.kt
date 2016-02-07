@@ -2,9 +2,12 @@ package com.dhsdevelopments.potato.channelmessages
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.text.Html
@@ -30,7 +33,6 @@ import java.util.*
 
 class ChannelContentAdapter(private val context: Context, private val cid: String) :
         RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>() {
-
     companion object {
         private val VIEW_TYPE_PLAIN_MESSAGE = 0
         private val VIEW_TYPE_EXTRA_CONTENT = 1
@@ -45,6 +47,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
 
     private var messages: MutableList<MessageWrapper> = ArrayList()
     private var isLoading = false
+
+    val elementDecoration: RecyclerView.ItemDecoration by lazy {
+        MessageElementItemDecoration()
+    }
 
     init {
         dateFormat = MessageFormat(context.resources.getString(R.string.message_entry_date_label))
@@ -345,6 +351,55 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
     }
 
     private inner class EndOfChannelMarkerViewHolder(view: View) : ViewHolder(view)
+
+    inner class MessageElementItemDecoration : RecyclerView.ItemDecoration() {
+        val divider: Drawable
+        val dividerVerticalMargin: Int
+
+        init {
+            val attrs = context.obtainStyledAttributes(intArrayOf(android.R.attr.listDivider))
+            divider = attrs.getDrawable(0)
+            attrs.recycle()
+
+            dividerVerticalMargin = context.resources.getDimension(R.dimen.channel_content_message_block_separator).toInt()
+        }
+
+        fun messageFromAdapterPos(parent: RecyclerView, view: View): MessageWrapper? {
+            var pos = parent.getChildAdapterPosition(view)
+            if (pos > 0 && pos < messages.size) {
+                val msg = messages[pos]
+                if (msg.isShouldDisplayHeader) {
+                    return msg
+                }
+            }
+            return null
+        }
+
+        override fun getItemOffsets(outRect: Rect?, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
+            var top = 0
+            if (messageFromAdapterPos(parent!!, view!!) != null) {
+                top = divider.intrinsicHeight + dividerVerticalMargin * 2
+            }
+            outRect!!.set(0, top, 0, 0)
+        }
+
+        override fun onDraw(canvas: Canvas?, parent: RecyclerView?, state: RecyclerView.State?) {
+            val left = parent!!.getPaddingLeft();
+            val right = parent.getWidth() - parent.getPaddingRight();
+
+            for (i in 0..(parent.childCount - 1)) {
+                val view = parent.getChildAt(i)
+                val msg = messageFromAdapterPos(parent, view)
+                if (msg != null) {
+                    val p = view.layoutParams as RecyclerView.LayoutParams
+                    val top = view.top - dividerVerticalMargin - divider.intrinsicHeight
+                    val bottom = top + divider.intrinsicHeight
+                    divider.setBounds(left, top, right, bottom)
+                    divider.draw(canvas)
+                }
+            }
+        }
+    }
 }
 
 interface LoadMessagesCallback {

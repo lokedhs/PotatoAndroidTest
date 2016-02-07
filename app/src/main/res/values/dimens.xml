@@ -14,4 +14,5 @@
     <dimen name="chat_image_height">32dip</dimen>
     <dimen name="message_image_width">256dip</dimen>
     <dimen name="message_image_height">256dip</dimen>
+    <dimen name="channel_content_message_block_separator">20dp</dimen>
 </resources>
