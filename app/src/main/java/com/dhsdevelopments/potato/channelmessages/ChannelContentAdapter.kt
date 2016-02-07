@@ -105,7 +105,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
             override fun onFailure(t: Throwable) {
                 handler.post {
                     isLoading = false
-                    Log.e(t.message)
+                    errorCallback(t.message ?: "Unknown error")
                 }
             }
         })
