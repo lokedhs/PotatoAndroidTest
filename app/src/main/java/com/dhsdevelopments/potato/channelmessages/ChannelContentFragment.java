@@ -35,6 +35,7 @@ import com.dhsdevelopments.potato.editor.UserNameTokeniser;
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService;
 import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
+import org.jetbrains.annotations.NotNull;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -72,6 +73,7 @@ public class ChannelContentFragment extends Fragment
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private int lastVisibleItem;
+    private RecyclerView messageListView;
 
     public ChannelContentFragment() {
         final Collator collator = Collator.getInstance();
@@ -115,6 +117,119 @@ public class ChannelContentFragment extends Fragment
     public void onDestroy() {
         LocalBroadcastManager.getInstance( getContext() ).unregisterReceiver( receiver );
         super.onDestroy();
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+        View rootView = inflater.inflate( R.layout.fragment_channel_content, container, false );
+        messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );
+        messageListView.setLayoutManager( layoutManager );
+
+        messageListView.setAdapter( adapter );
+
+        observer = new RecyclerView.AdapterDataObserver()
+        {
+            @Override
+            public void onItemRangeInserted( int positionStart, int itemCount ) {
+                // Only scroll if the message was inserted at the bottom, and we're already looking at
+                // the bottom element.
+                Log.d( "rangeInserted. posStart=" + positionStart + ", count=" + itemCount + ", lastVis=" + lastVisibleItem + ", itemCount=" + adapter.getItemCount() );
+                int numItems = adapter.getItemCount() - 1;
+                if( lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount ) {
+                    Log.d( "scrolling view to " + (numItems + 1) );
+                    messageListView.scrollToPosition( numItems );
+                }
+            }
+
+            @Override
+            public void onItemRangeChanged( int positionStart, int itemCount ) {
+                // After a change, we want to ensure that we can still see the bottom element that
+                // was visible before the change.
+                messageListView.scrollToPosition( lastVisibleItem < adapter.getItemCount() - 1 ? lastVisibleItem + 1 : lastVisibleItem );
+            }
+        };
+        adapter.registerAdapterDataObserver( observer );
+
+        messageListView.addOnScrollListener( new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled( RecyclerView recyclerView, int dx, int dy ) {
+                int pos = layoutManager.findLastVisibleItemPosition();
+                lastVisibleItem = (pos == adapter.getItemCount() - 1) ? pos - 1 : pos;
+            }
+        } );
+
+        final MultiAutoCompleteTextView messageInput = (MultiAutoCompleteTextView)rootView.findViewById( R.id.message_input_field );
+        messageInput.setImeActionLabel( "Send", KeyEvent.KEYCODE_ENTER );
+        messageInput.setOnKeyListener( new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey( View v, int keyCode, KeyEvent event ) {
+                if( keyCode == KeyEvent.KEYCODE_ENTER ) {
+                    sendMessage( messageInput );
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        } );
+
+        ChannelUsersTracker userTracker = ChannelUsersTracker.findEnclosingUserTracker( this );
+        userNameSuggestAdapter = new UserNameSuggestAdapter( getContext(), userTracker );
+        messageInput.setAdapter( userNameSuggestAdapter );
+        messageInput.setTokenizer( new UserNameTokeniser( userTracker ) );
+
+        final InputMethodManager imm = (InputMethodManager)getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
+        Button sendButton = (Button)rootView.findViewById( R.id.send_button );
+        sendButton.setOnClickListener( new View.OnClickListener()
+        {
+            @Override
+            public void onClick( View v ) {
+                sendMessage( messageInput );
+                imm.hideSoftInputFromWindow( messageInput.getWindowToken(), 0 );
+            }
+        } );
+
+        typingTextView = (TextView)rootView.findViewById( R.id.typing_text_view );
+
+
+        swipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById( R.id.channel_content_refresh );
+        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh() {
+                adapter.loadMoreMessages( new LoadMessagesCallback()
+                {
+                    @Override
+                    public void loadSuccessful( @NotNull List<? extends MessageWrapper> messages ) {
+                        swipeRefreshLayout.setRefreshing( false );
+                        messageListView.scrollToPosition( adapter.positionForMessage( messages.get( messages.size() - 1 ).getId() ) );
+                    }
+
+                    @Override
+                    public void loadFailed( @NotNull String errorMessage ) {
+                        swipeRefreshLayout.setRefreshing( false );
+                        showErrorSnackback( "Error loading messages: " + errorMessage );
+                    }
+                } );
+            }
+        } );
+
+        return rootView;
+    }
+
+    private void showErrorSnackback( String message ) {
+        Snackbar.make( messageListView, message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        userNameSuggestAdapter.shutdown();
+        adapter.unregisterAdapterDataObserver( observer );
+        super.onDestroyView();
     }
 
     private void handleBroadcastMessage( Intent intent ) {
@@ -210,7 +325,18 @@ public class ChannelContentFragment extends Fragment
         intent.setAction( ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL );
         intent.putExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid );
         getContext().startService( intent );
-        adapter.loadMessages();
+        adapter.loadMessages( new LoadMessagesCallback()
+        {
+            @Override
+            public void loadSuccessful( @NotNull List<? extends MessageWrapper> messages ) {
+                messageListView.scrollToPosition( adapter.getItemCount() - 1 );
+            }
+
+            @Override
+            public void loadFailed( @NotNull String errorMessage ) {
+                showErrorSnackback( "Error loading messages: " + errorMessage );
+            }
+        } );
 
         refreshTypingNotifier();
 
@@ -224,102 +350,6 @@ public class ChannelContentFragment extends Fragment
         intent.putExtra( ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid );
         getContext().startService( intent );
         super.onStop();
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
-        View rootView = inflater.inflate( R.layout.fragment_channel_content, container, false );
-        final RecyclerView messageListView = (RecyclerView)rootView.findViewById( R.id.message_list );
-
-        final LinearLayoutManager layoutManager = new LinearLayoutManager( this.getActivity() );
-        messageListView.setLayoutManager( layoutManager );
-
-        messageListView.setAdapter( adapter );
-
-        observer = new RecyclerView.AdapterDataObserver()
-        {
-            @Override
-            public void onItemRangeInserted( int positionStart, int itemCount ) {
-                // Only scroll if the message was inserted at the bottom, and we're already looking at
-                // the bottom element.
-                Log.d( "rangeInserted. posStart=" + positionStart + ", count=" + itemCount + ", lastVis=" + lastVisibleItem + ", itemCount=" + adapter.getItemCount() );
-                int numItems = adapter.getItemCount() - 1;
-                if( lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount ) {
-                    Log.d( "scrolling view to " + (numItems + 1) );
-                    messageListView.scrollToPosition( numItems );
-                }
-            }
-
-            @Override
-            public void onItemRangeChanged( int positionStart, int itemCount ) {
-                // After a change, we want to ensure that we can still see the bottom element that
-                // was visible before the change.
-                messageListView.scrollToPosition( lastVisibleItem < adapter.getItemCount() - 1 ? lastVisibleItem + 1 : lastVisibleItem );
-            }
-        };
-        adapter.registerAdapterDataObserver( observer );
-
-        messageListView.addOnScrollListener( new RecyclerView.OnScrollListener()
-        {
-            @Override
-            public void onScrolled( RecyclerView recyclerView, int dx, int dy ) {
-                int pos = layoutManager.findLastVisibleItemPosition();
-                lastVisibleItem = (pos == adapter.getItemCount() - 1) ? pos - 1 : pos;
-            }
-        } );
-
-        final MultiAutoCompleteTextView messageInput = (MultiAutoCompleteTextView)rootView.findViewById( R.id.message_input_field );
-        messageInput.setImeActionLabel( "Send", KeyEvent.KEYCODE_ENTER );
-        messageInput.setOnKeyListener( new View.OnKeyListener()
-        {
-            @Override
-            public boolean onKey( View v, int keyCode, KeyEvent event ) {
-                if( keyCode == KeyEvent.KEYCODE_ENTER ) {
-                    sendMessage( messageInput );
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        } );
-
-        ChannelUsersTracker userTracker = ChannelUsersTracker.findEnclosingUserTracker( this );
-        userNameSuggestAdapter = new UserNameSuggestAdapter( getContext(), userTracker );
-        messageInput.setAdapter( userNameSuggestAdapter );
-        messageInput.setTokenizer( new UserNameTokeniser( userTracker ) );
-
-        final InputMethodManager imm = (InputMethodManager)getContext().getSystemService( Context.INPUT_METHOD_SERVICE );
-        Button sendButton = (Button)rootView.findViewById( R.id.send_button );
-        sendButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick( View v ) {
-                sendMessage( messageInput );
-                imm.hideSoftInputFromWindow( messageInput.getWindowToken(), 0 );
-            }
-        } );
-
-        typingTextView = (TextView)rootView.findViewById( R.id.typing_text_view );
-
-
-        swipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById( R.id.channel_content_refresh );
-        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener()
-        {
-            @Override
-            public void onRefresh() {
-                adapter.loadMoreMessages();
-            }
-        } );
-
-        return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        userNameSuggestAdapter.shutdown();
-        adapter.unregisterAdapterDataObserver( observer );
-        super.onDestroyView();
     }
 
     private void sendMessage( final EditText messageInput ) {

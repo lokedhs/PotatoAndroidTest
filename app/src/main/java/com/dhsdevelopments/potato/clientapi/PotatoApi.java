@@ -23,7 +23,8 @@ public interface PotatoApi
     @GET( "channel/{cid}/history?format=json" )
     Call<MessageHistoryResult> loadHistoryAsJson( @Header( "API-token" ) String apiKey,
                                                   @Path( "cid" ) String channelId,
-                                                  @Query( "num" ) int numMessages );
+                                                  @Query( "num" ) int numMessages,
+                                                  @Query( "from" ) String from );
 
     @GET( "channel-updates?format=json" )
     Call<PotatoNotificationResult> channelUpdates( @Header( "API-token" ) String apiKey,

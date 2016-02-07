@@ -32,6 +32,10 @@ public class MessageWrapper
         this.createdDateFormatted = dateFormat.format( new Object[] { date } );
     }
 
+    public String getId() {
+        return msg.id;
+    }
+
     public String getSender() {
         return msg.from;
     }
