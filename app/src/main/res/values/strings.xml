@@ -46,4 +46,5 @@
     <string name="pref_key_default_domain">default_domain_id</string>
     <string name="menu_upload_photo">Upload photo</string>
     <string name="chooser_title_select_image">Select photo</string>
+    <string name="chat_image_description">Picture</string>
 </resources>
