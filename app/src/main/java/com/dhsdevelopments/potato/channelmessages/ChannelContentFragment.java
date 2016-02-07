@@ -212,7 +212,7 @@ public class ChannelContentFragment extends Fragment
                     @Override
                     public void loadFailed( @NotNull String errorMessage ) {
                         swipeRefreshLayout.setRefreshing( false );
-                        showErrorSnackback( "Error loading messages: " + errorMessage );
+                        showErrorSnackbar( "Error loading messages: " + errorMessage );
                     }
                 } );
             }
@@ -221,7 +221,7 @@ public class ChannelContentFragment extends Fragment
         return rootView;
     }
 
-    private void showErrorSnackback( String message ) {
+    private void showErrorSnackbar( String message ) {
         Snackbar.make( messageListView, message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
     }
 
@@ -334,7 +334,7 @@ public class ChannelContentFragment extends Fragment
 
             @Override
             public void loadFailed( @NotNull String errorMessage ) {
-                showErrorSnackback( "Error loading messages: " + errorMessage );
+                showErrorSnackbar( "Error loading messages: " + errorMessage );
             }
         } );
 
