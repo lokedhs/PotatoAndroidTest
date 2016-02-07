@@ -97,7 +97,6 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     }
 
     private fun loadChannelListImpl() {
-        Log.i("starting load")
         var errorMessage: String? = "error"
         try {
             val app = PotatoApplication.getInstance(this)

@@ -19,8 +19,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.SubMenu
-import android.view.View
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
@@ -46,15 +44,21 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
      */
     private var usersTracker: ChannelUsersTracker? = null
     private var channelListAdapter: ChannelListAdapter? = null
-    private var domainsMenu: SubMenu? = null
     private var receiver: BroadcastReceiver? = null
 
+    private val navigationView: NavigationView by lazy {
+        findViewById(R.id.channel_list_nav_view) as NavigationView
+    }
+
+    private val domainsMenu: SubMenu by lazy {
+        navigationView.menu.findItem(R.id.nav_domain_menu).subMenu
+    }
     private val swipeRefreshLayout: SwipeRefreshLayout by lazy {
         findViewById(R.id.channel_list_refresh) as SwipeRefreshLayout
     }
 
-    private val channelListRecyclerView: View by lazy {
-        findViewById(R.id.channel_list)!!
+    private val channelListRecyclerView: RecyclerView by lazy {
+        findViewById(R.id.channel_list) as RecyclerView
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,12 +77,10 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         setSupportActionBar(toolbar)
         toolbar.title = title
 
-        val navigationView = findViewById(R.id.channel_list_nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener { item -> handleNavigationItemSelected(item) }
-        domainsMenu = navigationView.menu.findItem(R.id.nav_domain_menu).subMenu
 
-        val recyclerView = channelListRecyclerView
-        setupRecyclerView(recyclerView as RecyclerView)
+        channelListAdapter = ChannelListAdapter(this)
+        channelListRecyclerView.adapter = channelListAdapter
 
         if (findViewById(R.id.channel_detail_container) != null) {
             isTwoPane = true
@@ -110,8 +112,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     private fun handleBroadcastMessage(intent: Intent) {
-        Log.i("got broadcast message: " + intent)
-        when(intent.action) {
+        when (intent.action) {
             RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED -> updateDomainList()
             RemoteRequestService.ACTION_CHANNEL_LIST_UPDATE_FAIL -> showErrorSnackbar(intent.getStringExtra(RemoteRequestService.EXTRA_ERROR_MESSAGE))
         }
@@ -119,7 +120,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     private fun showErrorSnackbar(message: String) {
-        Snackbar.make( channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG ).setAction( "Action", null ).show();
+        Snackbar.make(channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 
     override fun onStop() {
@@ -165,9 +166,9 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     private fun activateSelectedDomain() {
         if (selectedDomainId != null) {
             var domainName: String? = null
-            val n = domainsMenu!!.size()
+            val n = domainsMenu.size()
             for (i in 0..n - 1) {
-                val item = domainsMenu!!.getItem(i)
+                val item = domainsMenu.getItem(i)
                 val isSelectedDomain = item.intent.getStringExtra(EXTRA_DOMAIN_ID) == selectedDomainId
                 if (isSelectedDomain) {
                     domainName = item.intent.getStringExtra(EXTRA_DOMAIN_NAME)
@@ -182,11 +183,6 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
             }
             channelListAdapter!!.selectDomain(selectedDomainId)
         }
-    }
-
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
-        channelListAdapter = ChannelListAdapter(this)
-        recyclerView.adapter = channelListAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -221,7 +217,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     fun updateDomainList() {
         val db = PotatoApplication.getInstance(this).cacheDatabase
 
-        domainsMenu!!.clear()
+        domainsMenu.clear()
 
         db.query(StorageHelper.DOMAINS_TABLE,
                 arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
@@ -230,7 +226,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
                 val domainId = result.getString(0)
                 val domainName = result.getString(1)
 
-                val item = domainsMenu!!.add(domainName)
+                val item = domainsMenu.add(domainName)
                 val intent = Intent()
                 intent.putExtra(EXTRA_DOMAIN_ID, domainId)
                 intent.putExtra(EXTRA_DOMAIN_NAME, domainName)
