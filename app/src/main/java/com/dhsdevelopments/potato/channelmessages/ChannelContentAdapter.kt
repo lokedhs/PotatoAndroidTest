@@ -135,7 +135,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
             loadMessages(callback)
         }
         else {
-            val lastMessageId = messages.get(0).id
+            val lastMessageId = messages[0].id
             loadMessageHistory(lastMessageId, {
                 val parsed = parseMessageList(it)
                 messages.addAll(0, parsed)
@@ -385,7 +385,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
 
         override fun onDraw(canvas: Canvas?, parent: RecyclerView?, state: RecyclerView.State?) {
             val left = parent!!.getPaddingLeft();
-            val right = parent.getWidth() - parent.getPaddingRight();
+            val right = parent.width - parent.paddingRight;
 
             for (i in 0..(parent.childCount - 1)) {
                 val view = parent.getChildAt(i)
