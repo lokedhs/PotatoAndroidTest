@@ -8,10 +8,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.support.v4.content.LocalBroadcastManager
 import android.webkit.MimeTypeMap
-import com.dhsdevelopments.potato.Log
-import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
@@ -163,6 +160,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             val result = call.execute()
             if (result.isSuccess) {
                 if ("ok" == result.body().result) {
+                    updateRegistrationInDb(cid, add)
                     Log.d("Subscription updated successfully")
                 }
                 else {
@@ -175,6 +173,34 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
         catch (e: IOException) {
             Log.e("Exception while updating subscription state")
+        }
+    }
+
+    private fun updateRegistrationInDb(cid: String, add: Boolean) {
+        val db = PotatoApplication.getInstance(this).cacheDatabase
+        db.beginTransaction()
+        try {
+            var hasElement = false;
+            queryForChannel(db, cid).use { hasElement = it.moveToNext() }
+
+            if (hasElement) {
+                val values = ContentValues()
+                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0)
+                db.update(StorageHelper.CHANNEL_CONFIG_TABLE,
+                        values,
+                        StorageHelper.CHANNEL_CONFIG_ID + " = ?", arrayOf(cid))
+            }
+            else {
+                val values = ContentValues();
+                values.put(StorageHelper.CHANNEL_CONFIG_ID, cid);
+                values.put(StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0);
+                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0);
+                db.insert(StorageHelper.CHANNEL_CONFIG_TABLE, null, values);
+            }
+            db.setTransactionSuccessful();
+        }
+        finally {
+            db.endTransaction();
         }
     }
 

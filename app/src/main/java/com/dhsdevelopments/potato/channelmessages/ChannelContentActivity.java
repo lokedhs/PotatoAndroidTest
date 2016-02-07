@@ -1,12 +1,10 @@
 package com.dhsdevelopments.potato.channelmessages;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -14,9 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.dhsdevelopments.potato.DbHelperKt;
 import com.dhsdevelopments.potato.PotatoApplication;
 import com.dhsdevelopments.potato.R;
-import com.dhsdevelopments.potato.StorageHelper;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 import com.dhsdevelopments.potato.service.RemoteRequestService;
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker;
@@ -106,7 +104,7 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         MenuItem notifyUnreadOption = menu.findItem( R.id.menu_option_notify_unread );
         SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
         boolean notifyUnread = false;
-        try( Cursor cursor = queryForChannel( db ) ) {
+        try( Cursor cursor = DbHelperKt.queryForChannel( db, channelId ) ) {
             if( cursor.moveToNext() ) {
                 notifyUnread = cursor.getInt( 0 ) != 0;
             }
@@ -161,61 +159,11 @@ public class ChannelContentActivity extends AppCompatActivity implements HasUser
         }
     }
 
-    public String getPath( Uri uri ) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        //CursorLoader loader = new CursorLoader( this, uri, projection, null, null, null );
-
-        // try to retrieve the image from the media store first
-        // this will only work for images selected from gallery
-        Cursor cursor = managedQuery( uri, projection, null, null, null );
-        if( cursor != null ) {
-            int column_index = cursor.getColumnIndexOrThrow( MediaStore.Images.Media.DATA );
-            cursor.moveToFirst();
-            return cursor.getString( column_index );
-        }
-        // this is our fallback here
-        return uri.getPath();
-    }
-
     public ChannelUsersTracker getUsersTracker() {
         return usersTracker;
     }
 
-    private Cursor queryForChannel( SQLiteDatabase db ) {
-        return db.query( StorageHelper.CHANNEL_CONFIG_TABLE,
-                         new String[] { StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD },
-                         StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId },
-                         null, null, null, null );
-    }
-
     private void updateNotifyUnreadSetting( boolean notifyUnread ) {
-        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
-        db.beginTransaction();
-        try {
-            boolean hasElement;
-            try( Cursor result = queryForChannel( db ) ) {
-                hasElement = result.moveToNext();
-            }
-
-            if( hasElement ) {
-                ContentValues values = new ContentValues();
-                values.put( StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, notifyUnread ? 1 : 0 );
-                db.update( StorageHelper.CHANNEL_CONFIG_TABLE,
-                           values,
-                           StorageHelper.CHANNEL_CONFIG_ID + " = ?", new String[] { channelId } );
-            }
-            else {
-                ContentValues values = new ContentValues();
-                values.put( StorageHelper.CHANNEL_CONFIG_ID, channelId );
-                values.put( StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0 );
-                values.put( StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, notifyUnread ? 1 : 0 );
-                db.insert( StorageHelper.CHANNEL_CONFIG_TABLE, null, values );
-            }
-            db.setTransactionSuccessful();
-        }
-        finally {
-            db.endTransaction();
-        }
         RemoteRequestService.Companion.updateUnreadSubscriptionState( this, channelId, notifyUnread );
     }
 }
