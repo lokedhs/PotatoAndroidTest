@@ -3,7 +3,6 @@ package com.dhsdevelopments.potato.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -14,6 +13,7 @@ import android.preference.*;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import com.dhsdevelopments.potato.Log;
 import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.db.DomainDescriptor;
 import com.dhsdevelopments.potato.db.DomainUtils;
@@ -80,6 +80,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
      */
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
+        Log.d( "got actionbar = " + actionBar );
         if( actionBar != null ) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled( true );
@@ -92,6 +93,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     @Override
     public boolean onIsMultiPane() {
         return isXLargeTablet( this );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        int id = item.getItemId();
+        if( id == android.R.id.home ) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected( item );
     }
 
     /**
@@ -148,7 +159,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         public boolean onOptionsItemSelected( MenuItem item ) {
             int id = item.getItemId();
             if( id == android.R.id.home ) {
-                startActivity( new Intent( getActivity(), SettingsActivity.class ) );
+                //startActivity( new Intent( getActivity(), SettingsActivity.class ) );
+                getActivity().finish();
                 return true;
             }
             return super.onOptionsItemSelected( item );
@@ -179,7 +191,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         public boolean onOptionsItemSelected( MenuItem item ) {
             int id = item.getItemId();
             if( id == android.R.id.home ) {
-                startActivity( new Intent( getActivity(), SettingsActivity.class ) );
+                //startActivity( new Intent( getActivity(), SettingsActivity.class ) );
+                getActivity().finish();
                 return true;
             }
             return super.onOptionsItemSelected( item );
