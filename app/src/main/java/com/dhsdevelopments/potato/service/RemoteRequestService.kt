@@ -33,6 +33,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_LOAD_CHANNEL_LIST -> loadChannelListImpl()
                 ACTION_UPDATE_UNREAD_SUBSCRIPTION -> updateUnreadSubscriptionStateImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getBooleanExtra(EXTRA_UPDATE_STATE, false))
                 ACTION_SEND_MESSAGE_WITH_IMAGE -> sendMessageWithImageImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getParcelableExtra<Parcelable>(EXTRA_IMAGE_URI) as Uri)
+                ACTION_DELETE_MESSAGE -> deleteMessageImpl(intent.getStringExtra(EXTRA_MESSAGE_ID))
             }
         }
     }
@@ -172,7 +173,29 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             }
         }
         catch (e: IOException) {
-            Log.e("Exception while updating subscription state")
+            Log.e("Exception while updating subscription state", e)
+        }
+    }
+
+    private fun deleteMessageImpl(messageId: String) {
+        try {
+            val app = PotatoApplication.getInstance(this)
+            val call = app.potatoApi.deleteMessage(app.apiKey, messageId)
+            val result = call.execute()
+            if (result.isSuccess) {
+                if ("ok" == result.body().result) {
+                    Log.d("Message deleted successfully")
+                }
+                else {
+                    Log.e("Unexpcted reply from server")
+                }
+            }
+            else {
+                Log.e("Server error when requisting delete: " + result.message())
+            }
+        }
+        catch(e: IOException) {
+            Log.e("Exception when deleting message", e)
         }
     }
 
@@ -209,9 +232,11 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS"
         private val ACTION_UPDATE_UNREAD_SUBSCRIPTION = "com.dhsdevelopments.potato.gcm.UPDATE_UNREAD_SUBSCRIPTION"
         private val ACTION_SEND_MESSAGE_WITH_IMAGE = "com.dhsdevelopments.potato.gcm.SEND_MESSAGE_WITH_IMAGE"
+        private val ACTION_DELETE_MESSAGE = "com.dhsdevelopments.potato.DELETE_MESSAGE"
         private val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
+        private val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
 
         @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         @JvmField val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
@@ -236,6 +261,11 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             makeAndStartIntent(context, ACTION_SEND_MESSAGE_WITH_IMAGE,
                     EXTRA_CHANNEL_ID to cid,
                     EXTRA_IMAGE_URI to imageUri)
+        }
+
+        fun deleteMessage(context: Context, messageId: String) {
+            makeAndStartIntent(context, ACTION_DELETE_MESSAGE,
+                    EXTRA_MESSAGE_ID to messageId)
         }
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {

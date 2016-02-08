@@ -8,6 +8,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="pref_apikey">apikey</string>
+    <string name="pref_user_id">user_id</string>
     <string name="post_message_hint">Send a message</string>
     <string name="message_entry_date_label">{0,date,medium}, {0,time,short}</string>
 

@@ -21,7 +21,7 @@
             android:layout_above="@+id/message_input_field"
             tools:context=".channelmessages.ChannelContentActivity">
 
-        <android.support.v7.widget.RecyclerView
+        <com.dhsdevelopments.potato.ContextMenuRecyclerView
                 android:id="@+id/message_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

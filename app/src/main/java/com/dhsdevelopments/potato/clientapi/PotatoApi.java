@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato.clientapi;
 
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult;
+import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult;
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest;
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult;
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult;
@@ -44,12 +45,9 @@ public interface PotatoApi
                                          @Path( "cid" ) String channelId,
                                          @Body SendMessageRequest request );
 
-//    @Multipart
-//    @POST( "channel/{cid}/upload" )
-//    Call<SendMessageResult> sendMessageWithFile( @Header( "API-token" ) String apiKey,
-//                                                 @Path( "cid" ) String channelId,
-//                                                 @Part("content") SendMessageRequest request,
-//                                                 @Part("body") RequestBody fileBody );
+    @DELETE("message/{messageId}")
+    Call<DeleteMessageResult> deleteMessage( @Header( "API-token" ) String apiKey,
+                                             @Path( "messageId" ) String messageId );
 
     @Multipart
     @POST( "channel/{cid}/upload" )

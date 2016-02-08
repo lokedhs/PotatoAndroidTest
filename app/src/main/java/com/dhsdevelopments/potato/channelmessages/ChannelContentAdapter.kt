@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato.channelmessages
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.text.Html
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +41,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         private val VIEW_TYPE_END_OF_CHANNEL_MARKER = 2
 
         private val NUM_MESSAGES_PER_LOAD = 20
+
+        val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
+        val EXTRA_MESSAGE_CONTEXT_ACTION = "com.dhsdevelopments.potato.message_context_action"
+        val MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE = "deleteMessage"
     }
 
     private val dateFormat: MessageFormat
@@ -67,6 +73,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         imageCache!!.close()
         super.onDetachedFromRecyclerView(recyclerView)
     }
+
+    //    fun addItemSelectionListener(listener: (String) -> Unit) {
+    //        itemSelectionListeners.add(listener)
+    //    }
 
     fun parseMessageList(messages: List<Message>): List<MessageWrapper> {
         val result = ArrayList<MessageWrapper>(messages.size)
@@ -251,6 +261,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         return false
     }
 
+    private fun itemLongPress(messageId: String) {
+
+    }
+
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -259,18 +273,35 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         private val contentView: TextView
         private val imageView: ImageView
         private var updateIndex: Long = 0
+        private var currentMessage: MessageWrapper? = null
 
         init {
             senderView = itemView.findViewById(R.id.sender) as TextView
             dateView = itemView.findViewById(R.id.date) as TextView
             contentView = itemView.findViewById(R.id.content) as TextView
             imageView = itemView.findViewById(R.id.image) as ImageView
+            //itemView.isLongClickable = true
+            itemView.setOnCreateContextMenuListener { contextMenu, view, contextMenuInfo -> buildContextMenu(contextMenu!!) }
+            itemView.setOnContextClickListener { Log.d("Selected item: "); true }
+        }
+
+        private fun buildContextMenu(menu: ContextMenu) {
+            val userId = PotatoApplication.getInstance(context).userId
+            Log.d("checking sender ${currentMessage!!.sender} against local user ${userId}")
+            if(currentMessage!!.sender == userId) {
+                val item = menu.add("Delete message")
+                val intent = Intent()
+                intent.putExtra(EXTRA_MESSAGE_CONTEXT_ACTION, MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE)
+                intent.putExtra(EXTRA_MESSAGE_ID, currentMessage!!.id)
+                item.intent = intent
+            }
         }
 
         open fun fillInView(message: MessageWrapper) {
             senderView.text = message.senderName
             dateView.text = message.createdDateFormatted
             contentView.text = message.markupContent
+            currentMessage = message
 
             val dh = if (message.isShouldDisplayHeader) View.VISIBLE else View.GONE
             senderView.visibility = dh

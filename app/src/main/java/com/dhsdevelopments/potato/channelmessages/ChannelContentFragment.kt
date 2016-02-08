@@ -12,10 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Spanned
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -73,14 +70,30 @@ class ChannelContentFragment : Fragment() {
         caseInsensitiveStringComparator = Comparator<kotlin.String> { o1, o2 -> collator.compare(o1, o2) }
     }
 
+    override fun onContextItemSelected(item: MenuItem?): Boolean {
+        Log.d("Fragment context menu selected: " + item!!)
+        if(item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_CONTEXT_ACTION) == ChannelContentAdapter.MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE) {
+            deleteMessage(item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_ID)!!)
+            return true;
+        }
+        else {
+            return super.onContextItemSelected(item)
+        }
+    }
+
+    private fun deleteMessage(messageId: String) {
+        RemoteRequestService.deleteMessage(context, messageId)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("savedInstanceState in ChannelContentFragment = " + savedInstanceState)
         if (!arguments.containsKey(ARG_CHANNEL_ID)) {
             throw IllegalArgumentException("channelId not specified in activity")
         }
 
-        cid = arguments.getString(ARG_CHANNEL_ID)!!
+        cid = arguments.getString(ARG_CHANNEL_ID) ?: throw IllegalStateException("channelId argument not specified")
         name = arguments.getString(ARG_CHANNEL_NAME)
 
         receiver = object : BroadcastReceiver() {
@@ -95,6 +108,11 @@ class ChannelContentFragment : Fragment() {
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
 
         adapter = ChannelContentAdapter(context, cid)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState!!.putString("someKey", "value0")
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
@@ -165,7 +183,6 @@ class ChannelContentFragment : Fragment() {
         }
 
         typingTextView = rootView.findViewById(R.id.typing_text_view) as TextView
-
 
         swipeRefreshLayout = rootView.findViewById(R.id.channel_content_refresh) as SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {

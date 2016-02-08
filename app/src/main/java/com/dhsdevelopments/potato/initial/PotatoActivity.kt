@@ -25,7 +25,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             finish()
         }
         else {
-            Log.i("got key: " + apiKey)
+            val uid = prefs.getString(getString(R.string.pref_user_id), "");
+            if(uid == "") {
+                throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
+            }
             checkGooglePlayApis()
             startActivity(Intent(this, ChannelListActivity::class.java))
             finish()

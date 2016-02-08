@@ -35,10 +35,15 @@ public class WebLoginActivity extends AppCompatActivity
                 if( key == null || key.equals( "" ) ) {
                     throw new RuntimeException( "did not find key parameter" );
                 }
+                String uid = uri.getQueryParameter( "user_id" );
+                if( uid == null || key.equals( "" ) ) {
+                    throw new RuntimeException( "response did not include user id" );
+                }
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( WebLoginActivity.this );
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString( getString( R.string.pref_apikey ), key );
+                editor.putString( getString( R.string.pref_user_id ), uid );
                 editor.apply();
 
                 Intent intent = new Intent( WebLoginActivity.this, PotatoActivity.class );

@@ -42,13 +42,22 @@ public class PotatoApplication extends MultiDexApplication
         return (PotatoApplication)context.getApplicationContext();
     }
 
-    public String getApiKey() {
+    private String getPrefByName( int name ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        String apiKey = prefs.getString( getString( R.string.pref_apikey ), "" );
-        if( apiKey.equals( "" ) ) {
-            throw new RuntimeException( "API key not configured" );
+        String prefName = getString( name );
+        String value = prefs.getString( prefName, "" );
+        if( value.equals( "" ) ) {
+            throw new RuntimeException( "Preference value not found: " + prefName );
         }
-        return apiKey;
+        return value;
+    }
+
+    public String getApiKey() {
+        return getPrefByName( R.string.pref_apikey );
+    }
+
+    public String getUserId() {
+        return getPrefByName( R.string.pref_user_id );
     }
 
     public PotatoApi getPotatoApi() {
