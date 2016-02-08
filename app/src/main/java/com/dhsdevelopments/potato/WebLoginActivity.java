@@ -10,12 +10,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.dhsdevelopments.potato.initial.PotatoActivity;
 
-public class LoginActivity extends AppCompatActivity
+public class WebLoginActivity extends AppCompatActivity
 {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_login );
+        setContentView( R.layout.activity_web_login );
 
         WebView webView = (WebView)findViewById( R.id.login_webview );
         webView.setWebViewClient( new Client() );
@@ -34,12 +34,12 @@ public class LoginActivity extends AppCompatActivity
                     throw new RuntimeException( "did not find key parameter" );
                 }
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( LoginActivity.this );
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( WebLoginActivity.this );
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString( getString( R.string.pref_apikey ), key );
                 editor.apply();
 
-                Intent intent = new Intent( LoginActivity.this, PotatoActivity.class );
+                Intent intent = new Intent( WebLoginActivity.this, PotatoActivity.class );
                 startActivity( intent );
                 finish();
 

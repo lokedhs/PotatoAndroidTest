@@ -8,8 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import com.dhsdevelopments.potato.Log;
-import com.dhsdevelopments.potato.LoginActivity;
 import com.dhsdevelopments.potato.R;
+import com.dhsdevelopments.potato.WebLoginActivity;
 import com.dhsdevelopments.potato.channellist.ChannelListActivity;
 import com.dhsdevelopments.potato.service.RegistrationIntentService;
 import com.google.android.gms.common.ConnectionResult;
@@ -25,7 +25,7 @@ public class PotatoActivity extends AppCompatActivity implements GoogleApiClient
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         String apiKey = prefs.getString( getString( R.string.pref_apikey ), "" );
         if( apiKey.equals( "" ) ) {
-            Intent intent = new Intent( this, LoginActivity.class );
+            Intent intent = new Intent( this, WebLoginActivity.class );
             startActivity( intent );
             finish();
         }
