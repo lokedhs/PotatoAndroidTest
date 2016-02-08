@@ -6,8 +6,8 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.WebLoginActivity
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
+import com.dhsdevelopments.potato.login.WebLoginActivity
 import com.dhsdevelopments.potato.service.RegistrationIntentService
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability

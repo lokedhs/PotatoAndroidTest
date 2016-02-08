@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato;
+package com.dhsdevelopments.potato.login;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.dhsdevelopments.potato.PotatoApplication;
+import com.dhsdevelopments.potato.R;
 import com.dhsdevelopments.potato.initial.PotatoActivity;
 
 public class WebLoginActivity extends AppCompatActivity
