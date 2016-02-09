@@ -58,6 +58,10 @@ class ChannelContentFragment : Fragment() {
     private lateinit var adapter: ChannelContentAdapter
     private lateinit var observer: RecyclerView.AdapterDataObserver
     private lateinit var userNameSuggestAdapter: UserNameSuggestAdapter
+
+    private lateinit var scrollDownPanel: View
+    private lateinit var scrollDownButton: Button
+
     private val typingUsers = HashMap<String, String>()
     private val caseInsensitiveStringComparator: Comparator<String>
     private var typingTextView: TextView? = null
@@ -72,7 +76,7 @@ class ChannelContentFragment : Fragment() {
 
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         Log.d("Fragment context menu selected: " + item!!)
-        if(item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_CONTEXT_ACTION) == ChannelContentAdapter.MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE) {
+        if (item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_CONTEXT_ACTION) == ChannelContentAdapter.MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE) {
             deleteMessage(item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_ID)!!)
             return true;
         }
@@ -155,6 +159,9 @@ class ChannelContentFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 val pos = layoutManager.findLastVisibleItemPosition()
                 lastVisibleItem = if (pos == adapter.itemCount - 1) pos - 1 else pos
+
+                // Check if the scroll down button should be displayed
+                scrollDownPanel.visibility = if (pos < adapter.itemCount - 2) View.VISIBLE else View.GONE
             }
         })
 
@@ -199,7 +206,16 @@ class ChannelContentFragment : Fragment() {
             })
         }
 
+        scrollDownPanel = rootView.findViewById(R.id.scroll_down_panel)
+        scrollDownButton = scrollDownPanel.findViewById(R.id.scroll_to_bottom) as Button
+        scrollDownButton.setOnClickListener({ scrollToBottom() })
+
         return rootView
+    }
+
+    private fun scrollToBottom() {
+        Log.i("Scrolling to bottom")
+        messageListView.scrollToPosition(adapter.itemCount - 1)
     }
 
     private fun showErrorSnackbar(message: CharSequence) {
@@ -293,7 +309,7 @@ class ChannelContentFragment : Fragment() {
         context.startService(intent)
         adapter.loadMessages(object : LoadMessagesCallback {
             override fun loadSuccessful(messages: List<MessageWrapper>) {
-                messageListView.scrollToPosition(adapter.itemCount - 1)
+                scrollToBottom()
             }
 
             override fun loadFailed(errorMessage: String) {

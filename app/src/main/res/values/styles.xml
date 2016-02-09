@@ -21,5 +21,14 @@
         <item name="android:layout_marginBottom">3sp</item>
         <item name="android:elevation">1sp</item>
         -->
+
+    </style>
+    <style name="transition_theme">
+
+        <item name="android:windowActivityTransitions">true</item>
+
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@android:transition/explode</item>
+        <item name="android:windowExitTransition">@android:transition/explode</item>
     </style>
 </resources>
