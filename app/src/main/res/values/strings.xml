@@ -22,12 +22,12 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_default_domain">Selected domain when starting the application</string>
+    <string name="pref_title_default_domain">Default domain on start</string>
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
 
-    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="private_message_notifications">Private notifications</string>
 
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
@@ -48,4 +48,5 @@
     <string name="menu_upload_photo">Upload photo</string>
     <string name="chooser_title_select_image">Select photo</string>
     <string name="chat_image_description">Picture</string>
+    <string name="unread_notifications">Unread notifications</string>
 </resources>
