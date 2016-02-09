@@ -27,6 +27,7 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
+import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -124,6 +125,9 @@ class ChannelContentFragment : Fragment() {
         super.onDestroy()
     }
 
+    var scrollDownPanelVisibility = false
+    val scrollPanelSlideInHeight: Float by nlazy { resources.displayMetrics.density * 32f }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_channel_content, container, false)
         messageListView = rootView.findViewById(R.id.message_list) as RecyclerView
@@ -161,7 +165,25 @@ class ChannelContentFragment : Fragment() {
                 lastVisibleItem = if (pos == adapter.itemCount - 1) pos - 1 else pos
 
                 // Check if the scroll down button should be displayed
-                scrollDownPanel.visibility = if (pos < adapter.itemCount - 2) View.VISIBLE else View.GONE
+                val newVis = pos < adapter.itemCount - 2
+                val oldVisType = scrollDownPanel.visibility
+                Log.d("newVis=$newVis oldVisType=$oldVisType")
+                if (newVis && !scrollDownPanelVisibility) {
+                    scrollDownPanelVisibility = true
+                    scrollDownPanel.visibility = View.VISIBLE
+                    scrollDownPanel.alpha = 0f
+                    scrollDownPanel
+                            .animate()
+                            .alpha(1f)
+                }
+                else if (!newVis && scrollDownPanelVisibility) {
+                    scrollDownPanelVisibility = false
+                    scrollDownPanel
+                            .animate()
+                            .alpha(0f)
+                            .withEndAction { scrollDownPanel.visibility = View.GONE }
+                }
+                //scrollDownPanel.visibility = if (pos < adapter.itemCount - 2) View.VISIBLE else View.GONE
             }
         })
 
@@ -246,7 +268,7 @@ class ChannelContentFragment : Fragment() {
 
     private fun processChannelUsersNotification(intent: Intent) {
         val tracker = ChannelUsersTracker.findEnclosingUserTracker(this)
-        tracker?.processIncoming(intent)
+        tracker.processIncoming(intent)
     }
 
     private fun processTypingNotification(intent: Intent) {
