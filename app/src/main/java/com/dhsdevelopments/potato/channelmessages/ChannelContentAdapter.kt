@@ -18,10 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.dhsdevelopments.potato.DateHelper
-import com.dhsdevelopments.potato.Log
-import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.imagecache.ImageCache
@@ -56,9 +53,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
     private var messages: MutableList<MessageWrapper> = ArrayList()
     private var isLoading = false
 
-    val elementDecoration: RecyclerView.ItemDecoration by lazy {
-        MessageElementItemDecoration()
-    }
+    val elementDecoration: RecyclerView.ItemDecoration by nlazy { MessageElementItemDecoration() }
 
     init {
         dateFormat = MessageFormat(context.resources.getString(R.string.message_entry_date_label))

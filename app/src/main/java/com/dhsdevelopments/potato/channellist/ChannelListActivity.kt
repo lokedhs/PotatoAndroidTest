@@ -22,6 +22,7 @@ import android.view.SubMenu
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
@@ -46,18 +47,18 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     private var channelListAdapter: ChannelListAdapter? = null
     private var receiver: BroadcastReceiver? = null
 
-    private val navigationView: NavigationView by lazy {
+    private val navigationView: NavigationView by nlazy {
         findViewById(R.id.channel_list_nav_view) as NavigationView
     }
 
-    private val domainsMenu: SubMenu by lazy {
+    private val domainsMenu: SubMenu by nlazy {
         navigationView.menu.findItem(R.id.nav_domain_menu).subMenu
     }
-    private val swipeRefreshLayout: SwipeRefreshLayout by lazy {
+    private val swipeRefreshLayout: SwipeRefreshLayout by nlazy {
         findViewById(R.id.channel_list_refresh) as SwipeRefreshLayout
     }
 
-    private val channelListRecyclerView: RecyclerView by lazy {
+    private val channelListRecyclerView: RecyclerView by nlazy {
         findViewById(R.id.channel_list) as RecyclerView
     }
 
