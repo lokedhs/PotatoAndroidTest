@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.dhsdevelopments.potato.DateHelper
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
@@ -266,7 +267,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
         private val senderView: TextView
         private val dateView: TextView
+        private val dateDetailView: TextView
         private val contentView: TextView
+        private val senderNicknameView: TextView
+        private val dateWrapperLayout: View
         private val imageView: ImageView
         private var updateIndex: Long = 0
         private var currentMessage: MessageWrapper? = null
@@ -274,7 +278,10 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         init {
             senderView = itemView.findViewById(R.id.sender) as TextView
             dateView = itemView.findViewById(R.id.date) as TextView
+            dateDetailView = itemView.findViewById(R.id.date_detail) as TextView
             contentView = itemView.findViewById(R.id.content) as TextView
+            senderNicknameView = itemView.findViewById(R.id.sender_nickname) as TextView
+            dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
             imageView = itemView.findViewById(R.id.image) as ImageView
             //itemView.isLongClickable = true
             itemView.setOnCreateContextMenuListener { contextMenu, view, contextMenuInfo -> buildContextMenu(contextMenu!!) }
@@ -284,7 +291,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         private fun buildContextMenu(menu: ContextMenu) {
             val userId = PotatoApplication.getInstance(context).userId
             Log.d("checking sender ${currentMessage!!.sender} against local user $userId")
-            if(currentMessage!!.sender == userId) {
+            if (currentMessage!!.sender == userId) {
                 val item = menu.add("Delete message")
                 val intent = Intent()
                 intent.putExtra(EXTRA_MESSAGE_CONTEXT_ACTION, MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE)
@@ -295,13 +302,16 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
 
         open fun fillInView(message: MessageWrapper) {
             senderView.text = message.senderName
-            dateView.text = message.createdDateFormatted
+            dateView.text = DateHelper.makeDateDiffString(context, message.createdDate.time)
+            dateDetailView.text = message.createdDateFormatted
             contentView.text = message.markupContent
+            senderNicknameView.text = ""
             currentMessage = message
 
             val dh = if (message.isShouldDisplayHeader) View.VISIBLE else View.GONE
             senderView.visibility = dh
-            dateView.visibility = dh
+            dateWrapperLayout.visibility = dh
+            senderNicknameView.visibility = dh
             imageView.visibility = dh
 
             val resources = context.resources
