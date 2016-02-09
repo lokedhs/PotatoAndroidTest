@@ -37,6 +37,7 @@
         <activity android:name=".initial.PotatoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -92,8 +93,11 @@
                 android:name=".channelmessages.settings.ChannelSettingsActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".selectchannel.SelectChannelActivity"
-                  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+                android:name=".selectchannel.SelectChannelActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".tester.TesterActivity">
         </activity>
     </application>
 
