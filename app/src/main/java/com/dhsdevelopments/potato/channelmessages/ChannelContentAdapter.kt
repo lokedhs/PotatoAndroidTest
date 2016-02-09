@@ -36,6 +36,7 @@ import java.util.*
 
 class ChannelContentAdapter(private val context: Context, private val cid: String) :
         RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>() {
+
     companion object {
         private val VIEW_TYPE_PLAIN_MESSAGE = 0
         private val VIEW_TYPE_EXTRA_CONTENT = 1

@@ -15,6 +15,7 @@ import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.queryForChannel
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
+import com.dhsdevelopments.potato.userlist.HasUserTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
@@ -143,11 +144,11 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         }
     }
 
-    override fun getUsersTracker(): ChannelUsersTracker {
-        return usersTracker
-    }
-
     private fun updateNotifyUnreadSetting(notifyUnread: Boolean) {
         RemoteRequestService.updateUnreadSubscriptionState(this, channelId, notifyUnread)
+    }
+
+    override fun findUserTracker(): ChannelUsersTracker {
+        return usersTracker
     }
 }

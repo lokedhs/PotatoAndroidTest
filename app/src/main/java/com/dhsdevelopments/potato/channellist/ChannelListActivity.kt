@@ -22,11 +22,11 @@ import android.view.SubMenu
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
-import com.dhsdevelopments.potato.channelmessages.HasUserTracker
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
+import com.dhsdevelopments.potato.userlist.HasUserTracker
 
 class ChannelListActivity : AppCompatActivity(), HasUserTracker {
 
@@ -210,7 +210,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         usersTracker = ChannelUsersTracker.findForChannel(this, channelId)
     }
 
-    override fun getUsersTracker(): ChannelUsersTracker {
+    override fun findUserTracker(): ChannelUsersTracker {
         return usersTracker!!
     }
 
