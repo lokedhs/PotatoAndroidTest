@@ -261,10 +261,6 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         return false
     }
 
-    private fun itemLongPress(messageId: String) {
-
-    }
-
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -287,7 +283,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
 
         private fun buildContextMenu(menu: ContextMenu) {
             val userId = PotatoApplication.getInstance(context).userId
-            Log.d("checking sender ${currentMessage!!.sender} against local user ${userId}")
+            Log.d("checking sender ${currentMessage!!.sender} against local user $userId")
             if(currentMessage!!.sender == userId) {
                 val item = menu.add("Delete message")
                 val intent = Intent()
@@ -422,7 +418,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
                 val view = parent.getChildAt(i)
                 val msg = messageFromAdapterPos(parent, view)
                 if (msg != null) {
-                    val p = view.layoutParams as RecyclerView.LayoutParams
+                    //val p = view.layoutParams as RecyclerView.LayoutParams
                     val top = view.top - dividerVerticalMargin - divider.intrinsicHeight
                     val bottom = top + divider.intrinsicHeight
                     divider.setBounds(left, top, right, bottom)
