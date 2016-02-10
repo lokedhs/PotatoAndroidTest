@@ -38,12 +38,6 @@ import java.io.IOException
 import java.text.Collator
 import java.util.*
 
-/**
- * A fragment representing a single Channel detail screen.
- * This fragment is either contained in a [ChannelListActivity]
- * in two-pane mode (on tablets) or a [ChannelContentActivity]
- * on handsets.
- */
 class ChannelContentFragment : Fragment() {
 
     companion object {
@@ -167,7 +161,6 @@ class ChannelContentFragment : Fragment() {
                 // Check if the scroll down button should be displayed
                 val newVis = pos < adapter.itemCount - 2
                 val oldVisType = scrollDownPanel.visibility
-                Log.d("newVis=$newVis oldVisType=$oldVisType")
                 if (newVis && !scrollDownPanelVisibility) {
                     scrollDownPanelVisibility = true
                     scrollDownPanel.visibility = View.VISIBLE
