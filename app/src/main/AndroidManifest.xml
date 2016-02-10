@@ -104,6 +104,11 @@
                 android:label="@string/title_activity_tester_fab"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+                android:name=".channelmessages.MessageDetailActivity"
+                android:label="@string/title_activity_message_detail"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

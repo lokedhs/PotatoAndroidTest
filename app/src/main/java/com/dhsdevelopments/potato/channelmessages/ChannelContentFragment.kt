@@ -12,7 +12,10 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Spanned
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -27,7 +30,6 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
-import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -69,17 +71,6 @@ class ChannelContentFragment : Fragment() {
         caseInsensitiveStringComparator = Comparator<kotlin.String> { o1, o2 -> collator.compare(o1, o2) }
     }
 
-    override fun onContextItemSelected(item: MenuItem?): Boolean {
-        Log.d("Fragment context menu selected: " + item!!)
-        if (item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_CONTEXT_ACTION) == ChannelContentAdapter.MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE) {
-            deleteMessage(item.intent.getStringExtra(ChannelContentAdapter.EXTRA_MESSAGE_ID)!!)
-            return true;
-        }
-        else {
-            return super.onContextItemSelected(item)
-        }
-    }
-
     private fun deleteMessage(messageId: String) {
         RemoteRequestService.deleteMessage(context, messageId)
     }
@@ -106,7 +97,7 @@ class ChannelContentFragment : Fragment() {
         intentFilter.addAction(ChannelSubscriptionService.ACTION_TYPING)
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
 
-        adapter = ChannelContentAdapter(context, cid)
+        adapter = ChannelContentAdapter(this, cid)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -120,7 +111,6 @@ class ChannelContentFragment : Fragment() {
     }
 
     var scrollDownPanelVisibility = false
-    val scrollPanelSlideInHeight: Float by nlazy { resources.displayMetrics.density * 32f }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_channel_content, container, false)

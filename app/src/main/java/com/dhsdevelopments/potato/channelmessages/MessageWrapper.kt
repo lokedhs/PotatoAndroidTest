@@ -3,12 +3,13 @@ package com.dhsdevelopments.potato.channelmessages
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageImage
+import java.io.Serializable
 import java.text.DateFormat
 import java.text.MessageFormat
 import java.text.ParseException
 import java.util.*
 
-class MessageWrapper(msg: Message, isoDateFormat: DateFormat, dateFormat: MessageFormat) {
+class MessageWrapper(msg: Message, isoDateFormat: DateFormat, dateFormat: MessageFormat) : Serializable {
     val msg: Message
     val createdDate: Date
     val createdDateFormatted: String

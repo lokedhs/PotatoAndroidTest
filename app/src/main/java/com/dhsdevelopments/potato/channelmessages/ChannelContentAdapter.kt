@@ -1,7 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,7 +11,6 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.text.Html
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +22,7 @@ import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
+import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
@@ -31,7 +30,7 @@ import java.text.MessageFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChannelContentAdapter(private val context: Context, private val cid: String) :
+class ChannelContentAdapter(private val parent: ChannelContentFragment, private val cid: String) :
         RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>() {
 
     companion object {
@@ -40,15 +39,13 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         private val VIEW_TYPE_END_OF_CHANNEL_MARKER = 2
 
         private val NUM_MESSAGES_PER_LOAD = 20
-
-        val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
-        val EXTRA_MESSAGE_CONTEXT_ACTION = "com.dhsdevelopments.potato.message_context_action"
-        val MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE = "deleteMessage"
     }
 
+    private val context: Context
+    private lateinit var userTracker: ChannelUsersTracker
     private val dateFormat: MessageFormat
     private val isoDateFormat: SimpleDateFormat
-    private var imageCache: ImageCache? = null
+    private lateinit var imageCache: ImageCache
 
     private var messages: MutableList<MessageWrapper> = ArrayList()
     private var isLoading = false
@@ -56,6 +53,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
     val elementDecoration: RecyclerView.ItemDecoration by nlazy { MessageElementItemDecoration() }
 
     init {
+        context = parent.context
         dateFormat = MessageFormat(context.resources.getString(R.string.message_entry_date_label))
         isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
@@ -64,10 +62,11 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
         imageCache = ImageCache(context)
+        userTracker = ChannelUsersTracker.findEnclosingUserTracker(parent)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
-        imageCache!!.close()
+        imageCache.close()
         super.onDetachedFromRecyclerView(recyclerView)
     }
 
@@ -237,6 +236,11 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
         }
     }
 
+    private fun openMessageDetails(msg: MessageWrapper) {
+        val intent = MessageDetailActivity.makeIntent(context, userTracker, msg)
+        context.startActivity(intent)
+    }
+
     internal fun shouldHideHeader(reference: MessageWrapper, msg: MessageWrapper): Boolean {
         if (reference.sender != msg.sender) {
             return false
@@ -279,21 +283,8 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
             senderNicknameView = itemView.findViewById(R.id.sender_nickname) as TextView
             dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
             imageView = itemView.findViewById(R.id.image) as ImageView
-            //itemView.isLongClickable = true
-            itemView.setOnCreateContextMenuListener { contextMenu, view, contextMenuInfo -> buildContextMenu(contextMenu!!) }
-            itemView.setOnContextClickListener { Log.d("Selected item: "); true }
-        }
 
-        private fun buildContextMenu(menu: ContextMenu) {
-            val userId = PotatoApplication.getInstance(context).userId
-            Log.d("checking sender ${currentMessage!!.sender} against local user $userId")
-            if (currentMessage!!.sender == userId) {
-                val item = menu.add("Delete message")
-                val intent = Intent()
-                intent.putExtra(EXTRA_MESSAGE_CONTEXT_ACTION, MESSAGE_CONTEXT_ACTION_DELETE_MESSAGE)
-                intent.putExtra(EXTRA_MESSAGE_ID, currentMessage!!.id)
-                item.intent = intent
-            }
+            itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
         }
 
         open fun fillInView(message: MessageWrapper) {
@@ -316,7 +307,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
 
             updateIndex++
             val oldUpdateIndex = updateIndex
-            imageCache!!.loadImageFromApi("/users/" + message.sender + "/image", imageWidth, imageHeight, StorageType.LONG,
+            imageCache.loadImageFromApi("/users/" + message.sender + "/image", imageWidth, imageHeight, StorageType.LONG,
                     object : LoadImageCallback {
                         override fun bitmapLoaded(bitmap: Bitmap) {
                             if (updateIndex == oldUpdateIndex) {
@@ -374,7 +365,7 @@ class ChannelContentAdapter(private val context: Context, private val cid: Strin
                 val res = context.resources
                 val imageWidth = res.getDimensionPixelSize(R.dimen.message_image_width)
                 val imageHeight = res.getDimensionPixelSize(R.dimen.message_image_height)
-                imageCache!!.loadImageFromApi(messageImage.file, imageWidth, imageHeight, StorageType.LONG, callback)
+                imageCache.loadImageFromApi(messageImage.file, imageWidth, imageHeight, StorageType.LONG, callback)
             }
             else {
                 imageView.setImageDrawable(null)
