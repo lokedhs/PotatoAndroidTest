@@ -160,7 +160,6 @@ class ChannelContentFragment : Fragment() {
 
                 // Check if the scroll down button should be displayed
                 val newVis = pos < adapter.itemCount - 2
-                val oldVisType = scrollDownPanel.visibility
                 if (newVis && !scrollDownPanelVisibility) {
                     scrollDownPanelVisibility = true
                     scrollDownPanel.visibility = View.VISIBLE
