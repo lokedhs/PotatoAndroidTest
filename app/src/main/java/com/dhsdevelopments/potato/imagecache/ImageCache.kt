@@ -395,17 +395,15 @@ class ImageCache(private val context: Context) {
 
             val client = OkHttpClient()
             val builder = Request.Builder()
+            builder.url(urlString)
             if (apiKey != null) {
-                builder.url(PotatoApplication.API_URL_PREFIX + urlString)
                 builder.addHeader("API-token", apiKey)
-            }
-            else {
-                builder.url(urlString)
             }
             val req = builder.build()
             val call = client.newCall(req)
             Log.d("Downloading url: ${urlString}")
             val response = call.execute()
+            Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
             if (!response.isSuccessful) {
                 if (response.code() == 404) {
                     // Simply return null here since we want to cache the 404's

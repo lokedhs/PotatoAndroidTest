@@ -61,8 +61,8 @@ class PotatoApplication : MultiDexApplication() {
 
     companion object {
         @JvmField
-        val SERVER_URL_PREFIX = "http://10.0.2.2:8080/"
-        //public static final String SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/";
+        //val SERVER_URL_PREFIX = "http://10.0.2.2:8080/"
+        val SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/"
         @JvmField
         val API_URL_PREFIX = SERVER_URL_PREFIX + "api/1.0"
 
