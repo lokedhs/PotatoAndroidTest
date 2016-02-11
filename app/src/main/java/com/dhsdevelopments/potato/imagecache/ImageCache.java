@@ -82,7 +82,7 @@ public class ImageCache
                 return true;
             }
 
-            CacheKey cacheKey = new CacheKey( url, apiKey != null );
+            CacheKey cacheKey = new CacheKey( url, imageWidth, imageHeight, apiKey != null );
             cacheEntry = bitmapCache.get( cacheKey );
             if( cacheEntry == null ) {
                 cacheEntry = new BitmapCacheEntry( true );
@@ -200,11 +200,13 @@ public class ImageCache
         return found;
     }
 
-    private void addCacheEntryToDatabase( String url, File newFile, StorageType storageType, boolean markFileAsAvailable ) {
+    private void addCacheEntryToDatabase( String url, int imageWidth, int imageHeight, File newFile, StorageType storageType, boolean markFileAsAvailable ) {
         initialiseIfNeeded();
 
         ContentValues content = new ContentValues();
         content.put( StorageHelper.IMAGE_CACHE_NAME, url );
+        content.put( StorageHelper.IMAGE_CACHE_IMAGE_WIDTH, imageWidth );
+        content.put( StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT, imageHeight );
         content.put( StorageHelper.IMAGE_CACHE_FILENAME, newFile == null ? null : newFile.getName() );
         content.put( StorageHelper.IMAGE_CACHE_CREATED_DATE, System.currentTimeMillis() );
         content.put( StorageHelper.IMAGE_CACHE_CAN_DELETE, storageType != StorageType.LONG );
@@ -218,13 +220,14 @@ public class ImageCache
         db.delete( StorageHelper.IMAGE_CACHE_TABLE, StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url } );
     }
 
-    private CachedFileResult findCachedFileInDatabase( SQLiteDatabase db, File cacheDirCopy, String url ) {
+    private CachedFileResult findCachedFileInDatabase( SQLiteDatabase db, File cacheDirCopy, String url, int imageWidth, int imageHeight ) {
         db.beginTransaction();
         Cursor result = null;
         try {
             result = db.query( StorageHelper.IMAGE_CACHE_TABLE,
                                new String[] { "filename" },
-                               StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { url },
+                               StorageHelper.IMAGE_CACHE_NAME + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_WIDTH + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT + " = ?",
+                               new String[] { url, String.valueOf( imageWidth ), String.valueOf( imageHeight ) },
                                null,
                                null,
                                null );
@@ -289,6 +292,19 @@ public class ImageCache
         }
     }
 
+    static class DeletableEntry
+    {
+        public DeletableEntry( String name, int imageWidth, int imageHeight ) {
+            this.name = name;
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+        }
+
+        public String name;
+        public int imageWidth;
+        public int imageHeight;
+    }
+
     public void purge( long cutoffOffsetLong, long cutoffOffsetShort ) {
         initialiseIfNeeded();
 
@@ -296,21 +312,28 @@ public class ImageCache
         long cutoffLong = now - cutoffOffsetLong;
         long cutoffShort = now - cutoffOffsetShort;
 
-        List<String> toDelete = new ArrayList<>();
+        List<DeletableEntry> toDelete = new ArrayList<>();
 
         try( Cursor result = db.query( StorageHelper.IMAGE_CACHE_TABLE,
-                                       new String[] { StorageHelper.IMAGE_CACHE_NAME, StorageHelper.IMAGE_CACHE_FILENAME, StorageHelper.IMAGE_CACHE_CREATED_DATE, StorageHelper.IMAGE_CACHE_CAN_DELETE },
+                                       new String[] { StorageHelper.IMAGE_CACHE_NAME,
+                                                      StorageHelper.IMAGE_CACHE_FILENAME,
+                                                      StorageHelper.IMAGE_CACHE_IMAGE_WIDTH,
+                                                      StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT,
+                                                      StorageHelper.IMAGE_CACHE_CREATED_DATE,
+                                                      StorageHelper.IMAGE_CACHE_CAN_DELETE },
                                        null, null,
                                        null, null,
                                        null ) ) {
             while( result.moveToNext() ) {
                 String name = result.getString( 0 );
                 String fileName = result.getString( 1 );
-                long createdDate = result.getLong( 2 );
-                boolean canDelete = result.getInt( 3 ) != 0;
+                int imageWidth = result.getInt( 2 );
+                int imageHeight = result.getInt( 3 );
+                long createdDate = result.getLong( 4 );
+                boolean canDelete = result.getInt( 5 ) != 0;
 
                 if( (canDelete && createdDate < cutoffShort) || (!canDelete && createdDate < cutoffLong) ) {
-                    toDelete.add( name );
+                    toDelete.add( new DeletableEntry( name, imageWidth, imageHeight ) );
                     if( fileName != null ) {
                         File file = new File( cacheDir, fileName );
                         if( !file.delete() ) {
@@ -323,16 +346,17 @@ public class ImageCache
                     if( fileName != null ) {
                         File file = new File( cacheDir, fileName );
                         if( !file.exists() ) {
-                            toDelete.add( name );
+                            toDelete.add( new DeletableEntry( name, imageWidth, imageHeight ) );
                         }
                     }
                 }
             }
         }
 
-        for( String s : toDelete ) {
+        for( DeletableEntry e : toDelete ) {
             db.delete( StorageHelper.IMAGE_CACHE_TABLE,
-                       StorageHelper.IMAGE_CACHE_NAME + " = ?", new String[] { s } );
+                       StorageHelper.IMAGE_CACHE_NAME + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_WIDTH + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT + " = ?",
+                       new String[] { e.name, String.valueOf(e.imageWidth), String.valueOf(e.imageHeight) } );
         }
     }
 
@@ -374,14 +398,14 @@ public class ImageCache
                     return null;
                 }
 
-                CachedFileResult result = findCachedFileInDatabase( db, cacheDirCopy, queueEntry.url );
+                CachedFileResult result = findCachedFileInDatabase( db, cacheDirCopy, queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight );
                 Log.d( "cached image file=" + result + ", for url=" + queueEntry.url );
                 boolean wasCached = result != null;
                 File cachedFile;
                 if( !wasCached ) {
                     try {
                         cachedFile = copyUrlToFile( cacheDirCopy, queueEntry.url, null, queueEntry.apiKey );
-                        addCacheEntryToDatabase( queueEntry.url, cachedFile, queueEntry.storageType, false );
+                        addCacheEntryToDatabase( queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile, queueEntry.storageType, false );
                     }
                     catch( IOException | FileDownloadFailedException e ) {
                         Log.w( "failed to load image: '" + queueEntry.url + "'", e );

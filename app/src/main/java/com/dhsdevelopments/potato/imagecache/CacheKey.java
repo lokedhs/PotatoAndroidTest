@@ -3,10 +3,14 @@ package com.dhsdevelopments.potato.imagecache;
 class CacheKey
 {
     private String url;
+    private int width;
+    private int height;
     private boolean fromApi;
 
-    public CacheKey( String url, boolean fromApi ) {
+    public CacheKey( String url, int width, int height, boolean fromApi ) {
         this.url = url;
+        this.width = width;
+        this.height = height;
         this.fromApi = fromApi;
     }
 
@@ -22,6 +26,12 @@ class CacheKey
 
         CacheKey cacheKey = (CacheKey)o;
 
+        if( width != cacheKey.width ) {
+            return false;
+        }
+        if( height != cacheKey.height ) {
+            return false;
+        }
         if( fromApi != cacheKey.fromApi ) {
             return false;
         }
@@ -32,6 +42,8 @@ class CacheKey
     @Override
     public int hashCode() {
         int result = url.hashCode();
+        result = 31 * result + width;
+        result = 31 * result + height;
         result = 31 * result + (fromApi ? 1 : 0);
         return result;
     }

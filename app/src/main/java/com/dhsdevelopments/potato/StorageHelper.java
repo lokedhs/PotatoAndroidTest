@@ -11,6 +11,8 @@ public class StorageHelper extends SQLiteOpenHelper
     public static final String IMAGE_CACHE_TABLE = "imagecache";
     public static final String IMAGE_CACHE_NAME = "name";
     public static final String IMAGE_CACHE_FILENAME = "filename";
+    public static final String IMAGE_CACHE_IMAGE_WIDTH = "width";
+    public static final String IMAGE_CACHE_IMAGE_HEIGHT = "height";
     public static final String IMAGE_CACHE_CREATED_DATE = "createdDate";
     public static final String IMAGE_CACHE_IMAGE_AVAILABLE = "imageAvailable";
     public static final String IMAGE_CACHE_CAN_DELETE = "canDelete";
@@ -37,25 +39,26 @@ public class StorageHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate( SQLiteDatabase db ) {
-        db.execSQL( "create table " + IMAGE_CACHE_TABLE + " (" +
-                            IMAGE_CACHE_NAME + " text primary key, " +
-                            IMAGE_CACHE_FILENAME + " text, " +
-                            IMAGE_CACHE_CREATED_DATE + " int not null, " +
-                            IMAGE_CACHE_IMAGE_AVAILABLE + " boolean, " +
-                            IMAGE_CACHE_CAN_DELETE + " boolean" +
-                            ")" );
+        createImageCacheTables( db );
         createChannelTables( db );
         createChannelConfigTable( db );
     }
 
+    private void createImageCacheTables( SQLiteDatabase db ) {
+        db.execSQL( "create table " + IMAGE_CACHE_TABLE + " (" +
+                            IMAGE_CACHE_NAME + " text not null, " +
+                            IMAGE_CACHE_IMAGE_WIDTH + " int not null, " +
+                            IMAGE_CACHE_IMAGE_HEIGHT + " int not null, " +
+                            IMAGE_CACHE_FILENAME + " text, " +
+                            IMAGE_CACHE_CREATED_DATE + " int not null, " +
+                            IMAGE_CACHE_IMAGE_AVAILABLE + " boolean, " +
+                            IMAGE_CACHE_CAN_DELETE + " boolean, " +
+                            "primary key (" + IMAGE_CACHE_NAME + ", " + IMAGE_CACHE_IMAGE_WIDTH + ", " + IMAGE_CACHE_IMAGE_HEIGHT + ")" +
+                            ")" );
+    }
+
     @Override
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-        if( oldVersion < 2 ) {
-            createChannelTables( db );
-        }
-        if( oldVersion < 3 ) {
-            createChannelConfigTable( db );
-        }
     }
 
     private void createChannelTables( SQLiteDatabase db ) {
