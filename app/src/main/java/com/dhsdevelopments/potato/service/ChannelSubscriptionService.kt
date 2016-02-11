@@ -141,12 +141,10 @@ class ChannelSubscriptionService : Service() {
         private val api: PotatoApi
         private val apiKey: String
 
-        var isShutdown = false
-            private set
+        private var isShutdown = false
         private val subscribedChannels = HashSet<String>()
         private var pendingBinds: MutableSet<String>? = HashSet()
-        var eventId: String? = null
-            private set
+        private var eventId: String? = null
         private var outstandingCall: Call<PotatoNotificationResult>? = null
 
         init {
