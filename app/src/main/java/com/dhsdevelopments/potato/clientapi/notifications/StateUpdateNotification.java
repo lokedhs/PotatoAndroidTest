@@ -17,4 +17,14 @@ public class StateUpdateNotification extends PotatoNotification
 
     @SerializedName( "channel" )
     public String channel;
+
+    @Override
+    public String toString() {
+        return "StateUpdateNotification[" +
+                       "addType='" + addType + '\'' +
+                       ", userStateUser='" + userStateUser + '\'' +
+                       ", userStateSyncMembers=" + userStateSyncMembers +
+                       ", channel='" + channel + '\'' +
+                       "] " + super.toString();
+    }
 }
