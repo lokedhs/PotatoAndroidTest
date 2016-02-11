@@ -12,7 +12,7 @@ import android.view.MenuItem
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
-import com.dhsdevelopments.potato.queryForChannel
+import com.dhsdevelopments.potato.db.queryForChannel
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.HasUserTracker

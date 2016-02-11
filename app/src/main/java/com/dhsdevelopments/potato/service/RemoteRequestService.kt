@@ -8,10 +8,14 @@ import android.net.Uri
 import android.os.Parcelable
 import android.support.v4.content.LocalBroadcastManager
 import android.webkit.MimeTypeMap
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.Log
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.StorageHelper
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
+import com.dhsdevelopments.potato.db.queryForChannel
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
 import java.io.IOException
