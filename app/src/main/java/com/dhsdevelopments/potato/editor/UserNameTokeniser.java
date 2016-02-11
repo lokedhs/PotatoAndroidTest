@@ -56,7 +56,7 @@ public class UserNameTokeniser implements MultiAutoCompleteTextView.Tokenizer
 
     @Override
     public CharSequence terminateToken( CharSequence text ) {
-        Log.i( "Terminate token called: '" + text + "', type: " + text.getClass().getName() );
+        Log.INSTANCE.i( "Terminate token called: '" + text + "', type: " + text.getClass().getName() );
         String uid = text.toString();
         ChannelUsersTracker.UserDescriptor u = userTracker.getUsers().get( uid );
         String name = u == null ? uid : u.getName();

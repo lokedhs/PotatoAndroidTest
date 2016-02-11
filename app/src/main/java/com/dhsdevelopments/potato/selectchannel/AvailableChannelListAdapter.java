@@ -40,7 +40,7 @@ public class AvailableChannelListAdapter extends RecyclerView.Adapter<AvailableC
         public ViewHolder( View view ) {
             super( view );
             this.titleView = (TextView)view.findViewById( R.id.header_title_text );
-            Log.i( "Created header view. titleView=" + titleView );
+            Log.INSTANCE.i( "Created header view. titleView=" + titleView );
         }
 
         public void setTitle( String title ) {

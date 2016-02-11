@@ -40,7 +40,7 @@ class UserNameSuggestFilter extends Filter
         }
 
         if( text.charAt( 0 ) != '@' ) {
-            Log.w( "Attempt to filter a string which does not start with @: \"" + text + "\"" );
+            Log.INSTANCE.w( "Attempt to filter a string which does not start with @: \"" + text + "\"" );
             return null;
         }
 

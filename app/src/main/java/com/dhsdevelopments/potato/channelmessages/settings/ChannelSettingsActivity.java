@@ -46,7 +46,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
         boolean notifyUnread = false;
 
         channelId = getIntent().getStringExtra( EXTRA_CHANNEL_ID );
-        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
+        SQLiteDatabase db = PotatoApplication.Companion.getInstance( this ).getCacheDatabase();
         try( Cursor result = queryForChannel( db ) ) {
             if( result.moveToNext() ) {
                 showNotifications = result.getInt( 0 ) != 0;
@@ -76,7 +76,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected( MenuItem item ) {
         int id = item.getItemId();
         if( id == android.R.id.home ) {
-            Log.w( "Should not get home button" );
+            Log.INSTANCE.w( "Should not get home button" );
             return true;
         }
         else if( id == R.id.menu_option_save ) {
@@ -90,7 +90,7 @@ public class ChannelSettingsActivity extends AppCompatActivity
     }
 
     private void save() {
-        SQLiteDatabase db = PotatoApplication.getInstance( this ).getCacheDatabase();
+        SQLiteDatabase db = PotatoApplication.Companion.getInstance( this ).getCacheDatabase();
         db.beginTransaction();
         try {
             boolean hasElement;

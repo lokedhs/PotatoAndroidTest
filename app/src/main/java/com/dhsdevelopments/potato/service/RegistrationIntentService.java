@@ -43,17 +43,17 @@ public class RegistrationIntentService extends IntentService
             InstanceID instanceId = InstanceID.getInstance( this );
             String token = instanceId.getToken( getString( R.string.gcm_sender_id ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null );
 
-            Log.d( "Got token: " + token );
+            Log.INSTANCE.d( "Got token: " + token );
 
-            PotatoApplication app = PotatoApplication.getInstance( this );
+            PotatoApplication app = PotatoApplication.Companion.getInstance( this );
             Call<GcmRegistrationResult> call = app.getPotatoApi().registerGcm( app.getApiKey(), new GcmRegistrationRequest( token ) );
             Response<GcmRegistrationResult> result = call.execute();
             if( !result.isSuccess() ) {
                 if( result.code() == 503 ) {
-                    Log.w( "GCM is disabled on the server" );
+                    Log.INSTANCE.w( "GCM is disabled on the server" );
                 }
                 else {
-                    Log.e( "Error when updating GCM key: " + result.code() + ", " + result.message() );
+                    Log.INSTANCE.e( "Error when updating GCM key: " + result.code() + ", " + result.message() );
                 }
             }
             else if( "ok".equals( result.body().result ) ) {
@@ -63,7 +63,7 @@ public class RegistrationIntentService extends IntentService
             }
         }
         catch( IOException e ) {
-            Log.e( "Error when requesting token", e );
+            Log.INSTANCE.e( "Error when requesting token", e );
         }
     }
 }

@@ -120,7 +120,7 @@ class ChannelSubscriptionService : Service() {
         when (addType) {
             "begin" -> return TYPING_MODE_ADD
             "end" -> return TYPING_MODE_REMOVE
-            else -> throw IllegalStateException("Unexpected typing mode from server: \"" + addType + "\"")
+            else -> throw IllegalStateException("Unexpected typing mode from server: \"$addType\"")
         }
     }
 

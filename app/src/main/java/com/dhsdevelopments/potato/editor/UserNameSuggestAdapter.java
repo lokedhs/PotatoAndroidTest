@@ -67,7 +67,7 @@ public class UserNameSuggestAdapter extends BaseAdapter implements Filterable
 
     void setSuggestionList( List<UserSuggestion> users) {
         this.users = users;
-        Log.i( "Setting suggestion list: " + users );
+        Log.INSTANCE.i( "Setting suggestion list: " + users );
         notifyDataSetChanged();
     }
 }

@@ -50,10 +50,10 @@ class PotatoGcmListenerService : GcmListenerService() {
     }
 
     private fun processMessage(data: Bundle) {
-        val messageId = data.getString("message_id")
-        val notificationType = data.getString("notification_type")
+        //val messageId = data.getString("message_id")
+        //val notificationType = data.getString("notification_type")
         val text = data.getString("text")
-        val senderId = data.getString("sender_id")
+        //val senderId = data.getString("sender_id")
         val senderName = data.getString("sender_name")
         val channelId = data.getString("channel")
 
