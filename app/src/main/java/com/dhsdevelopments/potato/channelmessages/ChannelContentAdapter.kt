@@ -109,12 +109,14 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                         callback(response.body().messages)
                     }
                     else {
+                        Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
                         errorCallback("HTTP error: " + response.code())
                     }
                 }
             }
 
             override fun onFailure(t: Throwable) {
+                Log.e("Error loading message history", t)
                 handler.post {
                     isLoading = false
                     errorCallback(t.message ?: "Unknown error")

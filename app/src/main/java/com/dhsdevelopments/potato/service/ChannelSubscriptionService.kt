@@ -91,7 +91,7 @@ class ChannelSubscriptionService : Service() {
         when (update.addType) {
             "sync" -> {
                 intent.putExtra(EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC)
-                intent.putExtra(EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray(update.userStateSyncMembers))
+                intent.putExtra(EXTRA_CHANNEL_USERS_SYNC_USERS, userListToUserIdArray(update.userStateSyncMembers!!))
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
             }
             "add" -> {

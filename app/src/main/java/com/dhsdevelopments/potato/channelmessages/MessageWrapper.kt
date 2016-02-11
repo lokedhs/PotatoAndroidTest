@@ -44,7 +44,7 @@ class MessageWrapper(msg: Message, isoDateFormat: DateFormat, dateFormat: Messag
         get() = msg.text
 
     val markupContent: CharSequence
-        get() = msg.text.spannable
+        get() = msg.text.makeSpan()
 
     val extraHtml: String?
         get() = msg.extraHtml
