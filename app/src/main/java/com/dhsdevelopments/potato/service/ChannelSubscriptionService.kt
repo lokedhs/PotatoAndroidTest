@@ -262,10 +262,8 @@ class ChannelSubscriptionService : Service() {
 
         private fun submitBindRequest(cid: String) {
             Log.i("Submit bind request: " + cid)
-            if (eventId == null) {
-                throw IllegalStateException("eventId is null")
-            }
-            val call = api.channelUpdatesUpdate(apiKey, eventId, "add", cid, "content,state")
+            val e = eventId ?: throw IllegalStateException("eventId is null")
+            val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {
                 override fun onResponse(response: Response<ChannelUpdatesUpdateResult>, retrofit: Retrofit) {
                     if (response.isSuccess) {

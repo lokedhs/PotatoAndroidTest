@@ -91,7 +91,7 @@ class ImageCache(private val context: Context) {
                 }
                 else {
                     if (cacheEntry.bitmap != null) {
-                        callback.bitmapLoaded(cacheEntry.bitmap)
+                        callback.bitmapLoaded(cacheEntry.bitmap!!)
                     }
                     else {
                         callback.bitmapNotFound()
@@ -345,17 +345,18 @@ class ImageCache(private val context: Context) {
                 entry.bitmap = bitmap
                 val callbacksCopy = ArrayList(entry.callbacks)
                 entry.loading = false
-                entry.callbacks = null
+                entry.callbacks.clear()
                 Pair(callbacksCopy, bitmap)
             }
 
             Log.d("before calling callbacks. n=" + callbacksAndBitmap.first.size + ", bm=" + callbacksAndBitmap.second)
             for (callback in callbacksAndBitmap.first) {
-                if (callbacksAndBitmap.second == null) {
+                val b = callbacksAndBitmap.second
+                if (b == null) {
                     callback.bitmapNotFound()
                 }
                 else {
-                    callback.bitmapLoaded(callbacksAndBitmap.second)
+                    callback.bitmapLoaded(b)
                 }
             }
         }

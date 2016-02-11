@@ -50,7 +50,7 @@ class MessageDetailActivity : AppCompatActivity() {
                 res.getDimensionPixelSize(R.dimen.message_details_sender_image_height),
                 StorageType.SHORT,
                 object: LoadImageCallback {
-                    override fun bitmapLoaded(bitmap: Bitmap?) {
+                    override fun bitmapLoaded(bitmap: Bitmap) {
                         senderImageView.setImageDrawable(BitmapDrawable(res, bitmap))
                     }
                     override fun bitmapNotFound() {
