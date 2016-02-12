@@ -3,7 +3,9 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_option_search_history"
           android:icon="@android:drawable/ic_menu_search"
-          android:title="@string/channel_content_toolbar_search"/>
+          android:title="@string/channel_content_toolbar_search"
+          app:showAsAction="ifRoom|collapseActionView"
+          app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item android:id="@+id/menu_option_show_users"
           android:icon="@android:drawable/ic_menu_send"
           android:title="@string/menu_show_users"

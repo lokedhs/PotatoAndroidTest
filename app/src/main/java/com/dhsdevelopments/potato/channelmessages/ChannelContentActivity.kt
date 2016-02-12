@@ -1,11 +1,14 @@
 package com.dhsdevelopments.potato.channelmessages
 
 import android.app.Activity
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
@@ -92,6 +95,15 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         }
         notifyUnreadOption.isChecked = notifyUnread
 
+        // Set up search
+        Log.d("Setting up searchable info for $componentName")
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val item = menu.findItem(R.id.menu_option_search_history)
+        Log.d("got item: $item")
+        val searchView = item.actionView as SearchView
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView.setIconifiedByDefault(true)
+
         return true
     }
 
@@ -121,10 +133,13 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
                 sendImage()
                 return true
             }
-            R.id.menu_option_search_history -> {
-                Log.d("Should start search here")
-                return true
-            }
+//            R.id.menu_option_search_history -> {
+////                intent = Intent(this, SearchActivity::class.java)
+////                intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+////                startActivity(intent)
+//                Log.d("Open search input")
+//                return true
+//            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -136,10 +151,10 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         startActivityForResult(Intent.createChooser(intent, getString(R.string.chooser_title_select_image)), SELECT_IMAGE_RESULT_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_IMAGE_RESULT_CODE) {
-                val uri = data.data
+                val uri = data!!.data
                 RemoteRequestService.sendMessageWithImage(this, channelId, uri)
             }
         }
