@@ -34,7 +34,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="menu_show_users">Users</string>
-    <string name="menu_notify_unread">Notify on new messages</string>
+    <string name="channel_content_toolbar_notify_unread">Notify on new messages</string>
     <string name="show_notifications_title">Show notifications</string>
     <string name="show_notifications_summary">Notify me when a someone messages me directly on this channel, or if
         someone mentions any of the keywords.
@@ -45,7 +45,7 @@
     <string name="setting_display_notifications">Display notifications</string>
     <string name="setting_notify_unread">Notifications on unread</string>
     <string name="pref_key_default_domain">default_domain_id</string>
-    <string name="menu_upload_photo">Upload photo</string>
+    <string name="channel_content_toolbar_upload_photo">Upload photo</string>
     <string name="chooser_title_select_image">Select photo</string>
     <string name="chat_image_description">Picture</string>
     <string name="unread_notifications">Unread notifications</string>
@@ -141,4 +141,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="message_detail_sender_image_description">Image</string>
+    <string name="channel_content_toolbar_search">Search</string>
 </resources>

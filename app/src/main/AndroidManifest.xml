@@ -90,10 +90,6 @@
                 android:label="@string/title_activity_settings">
         </activity>
         <activity
-                android:name=".channelmessages.settings.ChannelSettingsActivity"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
                 android:name=".selectchannel.SelectChannelActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
@@ -108,6 +104,8 @@
                 android:name=".channelmessages.MessageDetailActivity"
                 android:label="@string/title_activity_message_detail"
                 android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".search.SearchActivity">
         </activity>
     </application>
 

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
@@ -44,9 +45,6 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
 
         usersTracker = ChannelUsersTracker.findForChannel(this, channelId)
 
-        val userListFragment = UserListFragment.newInstance(channelId)
-        supportFragmentManager.beginTransaction().replace(R.id.user_list_container, userListFragment).commit()
-
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -57,18 +55,17 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         // http://developer.android.com/guide/components/fragments.html
         //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            val arguments = Bundle()
+            val userListFragment = UserListFragment.newInstance(channelId)
+            supportFragmentManager.beginTransaction().replace(R.id.user_list_container, userListFragment).commit()
 
-            arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, channelId)
-            arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
+            val contentFragmentArgs = Bundle()
+            contentFragmentArgs.putString(ChannelContentFragment.ARG_CHANNEL_ID, channelId)
+            contentFragmentArgs.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
+            val channelContentFragment = ChannelContentFragment()
+            channelContentFragment.arguments = contentFragmentArgs
+            supportFragmentManager.beginTransaction().add(R.id.channel_detail_container, channelContentFragment).commit()
 
             title = channelName
-
-            val channelContentFragment = ChannelContentFragment()
-            channelContentFragment.arguments = arguments
-            supportFragmentManager.beginTransaction().add(R.id.channel_detail_container, channelContentFragment).commit()
         }
     }
 
@@ -122,6 +119,10 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
             }
             R.id.menu_option_send_image -> {
                 sendImage()
+                return true
+            }
+            R.id.menu_option_search_history -> {
+                Log.d("Should start search here")
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

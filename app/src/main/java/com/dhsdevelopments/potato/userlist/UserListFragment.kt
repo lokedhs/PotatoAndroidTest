@@ -49,4 +49,5 @@ class UserListFragment : Fragment() {
             return fragment
         }
     }
+
 }// Required empty public constructor
