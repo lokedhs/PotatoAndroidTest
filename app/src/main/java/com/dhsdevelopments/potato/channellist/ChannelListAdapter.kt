@@ -1,9 +1,6 @@
 package com.dhsdevelopments.potato.channellist
 
-import android.content.Context
 import android.content.Intent
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -16,9 +13,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
-
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
     private var publicChannels: MutableList<ChannelEntry> = ArrayList()
@@ -30,9 +25,9 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        when (viewType) {
-            VIEW_TYPE_HEADER -> return HeaderViewHolder(layoutInflater.inflate(R.layout.channel_list_header, parent, false))
-            VIEW_TYPE_CHANNEL -> return ChannelViewHolder(layoutInflater.inflate(R.layout.channel_list_content, parent, false))
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> HeaderViewHolder(layoutInflater.inflate(R.layout.channel_list_header, parent, false))
+            VIEW_TYPE_CHANNEL -> ChannelViewHolder(layoutInflater.inflate(R.layout.channel_list_content, parent, false))
             else -> throw RuntimeException("Unexpected view type=" + viewType)
         }
     }

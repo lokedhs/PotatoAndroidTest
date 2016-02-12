@@ -117,9 +117,9 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun typingModeFromJson(addType: String): String {
-        when (addType) {
-            "begin" -> return TYPING_MODE_ADD
-            "end" -> return TYPING_MODE_REMOVE
+        return when (addType) {
+            "begin" -> TYPING_MODE_ADD
+            "end" -> TYPING_MODE_REMOVE
             else -> throw IllegalStateException("Unexpected typing mode from server: \"$addType\"")
         }
     }

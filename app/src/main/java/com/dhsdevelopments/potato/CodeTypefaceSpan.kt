@@ -6,7 +6,7 @@ import android.text.style.ReplacementSpan
 class CodeTypefaceSpan : ReplacementSpan() {
     private val typeface = Typeface.MONOSPACE
 
-    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt): Int {
+    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
         val bounds = Rect()
         paint.typeface = typeface
         paint.getTextBounds(text.toString(), start, end, bounds)

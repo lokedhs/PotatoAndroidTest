@@ -25,29 +25,16 @@ class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
         }
         else {
             val obj = json.asJsonObject
+            fun makeElement(): MessageElement {
+                return context.deserialize<MessageElement>(obj.get("e"), MessageElement::class.java)
+            }
 
             val type = obj.get("type").asString
             return when (type) {
-                "p" -> {
-                    val element = obj.get("e")
-                    val messageElement = context.deserialize<MessageElement>(element, MessageElement::class.java)
-                    MessageElementParagraph(messageElement)
-                }
-                "b" -> {
-                    val element = obj.get("e")
-                    val messageElement = context.deserialize<MessageElement>(element, MessageElement::class.java)
-                    MessageElementBold(messageElement)
-                }
-                "i" -> {
-                    val element = obj.get("e")
-                    val messageElement = context.deserialize<MessageElement>(element, MessageElement::class.java)
-                    MessageElementItalics(messageElement)
-                }
-                "code" -> {
-                    val element = obj.get("e")
-                    val messageElement = context.deserialize<MessageElement>(element, MessageElement::class.java)
-                    MessageElementCode(messageElement)
-                }
+                "p" -> MessageElementParagraph(makeElement())
+                "b" -> MessageElementBold(makeElement())
+                "i" -> MessageElementItalics(makeElement())
+                "code" -> MessageElementCode(makeElement())
                 "url" -> {
                     val addr = obj.get("addr").asString
                     val description = obj.get("description")
@@ -63,7 +50,7 @@ class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
                     val userDescription = obj.get("user_description").asString
                     MessageElementUser(userId, userDescription)
                 }
-                "newline" -> return MessageElementNewline()
+                "newline" -> MessageElementNewline()
                 else -> MessageElementUnknownType(type)
             }
         }

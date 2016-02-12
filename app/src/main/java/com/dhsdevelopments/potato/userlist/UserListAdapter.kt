@@ -35,9 +35,9 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        when (viewType) {
-            VIEW_TYPE_HEADER -> return HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_header, parent, false))
-            VIEW_TYPE_USER -> return UserElementViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_element, parent, false))
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_header, parent, false))
+            VIEW_TYPE_USER -> UserElementViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_element, parent, false))
             else -> throw IllegalArgumentException("Unexpected viewType: " + viewType)
         }
     }

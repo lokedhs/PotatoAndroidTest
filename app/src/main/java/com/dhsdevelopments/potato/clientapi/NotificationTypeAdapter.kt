@@ -15,11 +15,11 @@ class NotificationTypeAdapter : JsonDeserializer<PotatoNotification> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): PotatoNotification {
         val obj = json.asJsonObject
         val type = obj.get("type").asString
-        when (type) {
-            "m" -> return context.deserialize<PotatoNotification>(obj, MessageNotification::class.java)
-            "cu" -> return context.deserialize<PotatoNotification>(obj, StateUpdateNotification::class.java)
-            "type" -> return context.deserialize<PotatoNotification>(obj, TypingNotification::class.java)
-            else -> return context.deserialize<PotatoNotification>(obj, PotatoNotification::class.java)
+        return when (type) {
+            "m" -> context.deserialize<PotatoNotification>(obj, MessageNotification::class.java)
+            "cu" -> context.deserialize<PotatoNotification>(obj, StateUpdateNotification::class.java)
+            "type" -> context.deserialize<PotatoNotification>(obj, TypingNotification::class.java)
+            else -> context.deserialize<PotatoNotification>(obj, PotatoNotification::class.java)
         }
     }
 }
