@@ -6,6 +6,7 @@ import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult
+import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
@@ -68,4 +69,10 @@ interface PotatoApi {
     fun updateUnreadNotification(@Header("API-token") apiKey: String,
                                  @Path("cid") channelId: String,
                                  @Body request: UpdateUnreadNotificationRequest): Call<UpdateUnreadNotificationResult>
+
+    @GET("channel/{cid}/search")
+    fun searchMessages(@Header("API-token") apiKey: String,
+                       @Path("cid") channelId: String,
+                       @Query("query") query: String,
+                       @Query("star-only") starOnly: String): Call<SearchResult>
 }
