@@ -142,4 +142,5 @@
     </string>
     <string name="message_detail_sender_image_description">Image</string>
     <string name="channel_content_toolbar_search">Search</string>
+    <string name="searchable_hint">Search channel</string>
 </resources>

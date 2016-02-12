@@ -101,8 +101,10 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         val item = menu.findItem(R.id.menu_option_search_history)
         Log.d("got item: $item")
         val searchView = item.actionView as SearchView
+        //searchView.setSearchableInfo(searchManager.getSearchableInfo(ComponentName(this, SearchActivity::class.java)))
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView.setIconifiedByDefault(true)
+        searchView.queryHint = getString(R.string.searchable_hint)
 
         return true
     }
@@ -133,13 +135,13 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
                 sendImage()
                 return true
             }
-//            R.id.menu_option_search_history -> {
-////                intent = Intent(this, SearchActivity::class.java)
-////                intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
-////                startActivity(intent)
-//                Log.d("Open search input")
-//                return true
-//            }
+        //            R.id.menu_option_search_history -> {
+        ////                intent = Intent(this, SearchActivity::class.java)
+        ////                intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+        ////                startActivity(intent)
+        //                Log.d("Open search input")
+        //                return true
+        //            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
