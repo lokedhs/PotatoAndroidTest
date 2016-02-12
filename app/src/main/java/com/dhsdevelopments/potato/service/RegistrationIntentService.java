@@ -56,7 +56,7 @@ public class RegistrationIntentService extends IntentService
                     Log.INSTANCE.e( "Error when updating GCM key: " + result.code() + ", " + result.message() );
                 }
             }
-            else if( "ok".equals( result.body().result ) ) {
+            else if( "ok".equals( result.body().getResult() ) ) {
                 SharedPreferences.Editor prefsEditor = prefs.edit();
                 prefsEditor.putBoolean( PREFS_KEY_GCM_REGISTERED, true );
                 prefsEditor.apply();
