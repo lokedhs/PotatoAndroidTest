@@ -17,6 +17,7 @@ import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.db.queryForChannel
+import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.HasUserTracker
@@ -107,6 +108,17 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         searchView.queryHint = getString(R.string.searchable_hint)
 
         return true
+    }
+
+    /**
+     * Override the startActivity method in order to add the channel id
+     * in the the intent sent to SearchActivity
+     */
+    override fun startActivity(intent: Intent) {
+        if(intent.action == Intent.ACTION_SEARCH) {
+            intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+        }
+        super.startActivity(intent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

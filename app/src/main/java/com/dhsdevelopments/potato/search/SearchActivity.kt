@@ -23,14 +23,15 @@ class SearchActivity : AppCompatActivity() {
 
         Log.d("Search activity started. intent=" + intent)
         if(intent.action != Intent.ACTION_SEARCH) {
-            throw IllegalArgumentException("Search acivity not started with ACTION_SEARCH")
+            throw IllegalArgumentException("Search activity not started with ACTION_SEARCH")
         }
 
         val query = intent.getStringExtra(SearchManager.QUERY)
         Log.d("Search query: '$query'")
+        val channelId = intent.getStringExtra(EXTRA_CHANNEL_ID)
 
         val app = PotatoApplication.getInstance(this)
-        val call = app.potatoApi.searchMessages(app.apiKey, "68e7d632c96ca2fe89eb16292942dbef", query, "0")
+        val call = app.potatoApi.searchMessages(app.apiKey, channelId, query, "0")
         call.enqueue(object: Callback<SearchResult?> {
             override fun onResponse(result: Response<SearchResult?>, retrofit: Retrofit) {
                 if(result.isSuccess) {
