@@ -200,7 +200,9 @@ class ChannelContentFragment : Fragment() {
             adapter.loadMoreMessages(object : LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
                     swipeRefreshLayout.isRefreshing = false
-                    messageListView.scrollToPosition(adapter.positionForMessage(messages[messages.size - 1].id))
+                    if(messages.size > 0) {
+                        messageListView.scrollToPosition(adapter.positionForMessage(messages[messages.size - 1].id))
+                    }
                 }
 
                 override fun loadFailed(errorMessage: String) {
