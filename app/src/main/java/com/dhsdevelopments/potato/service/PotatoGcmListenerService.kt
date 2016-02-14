@@ -87,7 +87,7 @@ class PotatoGcmListenerService : GcmListenerService() {
                 StorageHelper.CHANNELS_UNREAD + " > ?", arrayOf("0"),
                 null, null, null, null).use { result ->
             if (!result.moveToNext()) {
-                Log.e("No result when loading number of unrad channels")
+                Log.e("No result when loading number of unread channels")
                 return
             }
             val unread = result.getInt(0)

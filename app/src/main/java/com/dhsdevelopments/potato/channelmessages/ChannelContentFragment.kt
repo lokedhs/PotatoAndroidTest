@@ -71,10 +71,6 @@ class ChannelContentFragment : Fragment() {
         caseInsensitiveStringComparator = Comparator<kotlin.String> { o1, o2 -> collator.compare(o1, o2) }
     }
 
-    private fun deleteMessage(messageId: String) {
-        RemoteRequestService.deleteMessage(context, messageId)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

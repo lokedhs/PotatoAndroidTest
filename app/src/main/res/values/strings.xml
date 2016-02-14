@@ -143,4 +143,8 @@
     <string name="message_detail_sender_image_description">Image</string>
     <string name="channel_content_toolbar_search">Search</string>
     <string name="searchable_hint">Search channel</string>
+    <string name="scroll_down_button_content">Down</string>
+    <string name="channel_main_drawer_select_domain">Select domain</string>
+    <string name="channel_main_drawer_tools">Tools</string>
+    <string name="channel_main_drawer_settings">Settings</string>
 </resources>

@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/nav_domain_menu"
-          android:title="Select domain" android:checkableBehavior="single">
+          android:title="@string/channel_main_drawer_select_domain" android:checkableBehavior="single">
         <menu android:id="@+id/domain_menu">
         </menu>
     </item>
 
-    <item android:title="Tools">
+    <item android:title="@string/channel_main_drawer_tools">
         <menu>
             <item android:id="@+id/nav_settings"
                   android:icon="@drawable/ic_menu_manage"
-                  android:title="Settings"/>
+                  android:title="@string/channel_main_drawer_settings"/>
         </menu>
     </item>
 

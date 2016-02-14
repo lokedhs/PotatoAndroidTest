@@ -33,10 +33,10 @@ class DateHelper {
     }
 
     companion object {
-        @JvmField val SECOND_MILLIS: Long = 1000
-        @JvmField val MINUTE_MILLIS = SECOND_MILLIS * 60
-        @JvmField val HOUR_MILLIS = MINUTE_MILLIS * 60
-        @JvmField val DAY_MILLIS = HOUR_MILLIS * 24
+        val SECOND_MILLIS: Long = 1000
+        val MINUTE_MILLIS = SECOND_MILLIS * 60
+        val HOUR_MILLIS = MINUTE_MILLIS * 60
+        val DAY_MILLIS = HOUR_MILLIS * 24
 
         fun makeDateDiffString(context: Context, date: Long): String {
             val resources = context.resources

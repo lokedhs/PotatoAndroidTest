@@ -34,5 +34,4 @@ class AvailableChannelListAdapter(domainId: String) : RecyclerView.Adapter<Avail
             titleView.text = title
         }
     }
-
 }

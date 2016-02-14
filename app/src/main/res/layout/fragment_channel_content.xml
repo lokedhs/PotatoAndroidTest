@@ -28,7 +28,7 @@
                 android:id="@+id/scroll_to_bottom"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="Down"/>
+                android:text="@string/scroll_down_button_content"/>
     </LinearLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout

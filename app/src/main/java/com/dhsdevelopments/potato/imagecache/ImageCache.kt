@@ -401,7 +401,7 @@ class ImageCache(private val context: Context) {
             }
             val req = builder.build()
             val call = client.newCall(req)
-            Log.d("Downloading url: ${urlString}")
+            Log.d("Downloading url: $urlString")
             val response = call.execute()
             Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
             if (!response.isSuccessful) {

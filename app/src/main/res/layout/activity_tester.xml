@@ -14,5 +14,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Send notification"
-            android:id="@+id/test_notification_button" android:layout_alignParentTop="true" android:layout_alignParentStart="true"/>
+            android:id="@+id/test_notification_button" android:layout_alignParentTop="true" android:layout_alignParentStart="true"
+            tools:ignore="HardcodedText"/>
 </RelativeLayout>

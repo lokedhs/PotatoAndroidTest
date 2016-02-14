@@ -274,21 +274,15 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {
             val intent = Intent(context, RemoteRequestService::class.java)
-            intent.setAction(action)
+            intent.action = action
             for (v in extraElements) {
                 val key = v.first
                 val value = v.second
-                if (value is String) {
-                    intent.putExtra(key, value)
-                }
-                else if (value is Boolean) {
-                    intent.putExtra(key, value)
-                }
-                else if (value is Parcelable) {
-                    intent.putExtra(key, value)
-                }
-                else {
-                    throw IllegalArgumentException("Unexpected value type: " + value.javaClass.getName())
+                when(value) {
+                    is String -> intent.putExtra(key, value)
+                    is Boolean -> intent.putExtra(key, value)
+                    is Parcelable -> intent.putExtra(key, value)
+                    else -> throw IllegalArgumentException("Unexpected value type: " + value.javaClass.name)
                 }
             }
             context.startService(intent)

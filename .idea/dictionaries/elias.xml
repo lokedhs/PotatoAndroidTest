@@ -1,8 +1,13 @@
 <component name="ProjectDictionaryState">
   <dictionary name="elias">
     <words>
+      <w>channelmessages</w>
+      <w>msgs</w>
+      <w>signin</w>
       <w>snackbar</w>
       <w>tokeniser</w>
+      <w>userlist</w>
+      <w>webview</w>
     </words>
   </dictionary>
 </component>

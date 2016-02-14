@@ -403,8 +403,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             outRect!!.set(0, top, 0, 0)
         }
 
-        override fun onDraw(canvas: Canvas?, parent: RecyclerView?, state: RecyclerView.State?) {
-            val left = parent!!.getPaddingLeft();
+        override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+            val left = parent.paddingLeft;
             val right = parent.width - parent.paddingRight;
 
             for (i in 0..(parent.childCount - 1)) {
