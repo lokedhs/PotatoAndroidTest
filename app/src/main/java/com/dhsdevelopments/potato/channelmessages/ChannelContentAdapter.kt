@@ -26,8 +26,6 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
-import java.text.MessageFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ChannelContentAdapter(private val parent: ChannelContentFragment, private val cid: String) :
@@ -43,9 +41,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
 
     private val context: Context
     private lateinit var userTracker: ChannelUsersTracker
-    private val dateFormat: MessageFormat
-    private val isoDateFormat: SimpleDateFormat
     private lateinit var imageCache: ImageCache
+    private val dateHelper = DateHelper()
 
     private var messages: MutableList<MessageWrapper> = ArrayList()
     private var isLoading = false
@@ -54,9 +51,6 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
 
     init {
         context = parent.context
-        dateFormat = MessageFormat(context.resources.getString(R.string.message_entry_date_label))
-        isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
@@ -79,7 +73,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         var i = 0
         for (m in messages) {
             if (!m.deleted) {
-                val msg = MessageWrapper(m, isoDateFormat, dateFormat)
+                val msg = MessageWrapper(m, dateHelper)
                 result.add(msg)
                 if (i > 0 && shouldHideHeader(result[i - 1], msg)) {
                     msg.isShouldDisplayHeader = false
@@ -202,7 +196,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
      * Called when a new message is received from the server.
      */
     fun newMessage(msg: Message) {
-        val w = MessageWrapper(msg, isoDateFormat, dateFormat)
+        val w = MessageWrapper(msg, dateHelper)
         val pos = Collections.binarySearch(messages, w) { m1, m2 -> m1.createdDate.compareTo(m2.createdDate) }
 
         if (msg.updated == null) {

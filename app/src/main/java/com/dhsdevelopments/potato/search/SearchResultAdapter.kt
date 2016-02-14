@@ -10,22 +10,12 @@ import com.dhsdevelopments.potato.DateHelper
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResultMessage
-import java.text.MessageFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class SearchResultAdapter(private val parent: SearchActivity): RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
 
-    private val dateFormat: MessageFormat
-    private val isoDateFormat: SimpleDateFormat
-
+    private val dateHelper = DateHelper()
     private val searchResults: MutableList<SearchResultMessage> = ArrayList()
-
-    init {
-        dateFormat = MessageFormat(parent.resources.getString(R.string.message_entry_date_label))
-        isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
-    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.fillInMessage(searchResults[position])
@@ -62,12 +52,12 @@ class SearchResultAdapter(private val parent: SearchActivity): RecyclerView.Adap
         }
 
         fun fillInMessage(message: SearchResultMessage) {
-            val timestamp = isoDateFormat.parse(message.createdDate)
+            val timestamp = dateHelper.parseDate(message.createdDate)
 
             senderView.text = message.senderName
             contentView.text = Html.fromHtml(message.content)
             dateView.text = DateHelper.makeDateDiffString(parent, timestamp.time)
-            dateDetailView.text = dateFormat.format(arrayOf(timestamp))
+            dateDetailView.text = dateHelper.formatDateTimeOutputFormat(timestamp)
         }
 
     }
