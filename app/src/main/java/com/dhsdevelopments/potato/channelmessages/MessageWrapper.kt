@@ -42,4 +42,10 @@ class MessageWrapper : Serializable {
 
     val image: MessageImage?
         get() = msg.messageImage
+
+    val updated: Int
+        get() = msg.updated ?: 0
+
+    val updatedDate: String?
+        get() = msg.updatedDate
 }

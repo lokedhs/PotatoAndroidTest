@@ -9,9 +9,9 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.text.format.DateUtils
 import android.widget.ImageView
 import android.widget.TextView
+import com.dhsdevelopments.potato.DateHelper
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.imagecache.ImageCache
@@ -26,6 +26,8 @@ class MessageDetailActivity : AppCompatActivity() {
     private val senderNameTextView     by nlazy { findViewById(R.id.message_detail_sender_name) as TextView }
     private val senderNicknameTextView by nlazy { findViewById(R.id.message_detail_sender_nickname) as TextView }
     private val sentDateTextView       by nlazy { findViewById(R.id.message_detail_sent_date) as TextView }
+    private val editedInfo             by nlazy { findViewById(R.id.message_detail_edited_ref) as TextView }
+    private val messageText            by nlazy { findViewById(R.id.message_detail_message_text) as TextView }
 
     private lateinit var imageCache: ImageCache
 
@@ -37,6 +39,8 @@ class MessageDetailActivity : AppCompatActivity() {
 
         val fab = findViewById(R.id.fab) as FloatingActionButton
         fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
+
+        val dateHelper = DateHelper()
 
         val msg = intent.getSerializableExtra(EXTRA_MESSAGE_DATA) as MessageWrapper
         val userName = intent.getStringExtra(EXTRA_USER_NAME)
@@ -59,7 +63,9 @@ class MessageDetailActivity : AppCompatActivity() {
                 })
         senderNameTextView.text = userName
         senderNicknameTextView.text = userNickname
-        sentDateTextView.text = DateUtils.formatDateTime(this, msg.createdDate.time, DateUtils.FORMAT_SHOW_TIME)
+        sentDateTextView.text = dateHelper.formatDateTimeOutputFormat(msg.createdDate)
+        editedInfo.text = if (msg.updatedDate == null) "" else msg.updatedDate
+        messageText.text = msg.content.makeSpan()
     }
 
     override fun onDestroy() {

@@ -35,6 +35,9 @@ class Message : Serializable {
     @SerializedName("updated")
     var updated: Int? = null
 
+    @SerializedName("updated_date")
+    var updatedDate: String? = null
+
     @SerializedName("extra_html")
     var extraHtml: String? = null
 

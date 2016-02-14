@@ -32,7 +32,9 @@
 
             <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
-                <ImageView android:id="@+id/message_detail_sender_image" android:layout_width="64dp" android:layout_height="64dp"
+                <ImageView android:id="@+id/message_detail_sender_image"
+                           android:layout_width="@dimen/message_details_sender_image_width"
+                           android:layout_height="@dimen/message_details_sender_image_height"
                            android:layout_alignParentStart="true" android:layout_alignParentTop="true"
                            android:layout_margin="4dp"
                            android:contentDescription="@string/message_detail_sender_image_description"/>
@@ -41,22 +43,31 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:text="Sender name"
-                        android:id="@+id/message_detail_sender_name" android:layout_alignTop="@+id/message_detail_sender_image"
+                        android:id="@+id/message_detail_sender_name"
+                        android:layout_alignTop="@+id/message_detail_sender_image"
                         android:layout_toEndOf="@+id/message_detail_sender_image" tools:ignore="HardcodedText"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Sender nickname"
-                        android:id="@+id/message_detail_sender_nickname" android:layout_below="@+id/message_detail_sender_name"
+                        android:id="@+id/message_detail_sender_nickname"
+                        android:layout_below="@+id/message_detail_sender_name"
                         android:layout_alignStart="@+id/message_detail_sender_name" tools:ignore="HardcodedText"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Sent date"
-                        android:id="@+id/message_detail_sent_date" android:layout_below="@+id/message_detail_sender_image"
-                        android:layout_alignStart="@+id/message_detail_sender_image" tools:ignore="HardcodedText"/>
+                        android:id="@+id/message_detail_sent_date"
+                        tools:ignore="HardcodedText" android:layout_below="@+id/message_detail_sender_nickname"
+                        android:layout_alignStart="@+id/message_detail_sender_name"/>
+                <TextView tools:ignore="HardcodedText" android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceMedium" android:text="Edited information"
+                          android:id="@+id/message_detail_edited_ref"
+                          android:layout_below="@+id/message_detail_sent_date"
+                          android:layout_alignStart="@+id/message_detail_sender_name"/>
 
             </RelativeLayout>
 
