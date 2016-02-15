@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.Menu
 import android.widget.ImageView
 import android.widget.TextView
 import com.dhsdevelopments.potato.DateHelper
@@ -71,6 +72,11 @@ class MessageDetailActivity : AppCompatActivity() {
     override fun onDestroy() {
         imageCache.close()
         super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.message_detail_toolbar_menu, menu)
+        return true
     }
 
     companion object {

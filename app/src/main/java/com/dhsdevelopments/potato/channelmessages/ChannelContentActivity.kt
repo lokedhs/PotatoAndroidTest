@@ -83,6 +83,17 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         }
     }
 
+    /**
+     * Override the startActivity method in order to add the channel id
+     * in the the intent sent to SearchActivity
+     */
+    override fun startActivity(intent: Intent) {
+        if(intent.action == Intent.ACTION_SEARCH) {
+            intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+        }
+        super.startActivity(intent)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.channel_content_toolbar_menu, menu)
 
@@ -108,17 +119,6 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         searchView.queryHint = getString(R.string.searchable_hint)
 
         return true
-    }
-
-    /**
-     * Override the startActivity method in order to add the channel id
-     * in the the intent sent to SearchActivity
-     */
-    override fun startActivity(intent: Intent) {
-        if(intent.action == Intent.ACTION_SEARCH) {
-            intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
-        }
-        super.startActivity(intent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
