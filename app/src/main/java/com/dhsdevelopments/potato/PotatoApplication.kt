@@ -55,17 +55,24 @@ class PotatoApplication : MultiDexApplication() {
         if (timeout > 0) {
             httpClient.setReadTimeout(timeout.toLong(), TimeUnit.SECONDS)
         }
-        val retrofit = Retrofit.Builder().baseUrl(PotatoApplication.API_URL_PREFIX + "/").addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient).build()
+        val retrofit = Retrofit.Builder().baseUrl(apiUrlPrefix).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient).build()
         return retrofit.create(PotatoApi::class.java)
     }
 
-    companion object {
-        @JvmField
-        val SERVER_URL_PREFIX = "http://10.0.2.2:8080/"
-        //val SERVER_URL_PREFIX = "http://potato.dhsdevelopments.com/"
-        @JvmField
-        val API_URL_PREFIX = SERVER_URL_PREFIX + "api/1.0"
+    val serverUrlPrefix: String by lazy {
+        val identifier = resources.getIdentifier("${PotatoApplication::class.java.`package`.name}:string/override_server_prefix", null, null)
+        Log.d("Got identifier for ${PotatoApplication::class.java.`package`.name}:string/override_server_prefix = $identifier")
+        if(identifier == 0) {
+            resources.getString(R.string.server_prefix)
+        }
+        else {
+            resources.getString(identifier)
+        }
+    }
 
+    val apiUrlPrefix: String by lazy { serverUrlPrefix + "api/1.0/" }
+
+    companion object {
         private val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS
         private val IMAGE_CACHE_PURGE_CUTOFF_SHORT = DateHelper.HOUR_MILLIS
 

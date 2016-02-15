@@ -19,7 +19,8 @@ class WebLoginActivity : AppCompatActivity() {
         val webView = findViewById(R.id.login_webview) as WebView
         webView.setWebViewClient(Client())
 
-        webView.loadUrl(PotatoApplication.SERVER_URL_PREFIX + "login?m=1")
+        val app = PotatoApplication.getInstance(this)
+        webView.loadUrl(app.serverUrlPrefix + "login?m=1")
     }
 
     private inner class Client : WebViewClient() {

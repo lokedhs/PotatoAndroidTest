@@ -276,7 +276,8 @@ class ImageCache(private val context: Context) {
                 val cachedFile: File?
                 if (!wasCached) {
                     try {
-                        cachedFile = copyUrlToFile(cacheDirCopy, queueEntry.url, null, queueEntry.apiKey)
+                        val app = PotatoApplication.getInstance(context)
+                        cachedFile = copyUrlToFile(cacheDirCopy, app.apiUrlPrefix + queueEntry.url, null, queueEntry.apiKey)
                         addCacheEntryToDatabase(queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile, queueEntry.storageType, false)
                     }
                     catch (e: IOException) {
@@ -367,8 +368,6 @@ class ImageCache(private val context: Context) {
 
         @Throws(IOException::class, FileDownloadFailedException::class)
         fun copyUrlToFile(cacheDirCopy: File, url: String, tmpFilePrefix: String?, apiKey: String?): File? {
-            val urlString = if (apiKey == null) url else PotatoApplication.API_URL_PREFIX + url
-
             val buf = StringBuilder()
             if (tmpFilePrefix != null) {
                 buf.append(tmpFilePrefix)
@@ -395,13 +394,13 @@ class ImageCache(private val context: Context) {
 
             val client = OkHttpClient()
             val builder = Request.Builder()
-            builder.url(urlString)
+            builder.url(url)
             if (apiKey != null) {
                 builder.addHeader("API-token", apiKey)
             }
             val req = builder.build()
             val call = client.newCall(req)
-            Log.d("Downloading url: $urlString")
+            Log.d("Downloading url: $url")
             val response = call.execute()
             Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
             if (!response.isSuccessful) {

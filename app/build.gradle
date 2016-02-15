@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
-
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
         minSdkVersion 23
@@ -17,6 +16,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "override_server_prefix", "http://potato.dhsdevelopments.com/"
+        }
+        debugLocal {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
         }
     }
     compileOptions {
