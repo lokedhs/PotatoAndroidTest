@@ -279,7 +279,7 @@ class ImageCache(private val context: Context) {
                     // If the file should not be stored in the cache, and it was loaded (i.e. it wasn't already
                     // stored in the cache) it should be deleted at this point.
                     if (bitmap == null || (queueEntry.storageType == StorageType.DONT_STORE && result == null)) {
-                        removeOldFile(queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile)
+                        removeOldFile(queueEntry.url, cachedFile)
                     }
                 }
 
@@ -309,7 +309,7 @@ class ImageCache(private val context: Context) {
             }
         }
 
-        private fun removeOldFile(url: String, imageWidth: Int, imageHeight: Int, file: File) {
+        private fun removeOldFile(url: String, file: File) {
             if (!file.delete()) {
                 Log.w("failed to delete file: " + file)
             }
