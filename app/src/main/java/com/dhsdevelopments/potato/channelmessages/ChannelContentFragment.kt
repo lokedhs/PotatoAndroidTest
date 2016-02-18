@@ -258,7 +258,6 @@ class ChannelContentFragment : Fragment() {
 
         val uid = intent.getStringExtra(ChannelSubscriptionService.EXTRA_USER_ID)
         val mode = intent.getStringExtra(ChannelSubscriptionService.EXTRA_TYPING_MODE)
-        Log.i("uid=$uid, mode=$mode")
         when (mode) {
             ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, ChannelUsersTracker.findEnclosingUserTracker(this).getNameForUid(uid))
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)

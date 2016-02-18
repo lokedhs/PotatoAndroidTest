@@ -16,7 +16,7 @@ import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
-import com.dhsdevelopments.potato.db.queryForChannel
+import com.dhsdevelopments.potato.loadChannelConfigFromDb
 import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -100,7 +100,7 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
         val db = PotatoApplication.getInstance(this).cacheDatabase
         var notifyUnread = false
-        queryForChannel(db, channelId).use { cursor ->
+        loadChannelConfigFromDb(db, channelId).use { cursor ->
             if (cursor.moveToNext()) {
                 notifyUnread = cursor.getInt(0) != 0
             }
