@@ -5,8 +5,8 @@ import android.content.Intent
 import android.support.v4.app.Fragment
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
-import com.dhsdevelopments.potato.clientapi.users.User
+import com.dhsdevelopments.potato.clientapi.LoadUsersResult
+import com.dhsdevelopments.potato.clientapi.User
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import retrofit.Callback
 import retrofit.Response

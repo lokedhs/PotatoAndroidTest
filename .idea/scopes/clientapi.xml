@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="clientapi" pattern="file[app]:src/main/java/com/dhsdevelopments/potato/clientapi/*" />
+</component>

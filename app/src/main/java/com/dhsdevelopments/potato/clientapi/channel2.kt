@@ -28,3 +28,30 @@ class Channel {
         return "Channel[id='$id', name='$name', hide=$hide, groupId='$groupId', groupType='$groupType', unreadCount=$unreadCount, privateUser='$privateUser']"
     }
 }
+
+class ChannelsResult {
+    @SerializedName("domains")
+    lateinit var domains: List<Domain>
+
+    override fun toString(): String {
+        return "ChannelsResult[domains=$domains]"
+    }
+}
+
+class Domain {
+    @SerializedName("id")
+    lateinit var id: String
+
+    @SerializedName("name")
+    lateinit var name: String
+
+    @SerializedName("domain-type")
+    lateinit var type: String
+
+    @SerializedName("channels")
+    lateinit var channels: List<Channel>
+
+    override fun toString(): String {
+        return "Domain[id='$id', name='$name', type='$type', channels=$channels]"
+    }
+}
