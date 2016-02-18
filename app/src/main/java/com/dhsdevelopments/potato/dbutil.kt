@@ -17,14 +17,11 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
 
     private fun createImageCacheTables(db: SQLiteDatabase) {
         db.execSQL("create table $IMAGE_CACHE_TABLE (" +
-                "$IMAGE_CACHE_NAME text not null, " +
-                "$IMAGE_CACHE_IMAGE_WIDTH int not null, " +
-                "$IMAGE_CACHE_IMAGE_HEIGHT int not null, " +
+                "$IMAGE_CACHE_NAME text primary key, " +
                 "$IMAGE_CACHE_FILENAME text, " +
                 "$IMAGE_CACHE_CREATED_DATE int not null, " +
                 "$IMAGE_CACHE_IMAGE_AVAILABLE boolean, " +
-                "$IMAGE_CACHE_CAN_DELETE boolean, " +
-                "primary key ($IMAGE_CACHE_NAME, $IMAGE_CACHE_IMAGE_WIDTH, $IMAGE_CACHE_IMAGE_HEIGHT))")
+                "$IMAGE_CACHE_CAN_DELETE boolean)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -56,8 +53,6 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
         val IMAGE_CACHE_TABLE = "imagecache"
         val IMAGE_CACHE_NAME = "name"
         val IMAGE_CACHE_FILENAME = "filename"
-        val IMAGE_CACHE_IMAGE_WIDTH = "width"
-        val IMAGE_CACHE_IMAGE_HEIGHT = "height"
         val IMAGE_CACHE_CREATED_DATE = "createdDate"
         val IMAGE_CACHE_IMAGE_AVAILABLE = "imageAvailable"
         val IMAGE_CACHE_CAN_DELETE = "canDelete"

@@ -5,10 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.os.AsyncTask
-import com.dhsdevelopments.potato.ImageHelpers
-import com.dhsdevelopments.potato.Log
-import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.*
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import java.io.File
@@ -129,11 +126,9 @@ class ImageCache(private val context: Context) {
         return true
     }
 
-    private fun addCacheEntryToDatabase(url: String, imageWidth: Int, imageHeight: Int, newFile: File?, storageType: StorageType, markFileAsAvailable: Boolean) {
+    private fun addCacheEntryToDatabase(url: String, newFile: File?, storageType: StorageType, markFileAsAvailable: Boolean) {
         val content = ContentValues()
         content.put(StorageHelper.IMAGE_CACHE_NAME, url)
-        content.put(StorageHelper.IMAGE_CACHE_IMAGE_WIDTH, imageWidth)
-        content.put(StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT, imageHeight)
         content.put(StorageHelper.IMAGE_CACHE_FILENAME, newFile?.name)
         content.put(StorageHelper.IMAGE_CACHE_CREATED_DATE, System.currentTimeMillis())
         content.put(StorageHelper.IMAGE_CACHE_CAN_DELETE, storageType != StorageType.LONG)
@@ -141,19 +136,19 @@ class ImageCache(private val context: Context) {
         db.insert(StorageHelper.IMAGE_CACHE_TABLE, "filename", content)
     }
 
-    private fun deleteCacheEntryFromDatabase(url: String, imageWidth: Int, imageHeight: Int) {
+    private fun deleteCacheEntryFromDatabase(url: String) {
         db.delete(StorageHelper.IMAGE_CACHE_TABLE,
-                "${StorageHelper.IMAGE_CACHE_NAME} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_WIDTH} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT} = ?",
-                arrayOf(url, imageWidth.toString(), imageHeight.toString()))
+                "${StorageHelper.IMAGE_CACHE_NAME} = ?",
+                arrayOf(url))
     }
 
-    private fun findCachedFileInDatabase(db: SQLiteDatabase, url: String, imageWidth: Int, imageHeight: Int): CachedFileResult? {
+    private fun findCachedFileInDatabase(db: SQLiteDatabase, url: String): CachedFileResult? {
         db.beginTransaction()
         try {
             db.query(StorageHelper.IMAGE_CACHE_TABLE,
                     arrayOf("filename"),
-                    "${StorageHelper.IMAGE_CACHE_NAME} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_WIDTH} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT} = ?",
-                    arrayOf(url, imageWidth.toString(), imageHeight.toString()),
+                    "${StorageHelper.IMAGE_CACHE_NAME} = ?",
+                    arrayOf(url),
                     null,
                     null,
                     null).use { result ->
@@ -168,7 +163,7 @@ class ImageCache(private val context: Context) {
                 if (filename != null) {
                     file = File(cacheDir, filename)
                     if (!file.exists()) {
-                        deleteCacheEntryFromDatabase(url, imageWidth, imageHeight)
+                        deleteCacheEntryFromDatabase(url)
                         file = null
                     }
                 }
@@ -183,10 +178,8 @@ class ImageCache(private val context: Context) {
         }
     }
 
-    class DeletableEntry(var name: String, var imageWidth: Int, var imageHeight: Int)
-
     fun purge(cutoffOffsetLong: Long, cutoffOffsetShort: Long) {
-        if(cacheDir == null) {
+        if (cacheDir == null) {
             return
         }
 
@@ -194,23 +187,21 @@ class ImageCache(private val context: Context) {
         val cutoffLong = now - cutoffOffsetLong
         val cutoffShort = now - cutoffOffsetShort
 
-        val toDelete = ArrayList<DeletableEntry>()
+        val toDelete = ArrayList<String>()
 
         db.query(StorageHelper.IMAGE_CACHE_TABLE,
-                arrayOf(StorageHelper.IMAGE_CACHE_NAME, StorageHelper.IMAGE_CACHE_FILENAME, StorageHelper.IMAGE_CACHE_IMAGE_WIDTH, StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT, StorageHelper.IMAGE_CACHE_CREATED_DATE, StorageHelper.IMAGE_CACHE_CAN_DELETE),
+                arrayOf(StorageHelper.IMAGE_CACHE_NAME, StorageHelper.IMAGE_CACHE_FILENAME, StorageHelper.IMAGE_CACHE_CREATED_DATE, StorageHelper.IMAGE_CACHE_CAN_DELETE),
                 null, null,
                 null, null,
                 null).use { result ->
             while (result.moveToNext()) {
                 val name = result.getString(0)
                 val fileName = result.getString(1)
-                val imageWidth = result.getInt(2)
-                val imageHeight = result.getInt(3)
-                val createdDate = result.getLong(4)
-                val canDelete = result.getInt(5) != 0
+                val createdDate = result.getLong(2)
+                val canDelete = result.getInt(3) != 0
 
                 if (canDelete && createdDate < cutoffShort || !canDelete && createdDate < cutoffLong) {
-                    toDelete.add(DeletableEntry(name, imageWidth, imageHeight))
+                    toDelete.add(name)
                     if (fileName != null) {
                         val file = File(cacheDir, fileName)
                         if (!file.delete()) {
@@ -223,17 +214,17 @@ class ImageCache(private val context: Context) {
                     if (fileName != null) {
                         val file = File(cacheDir, fileName)
                         if (!file.exists()) {
-                            toDelete.add(DeletableEntry(name, imageWidth, imageHeight))
+                            toDelete.add(name)
                         }
                     }
                 }
             }
         }
 
-        for (e in toDelete) {
+        for (name in toDelete) {
             db.delete(StorageHelper.IMAGE_CACHE_TABLE,
-                    StorageHelper.IMAGE_CACHE_NAME + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_WIDTH + " = ? and " + StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT + " = ?",
-                    arrayOf(e.name, e.imageWidth.toString(), e.imageHeight.toString()))
+                    StorageHelper.IMAGE_CACHE_NAME + " = ?",
+                    arrayOf(name))
         }
     }
 
@@ -260,14 +251,13 @@ class ImageCache(private val context: Context) {
                     return null
                 }
 
-                val result = findCachedFileInDatabase(db, queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight)
+                val result = findCachedFileInDatabase(db, queueEntry.url)
                 Log.d("cached image file=" + result + ", for url=" + queueEntry.url)
-                val wasCached = result != null
                 val cachedFile: File?
-                if (!wasCached) {
+                if (result == null) {
                     try {
-                        cachedFile = copyUrlToFile(cacheDirCopy, queueEntry.url, null, queueEntry.apiKey)
-                        addCacheEntryToDatabase(queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile, queueEntry.storageType, false)
+                        cachedFile = copyUrlToFile(cacheDirCopy, queueEntry.url, "", queueEntry.apiKey)
+                        addCacheEntryToDatabase(queueEntry.url, cachedFile, queueEntry.storageType, false)
                     }
                     catch (e: IOException) {
                         Log.w("failed to load image: '" + queueEntry.url + "'", e)
@@ -280,7 +270,7 @@ class ImageCache(private val context: Context) {
 
                 }
                 else {
-                    cachedFile = result!!.file
+                    cachedFile = result.file
                 }
 
                 var bitmap: Bitmap? = null
@@ -288,7 +278,7 @@ class ImageCache(private val context: Context) {
                     bitmap = ImageHelpers.loadAndScaleBitmap(cachedFile.path, queueEntry.imageWidth, queueEntry.imageHeight)
                     // If the file should not be stored in the cache, and it was loaded (i.e. it wasn't already
                     // stored in the cache) it should be deleted at this point.
-                    if (bitmap == null || queueEntry.storageType == StorageType.DONT_STORE && !wasCached) {
+                    if (bitmap == null || (queueEntry.storageType == StorageType.DONT_STORE && result == null)) {
                         removeOldFile(queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile)
                     }
                 }
@@ -323,7 +313,7 @@ class ImageCache(private val context: Context) {
             if (!file.delete()) {
                 Log.w("failed to delete file: " + file)
             }
-            deleteCacheEntryFromDatabase(url, imageWidth, imageHeight)
+            deleteCacheEntryFromDatabase(url)
         }
 
         override fun onProgressUpdate(vararg values: BackgroundLoadResult) {
@@ -356,25 +346,8 @@ class ImageCache(private val context: Context) {
         private val IMAGE_CACHE_DIR_NAME = "images"
 
         @Throws(IOException::class, FileDownloadFailedException::class)
-        fun copyUrlToFile(cacheDirCopy: File, url: String, tmpFilePrefix: String?, apiKey: String?): File? {
-            val buf = StringBuilder()
-            if (tmpFilePrefix != null) {
-                buf.append(tmpFilePrefix)
-            }
-            for (i in 0..19) {
-                buf.append(('a' + (Math.random() * ('z' - 'a' + 1)).toInt()).toChar())
-            }
-            buf.append('_')
-            val s = buf.toString()
-            var found: File? = null
-            for (i in 0..29) {
-                val name = s + i
-                val f = File(cacheDirCopy, name)
-                if (f.createNewFile()) {
-                    found = f
-                    break
-                }
-            }
+        fun copyUrlToFile(cacheDirCopy: File, url: String, tmpFilePrefix: String, apiKey: String?): File? {
+            val found = makeRandomFile(cacheDirCopy, tmpFilePrefix)
 
             if (found == null) {
                 Log.w("failed to create file name")
