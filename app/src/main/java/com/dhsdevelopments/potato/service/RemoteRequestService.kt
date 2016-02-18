@@ -238,9 +238,9 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
         private val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
 
-        @JvmField val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
-        @JvmField val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
-        @JvmField val EXTRA_ERROR_MESSAGE = "com.dhsdevelopments.potato.error_message"
+        val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
+        val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
+        val EXTRA_ERROR_MESSAGE = "com.dhsdevelopments.potato.error_message"
 
         fun markNotificationsForChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,
