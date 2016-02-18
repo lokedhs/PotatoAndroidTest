@@ -61,7 +61,7 @@ class ChannelContentFragment : Fragment() {
 
     private val typingUsers = HashMap<String, String>()
     private val caseInsensitiveStringComparator: Comparator<String>
-    private var typingTextView: TextView? = null
+    private lateinit var typingTextView: TextView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var lastVisibleItem: Int = 0
@@ -96,8 +96,8 @@ class ChannelContentFragment : Fragment() {
         adapter = ChannelContentAdapter(this, cid)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState!!.putString("someKey", "value0")
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("someKey", "value0")
         super.onSaveInstanceState(outState)
     }
 
@@ -108,8 +108,8 @@ class ChannelContentFragment : Fragment() {
 
     var scrollDownPanelVisibility = false
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_channel_content, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val rootView = inflater.inflate(R.layout.fragment_channel_content, container, false)
         messageListView = rootView.findViewById(R.id.message_list) as RecyclerView
 
         val layoutManager = LinearLayoutManager(this.activity)
@@ -161,7 +161,6 @@ class ChannelContentFragment : Fragment() {
                             .alpha(0f)
                             .withEndAction { scrollDownPanel.visibility = View.GONE }
                 }
-                //scrollDownPanel.visibility = if (pos < adapter.itemCount - 2) View.VISIBLE else View.GONE
             }
         })
 
@@ -193,7 +192,7 @@ class ChannelContentFragment : Fragment() {
 
         swipeRefreshLayout = rootView.findViewById(R.id.channel_content_refresh) as SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {
-            adapter.loadMoreMessages(object : LoadMessagesCallback {
+            adapter.loadMoreMessages(object : ChannelContentAdapter.LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
                     swipeRefreshLayout.isRefreshing = false
                     if(messages.size > 0) {
@@ -274,7 +273,7 @@ class ChannelContentFragment : Fragment() {
 
     private fun refreshTypingNotifier() {
         if (typingUsers.isEmpty()) {
-            typingTextView!!.visibility = View.INVISIBLE
+            typingTextView.visibility = View.INVISIBLE
         }
         else {
             val users = ArrayList(typingUsers.values)
@@ -298,8 +297,8 @@ class ChannelContentFragment : Fragment() {
                 buf.append(" are typing")
             }
 
-            typingTextView!!.text = buf.toString()
-            typingTextView!!.visibility = View.VISIBLE
+            typingTextView.text = buf.toString()
+            typingTextView.visibility = View.VISIBLE
         }
     }
 
@@ -309,7 +308,7 @@ class ChannelContentFragment : Fragment() {
         intent.action = ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL
         intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
         context.startService(intent)
-        adapter.loadMessages(object : LoadMessagesCallback {
+        adapter.loadMessages(object : ChannelContentAdapter.LoadMessagesCallback {
             override fun loadSuccessful(messages: List<MessageWrapper>) {
                 scrollToBottom()
             }

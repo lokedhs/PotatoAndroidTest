@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'lokedhs_android'
+            keyPassword 'foofoo'
+            storeFile file('/home/emartenson/prog/my-release-key.keystore')
+            storePassword 'foofoo'
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
     defaultConfig {
@@ -11,6 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
@@ -19,8 +28,6 @@ android {
             resValue "string", "override_server_prefix", "http://potato.dhsdevelopments.com/"
         }
         debugLocal {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
         }
     }
@@ -40,6 +47,8 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    productFlavors {
     }
 }
 

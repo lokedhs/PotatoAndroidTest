@@ -2,7 +2,8 @@
     <string name="app_name">Potato</string>
     <string name="title_channel_detail">Channel Detail</string>
     <string name="title_activity_channel_main">ChannelMainActivity</string>
-    <string name="server_prefix">http://potato.dhsdevelopments.com/</string>
+    <!--<string name="server_prefix">http://potato.dhsdevelopments.com/</string>-->
+    <string name="server_prefix">http://10.0.2.2:8080/</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

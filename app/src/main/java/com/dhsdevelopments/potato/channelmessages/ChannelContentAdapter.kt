@@ -420,9 +420,9 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             }
         }
     }
-}
 
-interface LoadMessagesCallback {
-    fun loadSuccessful(messages: List<MessageWrapper>)
-    fun loadFailed(errorMessage: String)
+    interface LoadMessagesCallback {
+        fun loadSuccessful(messages: List<MessageWrapper>)
+        fun loadFailed(errorMessage: String)
+    }
 }
