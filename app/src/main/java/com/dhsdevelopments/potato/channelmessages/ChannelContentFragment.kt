@@ -195,7 +195,7 @@ class ChannelContentFragment : Fragment() {
             adapter.loadMoreMessages(object : ChannelContentAdapter.LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
                     swipeRefreshLayout.isRefreshing = false
-                    if(messages.size > 0) {
+                    if (messages.size > 0) {
                         messageListView.scrollToPosition(adapter.positionForMessage(messages[messages.size - 1].id))
                     }
                 }
@@ -260,10 +260,7 @@ class ChannelContentFragment : Fragment() {
         val mode = intent.getStringExtra(ChannelSubscriptionService.EXTRA_TYPING_MODE)
         Log.i("uid=$uid, mode=$mode")
         when (mode) {
-            ChannelSubscriptionService.TYPING_MODE_ADD -> {
-                val tracker = ChannelUsersTracker.findEnclosingUserTracker(this)
-                typingUsers.put(uid, tracker.getNameForUid(uid))
-            }
+            ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, ChannelUsersTracker.findEnclosingUserTracker(this).getNameForUid(uid))
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)
             else -> Log.w("Unexpected typing mode in broadcast message: " + mode)
         }
