@@ -1,9 +1,9 @@
 package com.dhsdevelopments.potato
 
+import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.preference.PreferenceManager
-import android.support.multidex.MultiDexApplication
 import com.dhsdevelopments.potato.clientapi.MessageElementTypeAdapter
 import com.dhsdevelopments.potato.clientapi.NotificationTypeAdapter
 import com.dhsdevelopments.potato.clientapi.PotatoApi
@@ -16,7 +16,7 @@ import retrofit.GsonConverterFactory
 import retrofit.Retrofit
 import java.util.concurrent.TimeUnit
 
-class PotatoApplication : MultiDexApplication() {
+class PotatoApplication : Application() {
 
     val cacheDatabase: SQLiteDatabase by lazy { StorageHelper(this).writableDatabase }
 
