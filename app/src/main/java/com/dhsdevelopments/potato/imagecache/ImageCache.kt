@@ -20,15 +20,37 @@ class ImageCache(private val context: Context) {
 
     private val bitmapCache = HashMap<CacheKey, BitmapCacheEntry>()
 
-    private var initialised = false
     private var shuttingDown = false
     private var shutDown = false
 
-    private var cacheDir: File? = null
     private val db: SQLiteDatabase by lazy { PotatoApplication.getInstance(context).cacheDatabase }
 
     private var loadTaskIsActive = false
     private val loadQueue = LinkedList<LoadQueueEntry>()
+
+    private val cacheDir: File? by lazy {
+        val root = context.cacheDir
+
+        if (root == null) {
+            Log.e("No cache directory found")
+            null
+        }
+        else {
+            val dir = File(root, IMAGE_CACHE_DIR_NAME)
+            if (!dir.exists()) {
+                if (!dir.mkdir()) {
+                    Log.e("Unable to create cache directory")
+                    null
+                }
+                else {
+                    dir
+                }
+            }
+            else {
+                dir
+            }
+        }
+    }
 
     @Synchronized fun close() {
         synchronized (bitmapCache) {
@@ -54,7 +76,7 @@ class ImageCache(private val context: Context) {
     fun loadImageFromApi(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {
         val app = PotatoApplication.getInstance(context)
         val apiKey = app.apiKey
-        return loadImageInternal(url, imageWidth, imageHeight, storageType, callback, apiKey)
+        return loadImageInternal(app.apiUrlPrefix + (if (url.startsWith("/")) url.substring(1) else url), imageWidth, imageHeight, storageType, callback, apiKey)
     }
 
     fun loadImage(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {
@@ -64,11 +86,9 @@ class ImageCache(private val context: Context) {
     private fun loadImageInternal(url: String, imageWidth: Int, imageHeight: Int,
                                   storageType: StorageType, callback: LoadImageCallback,
                                   apiKey: String?): Boolean {
-        initialiseIfNeeded()
-
         var shouldStartTask = false
         synchronized (bitmapCache) {
-            if (shuttingDown) {
+            if (shuttingDown || shutDown) {
                 return true
             }
 
@@ -110,8 +130,6 @@ class ImageCache(private val context: Context) {
     }
 
     private fun addCacheEntryToDatabase(url: String, imageWidth: Int, imageHeight: Int, newFile: File?, storageType: StorageType, markFileAsAvailable: Boolean) {
-        initialiseIfNeeded()
-
         val content = ContentValues()
         content.put(StorageHelper.IMAGE_CACHE_NAME, url)
         content.put(StorageHelper.IMAGE_CACHE_IMAGE_WIDTH, imageWidth)
@@ -124,14 +142,12 @@ class ImageCache(private val context: Context) {
     }
 
     private fun deleteCacheEntryFromDatabase(url: String, imageWidth: Int, imageHeight: Int) {
-        initialiseIfNeeded()
-
         db.delete(StorageHelper.IMAGE_CACHE_TABLE,
                 "${StorageHelper.IMAGE_CACHE_NAME} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_WIDTH} = ? and ${StorageHelper.IMAGE_CACHE_IMAGE_HEIGHT} = ?",
                 arrayOf(url, imageWidth.toString(), imageHeight.toString()))
     }
 
-    private fun findCachedFileInDatabase(db: SQLiteDatabase, cacheDirCopy: File, url: String, imageWidth: Int, imageHeight: Int): CachedFileResult? {
+    private fun findCachedFileInDatabase(db: SQLiteDatabase, url: String, imageWidth: Int, imageHeight: Int): CachedFileResult? {
         db.beginTransaction()
         try {
             db.query(StorageHelper.IMAGE_CACHE_TABLE,
@@ -150,7 +166,7 @@ class ImageCache(private val context: Context) {
 
                 var file: File? = null
                 if (filename != null) {
-                    file = File(cacheDirCopy, filename)
+                    file = File(cacheDir, filename)
                     if (!file.exists()) {
                         deleteCacheEntryFromDatabase(url, imageWidth, imageHeight)
                         file = null
@@ -167,36 +183,12 @@ class ImageCache(private val context: Context) {
         }
     }
 
-    private fun initialiseIfNeeded() {
-        synchronized (bitmapCache) {
-            if (initialised) {
-                return
-            }
-            if (shutDown) {
-                throw IllegalStateException("trying to initialise when already shut down")
-            }
-
-            val root = context.cacheDir
-            if (root != null) {
-                val dir = File(root, IMAGE_CACHE_DIR_NAME)
-                if (!dir.exists()) {
-                    if (dir.mkdir()) {
-                        cacheDir = dir
-                    }
-                }
-                else {
-                    cacheDir = dir
-                }
-            }
-
-            initialised = true
-        }
-    }
-
     class DeletableEntry(var name: String, var imageWidth: Int, var imageHeight: Int)
 
     fun purge(cutoffOffsetLong: Long, cutoffOffsetShort: Long) {
-        initialiseIfNeeded()
+        if(cacheDir == null) {
+            return
+        }
 
         val now = System.currentTimeMillis()
         val cutoffLong = now - cutoffOffsetLong
@@ -263,21 +255,18 @@ class ImageCache(private val context: Context) {
                     break
                 }
 
-                val cacheDirCopy = synchronized (this) { cacheDir }
-
+                val cacheDirCopy = cacheDir
                 if (cacheDirCopy == null) {
-                    // Session has been closed, cancel right away
                     return null
                 }
 
-                val result = findCachedFileInDatabase(db, cacheDirCopy, queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight)
+                val result = findCachedFileInDatabase(db, queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight)
                 Log.d("cached image file=" + result + ", for url=" + queueEntry.url)
                 val wasCached = result != null
                 val cachedFile: File?
                 if (!wasCached) {
                     try {
-                        val app = PotatoApplication.getInstance(context)
-                        cachedFile = copyUrlToFile(cacheDirCopy, app.apiUrlPrefix + queueEntry.url, null, queueEntry.apiKey)
+                        cachedFile = copyUrlToFile(cacheDirCopy, queueEntry.url, null, queueEntry.apiKey)
                         addCacheEntryToDatabase(queueEntry.url, queueEntry.imageWidth, queueEntry.imageHeight, cachedFile, queueEntry.storageType, false)
                     }
                     catch (e: IOException) {
@@ -400,7 +389,7 @@ class ImageCache(private val context: Context) {
             }
             val req = builder.build()
             val call = client.newCall(req)
-            Log.d("Downloading url: $url")
+            Log.d("Downloading url: $url with apiKey=$apiKey")
             val response = call.execute()
             Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
             if (!response.isSuccessful) {
