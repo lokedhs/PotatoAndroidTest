@@ -74,7 +74,6 @@ class ChannelContentFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("savedInstanceState in ChannelContentFragment = " + savedInstanceState)
         if (!arguments.containsKey(ARG_CHANNEL_ID)) {
             throw IllegalArgumentException("channelId not specified in activity")
         }
@@ -94,11 +93,6 @@ class ChannelContentFragment : Fragment() {
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
 
         adapter = ChannelContentAdapter(this, cid)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString("someKey", "value0")
-        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
