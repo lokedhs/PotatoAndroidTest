@@ -223,7 +223,7 @@ class ImageCache(private val context: Context) {
 
         for (name in toDelete) {
             db.delete(StorageHelper.IMAGE_CACHE_TABLE,
-                    StorageHelper.IMAGE_CACHE_NAME + " = ?",
+                    "${StorageHelper.IMAGE_CACHE_NAME} = ?",
                     arrayOf(name))
         }
     }

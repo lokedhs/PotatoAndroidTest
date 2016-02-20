@@ -5,11 +5,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import com.dhsdevelopments.potato.DateHelper
@@ -19,6 +19,7 @@ import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
 import com.dhsdevelopments.potato.nlazy
+import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class MessageDetailActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class MessageDetailActivity : AppCompatActivity() {
     private val editedInfo             by nlazy { findViewById(R.id.message_detail_edited_ref) as TextView }
     private val messageText            by nlazy { findViewById(R.id.message_detail_message_text) as TextView }
 
+    private lateinit var msg: MessageWrapper
     private lateinit var imageCache: ImageCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +40,11 @@ class MessageDetailActivity : AppCompatActivity() {
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
+        title = "Details"
 
         val dateHelper = DateHelper()
 
-        val msg = intent.getSerializableExtra(EXTRA_MESSAGE_DATA) as MessageWrapper
+        msg = intent.getSerializableExtra(EXTRA_MESSAGE_DATA) as MessageWrapper
         val userName = intent.getStringExtra(EXTRA_USER_NAME)
         val userNickname = intent.getStringExtra(EXTRA_USER_NICKNAME)
 
@@ -54,10 +55,11 @@ class MessageDetailActivity : AppCompatActivity() {
                 res.getDimensionPixelSize(R.dimen.message_details_sender_image_width),
                 res.getDimensionPixelSize(R.dimen.message_details_sender_image_height),
                 StorageType.SHORT,
-                object: LoadImageCallback {
+                object : LoadImageCallback {
                     override fun bitmapLoaded(bitmap: Bitmap) {
                         senderImageView.setImageDrawable(BitmapDrawable(res, bitmap))
                     }
+
                     override fun bitmapNotFound() {
                         Log.w("Unable to load bitmap")
                     }
@@ -65,7 +67,7 @@ class MessageDetailActivity : AppCompatActivity() {
         senderNameTextView.text = userName
         senderNicknameTextView.text = userNickname
         sentDateTextView.text = dateHelper.formatDateTimeOutputFormat(msg.createdDate)
-        editedInfo.text = if (msg.updatedDate == null) "" else msg.updatedDate
+        editedInfo.text = msg.updatedDate ?: ""
         messageText.text = msg.content.makeSpan()
     }
 
@@ -74,9 +76,31 @@ class MessageDetailActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.message_detail_toolbar_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_option_delete_message -> run { deleteMessage() ; true }
+            R.id.menu_option_edit_message -> run { editMessage() ; true }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun deleteMessage() {
+        AlertDialog.Builder(this).setMessage("Are you sure?")
+                .setPositiveButton("Yes", { dialog, which ->
+                    RemoteRequestService.deleteMessage(this, msg.id)
+                    finish()
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    fun editMessage() {
+        Log.i("Need to implement message editing")
     }
 
     companion object {
