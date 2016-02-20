@@ -65,4 +65,5 @@
     <string name="delete_message_confirm">Delete</string>
     <string name="delete_message_deny">Cancel</string>
     <string name="delete_message_confirmation_text">Are you sure?</string>
+    <string name="application_logo_description">Potato</string>
 </resources>

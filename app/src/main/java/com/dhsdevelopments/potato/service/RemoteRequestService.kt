@@ -187,11 +187,11 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     Log.d("Message deleted successfully")
                 }
                 else {
-                    Log.e("Unexpcted reply from server")
+                    Log.e("Unexpected reply from server")
                 }
             }
             else {
-                Log.e("Server error when requisting delete: " + result.message())
+                Log.e("Server error when requesting delete: " + result.message())
             }
         }
         catch(e: IOException) {

@@ -14,6 +14,7 @@ class GcmRegistrationRequest {
     }
 }
 
+@Suppress("unused")
 class GcmRegistrationResult {
     @SerializedName("result")
     lateinit var result: String

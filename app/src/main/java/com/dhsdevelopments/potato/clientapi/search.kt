@@ -13,6 +13,7 @@ class SearchResult {
     lateinit var messages: Array<SearchResultMessage>
 }
 
+@Suppress("unused")
 class SearchResultMessage {
     @SerializedName("id")
     lateinit var id: String

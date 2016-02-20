@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 
+@Suppress("unused")
 class AvailableChannelListAdapter(domainId: String) : RecyclerView.Adapter<AvailableChannelListAdapter.ViewHolder>() {
     private val channels = emptyList<AvailableChannel>()
 
