@@ -90,12 +90,12 @@ class MessageDetailActivity : AppCompatActivity() {
     }
 
     fun deleteMessage() {
-        AlertDialog.Builder(this).setMessage("Are you sure?")
-                .setPositiveButton("Yes", { dialog, which ->
+        AlertDialog.Builder(this).setMessage(R.string.delete_message_confirmation_text)
+                .setPositiveButton(R.string.delete_message_confirm, { dialog, which ->
                     RemoteRequestService.deleteMessage(this, msg.id)
                     finish()
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton(R.string.delete_message_deny, null)
                 .show();
     }
 
