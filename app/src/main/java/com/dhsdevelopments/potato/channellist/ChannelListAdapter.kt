@@ -34,10 +34,12 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     override fun getItemViewType(position: Int): Int {
         if (publicChannels.isEmpty()) {
             return if (position == 0) VIEW_TYPE_HEADER else VIEW_TYPE_CHANNEL
-        } else {
+        }
+        else {
             if (position == 0 || !privateChannels.isEmpty() && position == publicChannels.size + 1) {
                 return VIEW_TYPE_HEADER
-            } else {
+            }
+            else {
                 return VIEW_TYPE_CHANNEL
             }
         }
@@ -47,18 +49,23 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
         if (publicChannels.isEmpty()) {
             if (position == 0) {
                 (holder as HeaderViewHolder).setTitle("Conversations")
-            } else {
+            }
+            else {
                 (holder as ChannelViewHolder).fillInChannelEntry(privateChannels[position - 1])
             }
-        } else {
+        }
+        else {
             if (position == 0) {
                 (holder as HeaderViewHolder).setTitle("Channels")
-            } else if (position < publicChannels.size + 1) {
+            }
+            else if (position < publicChannels.size + 1) {
                 (holder as ChannelViewHolder).fillInChannelEntry(publicChannels[position - 1])
-            } else if (!privateChannels.isEmpty()) {
+            }
+            else if (!privateChannels.isEmpty()) {
                 if (position == publicChannels.size + 1) {
                     (holder as HeaderViewHolder).setTitle("Conversations")
-                } else {
+                }
+                else {
                     (holder as ChannelViewHolder).fillInChannelEntry(privateChannels[position - publicChannels.size - 2])
                 }
             }
@@ -94,7 +101,8 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
                     val e = ChannelEntry(cid, name, privateUser != null, unread)
                     if (e.isPrivateChannel) {
                         privateChannels.add(e)
-                    } else {
+                    }
+                    else {
                         publicChannels.add(e)
                     }
                 }
@@ -130,7 +138,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
         fun fillInChannelEntry(item: ChannelEntry) {
             contentView.text = item.name
-            if( item.unread > 0 ) {
+            if ( item.unread > 0 ) {
                 unreadView.text = item.unread.toString()
                 unreadView.visibility = View.VISIBLE
             }
@@ -141,7 +149,8 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
             view.setOnClickListener { v ->
                 if (parent.isTwoPane) {
                     parent.setActiveChannel(item.id, item.name)
-                } else {
+                }
+                else {
                     val context = v.context
                     val intent = Intent(context, ChannelContentActivity::class.java)
                     intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, item.id)

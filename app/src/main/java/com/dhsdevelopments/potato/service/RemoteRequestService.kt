@@ -274,7 +274,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             for (v in extraElements) {
                 val key = v.first
                 val value = v.second
-                when(value) {
+                when (value) {
                     is String -> intent.putExtra(key, value)
                     is Boolean -> intent.putExtra(key, value)
                     is Parcelable -> intent.putExtra(key, value)

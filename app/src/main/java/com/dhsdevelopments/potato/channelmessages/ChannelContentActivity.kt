@@ -77,7 +77,7 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
      * in the the intent sent to SearchActivity
      */
     override fun startActivity(intent: Intent) {
-        if(intent.action == Intent.ACTION_SEARCH) {
+        if (intent.action == Intent.ACTION_SEARCH) {
             intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
         }
         super.startActivity(intent)

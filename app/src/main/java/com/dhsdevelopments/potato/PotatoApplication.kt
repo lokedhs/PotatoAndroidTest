@@ -62,7 +62,7 @@ class PotatoApplication : Application() {
     val serverUrlPrefix: String by lazy {
         val identifier = resources.getIdentifier("${PotatoApplication::class.java.`package`.name}:string/override_server_prefix", null, null)
         Log.d("Got identifier for ${PotatoApplication::class.java.`package`.name}:string/override_server_prefix = $identifier")
-        if(identifier == 0) {
+        if (identifier == 0) {
             resources.getString(R.string.server_prefix)
         }
         else {

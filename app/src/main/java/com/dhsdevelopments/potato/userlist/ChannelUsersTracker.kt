@@ -133,7 +133,7 @@ class ChannelUsersTracker private constructor(private val context: Context, priv
 
     fun getNicknameForUid(uid: String): String {
         val user = getUsers()[uid]
-        if(user == null) {
+        if (user == null) {
             return "unknown"
         }
         else {

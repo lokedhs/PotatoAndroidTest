@@ -12,7 +12,7 @@ import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResultMessage
 import java.util.*
 
-class SearchResultAdapter(private val parent: SearchActivity): RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
+class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
 
     private val dateHelper = DateHelper()
     private val searchResults: MutableList<SearchResultMessage> = ArrayList()

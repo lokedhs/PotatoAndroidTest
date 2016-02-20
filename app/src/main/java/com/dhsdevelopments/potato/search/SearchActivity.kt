@@ -27,7 +27,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         Log.d("Search activity started. intent=" + intent)
-        if(intent.action != Intent.ACTION_SEARCH) {
+        if (intent.action != Intent.ACTION_SEARCH) {
             throw IllegalArgumentException("Search activity not started with ACTION_SEARCH")
         }
 
@@ -40,9 +40,9 @@ class SearchActivity : AppCompatActivity() {
 
         val app = PotatoApplication.getInstance(this)
         val call = app.potatoApi.searchMessages(app.apiKey, channelId, query, "0")
-        call.enqueue(object: Callback<SearchResult?> {
+        call.enqueue(object : Callback<SearchResult?> {
             override fun onResponse(result: Response<SearchResult?>, retrofit: Retrofit) {
-                if(result.isSuccess) {
+                if (result.isSuccess) {
                     processResults(result.body()!!)
                 }
                 else {

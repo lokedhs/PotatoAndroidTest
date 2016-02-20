@@ -94,7 +94,7 @@ class ChannelUpdatesUpdateResult {
     @SerializedName("result")
     lateinit var result: String
 
-    override fun toString(): String{
+    override fun toString(): String {
         return "ChannelUpdatesUpdateResult(result='$result')"
     }
 }
@@ -124,9 +124,9 @@ class ImageUriRequestBody(private val context: Context, private val imageUri: Ur
         context.contentResolver.openInputStream(imageUri).use { inStream ->
             val out = sink.outputStream()
             val buf = ByteArray(16 * 1024)
-            while(true) {
+            while (true) {
                 val n = inStream.read(buf)
-                if(n == -1) {
+                if (n == -1) {
                     break
                 }
                 out.write(buf, 0, n)
@@ -190,10 +190,10 @@ class NotificationTypeAdapter : JsonDeserializer<PotatoNotification> {
         val obj = json.asJsonObject
         val type = obj.get("type").asString
         return when (type) {
-            "m"    -> context.deserialize<PotatoNotification>(obj, MessageNotification::class.java)
-            "cu"   -> context.deserialize<PotatoNotification>(obj, StateUpdateNotification::class.java)
+            "m" -> context.deserialize<PotatoNotification>(obj, MessageNotification::class.java)
+            "cu" -> context.deserialize<PotatoNotification>(obj, StateUpdateNotification::class.java)
             "type" -> context.deserialize<PotatoNotification>(obj, TypingNotification::class.java)
-            else   -> context.deserialize<PotatoNotification>(obj, PotatoNotification::class.java)
+            else -> context.deserialize<PotatoNotification>(obj, PotatoNotification::class.java)
         }
     }
 }
