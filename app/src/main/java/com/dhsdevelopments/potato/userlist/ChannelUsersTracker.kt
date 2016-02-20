@@ -1,8 +1,8 @@
 package com.dhsdevelopments.potato.userlist
 
+import android.app.Fragment
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.Fragment
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.LoadUsersResult

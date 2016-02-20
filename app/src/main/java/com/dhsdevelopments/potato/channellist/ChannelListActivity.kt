@@ -22,12 +22,14 @@ import android.view.SubMenu
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.HasUserTracker
+import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelListActivity : AppCompatActivity(), HasUserTracker {
 
@@ -44,8 +46,10 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
      * In two pane mode, this activity needs to hold the channel users tracker for the selected channel.
      */
     private var usersTracker: ChannelUsersTracker? = null
-    private var channelListAdapter: ChannelListAdapter? = null
-    private var receiver: BroadcastReceiver? = null
+    private lateinit var channelListAdapter: ChannelListAdapter
+    private lateinit var receiver: BroadcastReceiver
+
+    private var userListFragment: UserListFragment? = null
 
     private val navigationView: NavigationView by nlazy {
         findViewById(R.id.channel_list_nav_view) as NavigationView
@@ -87,7 +91,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
             isTwoPane = true
         }
 
-        val drawer = findViewById(R.id.channel_list_drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         val toggle = ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer.setDrawerListener(toggle)
         toggle.syncState()
@@ -135,7 +139,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById(R.id.channel_list_drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         }
@@ -145,7 +149,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     private fun handleNavigationItemSelected(item: MenuItem): Boolean {
-        val drawer = findViewById(R.id.channel_list_drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         drawer.closeDrawer(GravityCompat.START)
 
         when (item.itemId) {
@@ -176,13 +180,13 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
                 }
                 item.isChecked = isSelectedDomain
             }
-            title = if (domainName == null) "No domain selected" else domainName
+            title = domainName ?: "No domain selected"
             if (domainName == null) {
                 // If we get here, the user has been removed from the currently selected domain, so we'll
                 // simply clear the selected domain.
                 selectedDomainId = null
             }
-            channelListAdapter!!.selectDomain(selectedDomainId)
+            channelListAdapter.selectDomain(selectedDomainId)
         }
     }
 
@@ -192,12 +196,12 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_option_join_channel -> {
                 selectAndJoinChannel()
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -207,8 +211,23 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         startActivityForResult(intent, 0, null)
     }
 
-    fun setActiveChannel(channelId: String) {
+    fun setActiveChannel(channelId: String, channelName: String) {
         usersTracker = ChannelUsersTracker.findForChannel(this, channelId)
+
+        val arguments = Bundle()
+        arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, channelId)
+        arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
+        val fragment = ChannelContentFragment()
+        fragment.arguments = arguments
+
+        userListFragment = UserListFragment.newInstance(channelId)
+
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.channel_detail_container, fragment)
+                .replace(R.id.user_list_container, userListFragment)
+                .commit()
+        invalidateOptionsMenu()
     }
 
     override fun findUserTracker(): ChannelUsersTracker {

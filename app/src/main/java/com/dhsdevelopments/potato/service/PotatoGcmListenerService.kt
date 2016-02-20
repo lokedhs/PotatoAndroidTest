@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.service
 
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ContentValues
@@ -7,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.StorageHelper
@@ -98,7 +98,7 @@ class PotatoGcmListenerService : GcmListenerService() {
             else {
                 val intent = Intent(this, ChannelListActivity::class.java)
                 val pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_ONE_SHOT)
-                val builder = NotificationCompat.Builder(this).setSmallIcon(android.R.drawable.ic_dialog_email).setContentTitle("New Potato messages").setContentText("You have new messages in " + unread + " channel" + if (unread == 1) "" else "s").setAutoCancel(true).setContentIntent(pendingIntent)
+                val builder = Notification.Builder(this).setSmallIcon(android.R.drawable.ic_dialog_email).setContentTitle("New Potato messages").setContentText("You have new messages in " + unread + " channel" + if (unread == 1) "" else "s").setAutoCancel(true).setContentIntent(pendingIntent)
                 mgr.notify(UNREAD_NOTIFICATIONS_TAG, UNREAD_NOTIFICATION_ID, builder.build())
             }
         }

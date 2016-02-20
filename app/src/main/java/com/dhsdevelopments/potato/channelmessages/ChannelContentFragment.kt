@@ -1,21 +1,21 @@
 package com.dhsdevelopments.potato.channelmessages
 
+import android.app.Activity
+import android.app.Fragment
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Spanned
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -24,12 +24,14 @@ import android.widget.TextView
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
+import com.dhsdevelopments.potato.loadChannelConfigFromDb
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -43,8 +45,10 @@ import java.util.*
 class ChannelContentFragment : Fragment() {
 
     companion object {
-        @JvmField val ARG_CHANNEL_ID = "item_id"
-        @JvmField val ARG_CHANNEL_NAME = "channel_name"
+        val ARG_CHANNEL_ID = "item_id"
+        val ARG_CHANNEL_NAME = "channel_name"
+
+        private val SELECT_IMAGE_RESULT_CODE = 1
     }
 
     private lateinit var cid: String
@@ -105,6 +109,8 @@ class ChannelContentFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_channel_content, container, false)
         messageListView = rootView.findViewById(R.id.message_list) as RecyclerView
+
+        setHasOptionsMenu(true)
 
         val layoutManager = LinearLayoutManager(this.activity)
         messageListView.layoutManager = layoutManager
@@ -208,6 +214,113 @@ class ChannelContentFragment : Fragment() {
         return rootView
     }
 
+    override fun onDestroyView() {
+        userNameSuggestAdapter.shutdown()
+        adapter.unregisterAdapterDataObserver(observer)
+
+        super.onDestroyView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val intent = Intent(context, ChannelSubscriptionService::class.java)
+        intent.action = ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL
+        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
+        context.startService(intent)
+        adapter.loadMessages(object : ChannelContentAdapter.LoadMessagesCallback {
+            override fun loadSuccessful(messages: List<MessageWrapper>) {
+                scrollToBottom()
+            }
+
+            override fun loadFailed(errorMessage: String) {
+                showErrorSnackbar("Error loading messages: " + errorMessage)
+            }
+        })
+
+        refreshTypingNotifier()
+
+        RemoteRequestService.markNotificationsForChannel(context, cid)
+    }
+
+    override fun onStop() {
+        val intent = Intent(context, ChannelSubscriptionService::class.java)
+        intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
+        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
+        context.startService(intent)
+        super.onStop()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.channel_content_toolbar_menu, menu)
+
+        val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
+        val db = PotatoApplication.getInstance(context).cacheDatabase
+        var notifyUnread = false
+        loadChannelConfigFromDb(db, cid).use { cursor ->
+            if (cursor.moveToNext()) {
+                notifyUnread = cursor.getInt(0) != 0
+            }
+        }
+        notifyUnreadOption.isChecked = notifyUnread
+
+        // Set up search
+        //            Log.d("Setting up searchable info for $componentName")
+        //            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        //            val item = menu.findItem(R.id.menu_option_search_history)
+        //            Log.d("got item: $item")
+        //            val searchView = item.actionView as SearchView
+        //            //searchView.setSearchableInfo(searchManager.getSearchableInfo(ComponentName(this, SearchActivity::class.java)))
+        //            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        //            searchView.setIconifiedByDefault(true)
+        //            searchView.queryHint = getString(R.string.searchable_hint)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                activity.navigateUpTo(Intent(context, ChannelListActivity::class.java))
+                return true
+            }
+            R.id.menu_option_show_users -> {
+                val drawer = activity.findViewById(R.id.drawer_layout) as DrawerLayout
+                if (drawer.isDrawerOpen(GravityCompat.END)) {
+                    drawer.closeDrawer(GravityCompat.END)
+                }
+                else {
+                    drawer.openDrawer(GravityCompat.END)
+                }
+                return true
+            }
+            R.id.menu_option_notify_unread -> {
+                val notifyUnread = !item.isChecked
+                item.isChecked = notifyUnread
+                updateNotifyUnreadSetting(notifyUnread)
+                return true
+            }
+            R.id.menu_option_send_image -> {
+                sendImage()
+                return true
+            }
+        //            R.id.menu_option_search_history -> {
+        ////                intent = Intent(this, SearchActivity::class.java)
+        ////                intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+        ////                startActivity(intent)
+        //                Log.d("Open search input")
+        //                return true
+        //            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SELECT_IMAGE_RESULT_CODE) {
+                val uri = data!!.data
+                RemoteRequestService.sendMessageWithImage(context, cid, uri)
+            }
+        }
+    }
+
     private fun scrollToBottom() {
         Log.i("Scrolling to bottom")
         messageListView.scrollToPosition(adapter.itemCount - 1)
@@ -215,12 +328,6 @@ class ChannelContentFragment : Fragment() {
 
     private fun showErrorSnackbar(message: CharSequence) {
         Snackbar.make(messageListView, message, Snackbar.LENGTH_LONG).setAction("Action", null).show()
-    }
-
-    override fun onDestroyView() {
-        userNameSuggestAdapter.shutdown()
-        adapter.unregisterAdapterDataObserver(observer)
-        super.onDestroyView()
     }
 
     private fun handleBroadcastMessage(intent: Intent) {
@@ -292,35 +399,6 @@ class ChannelContentFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val intent = Intent(context, ChannelSubscriptionService::class.java)
-        intent.action = ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL
-        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
-        context.startService(intent)
-        adapter.loadMessages(object : ChannelContentAdapter.LoadMessagesCallback {
-            override fun loadSuccessful(messages: List<MessageWrapper>) {
-                scrollToBottom()
-            }
-
-            override fun loadFailed(errorMessage: String) {
-                showErrorSnackbar("Error loading messages: " + errorMessage)
-            }
-        })
-
-        refreshTypingNotifier()
-
-        RemoteRequestService.markNotificationsForChannel(context, cid)
-    }
-
-    override fun onStop() {
-        val intent = Intent(context, ChannelSubscriptionService::class.java)
-        intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
-        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
-        context.startService(intent)
-        super.onStop()
-    }
-
     private fun sendMessage(messageInput: EditText) {
         val text = messageInput.text
 
@@ -354,6 +432,17 @@ class ChannelContentFragment : Fragment() {
 
             messageInput.setText("")
         }
+    }
+
+    private fun sendImage() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.type = "image/*"
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.chooser_title_select_image)), SELECT_IMAGE_RESULT_CODE)
+    }
+
+    private fun updateNotifyUnreadSetting(notifyUnread: Boolean) {
+        RemoteRequestService.updateUnreadSubscriptionState(context, cid, notifyUnread)
     }
 
     private fun convertUidRefs(text: CharSequence): String {

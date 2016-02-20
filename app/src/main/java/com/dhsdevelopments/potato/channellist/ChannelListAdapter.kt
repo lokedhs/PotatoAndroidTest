@@ -1,7 +1,6 @@
 package com.dhsdevelopments.potato.channellist
 
 import android.content.Intent
-import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -141,15 +140,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
             view.setOnClickListener { v ->
                 if (parent.isTwoPane) {
-                    parent.setActiveChannel(item.id)
-
-                    val arguments = Bundle()
-                    arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, item.id)
-                    arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, item.name)
-                    val fragment = ChannelContentFragment()
-                    fragment.arguments = arguments
-
-                    parent.supportFragmentManager.beginTransaction().replace(R.id.channel_detail_container, fragment).commit()
+                    parent.setActiveChannel(item.id, item.name)
                 } else {
                     val context = v.context
                     val intent = Intent(context, ChannelContentActivity::class.java)
