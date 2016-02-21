@@ -8,13 +8,12 @@ import android.widget.BaseAdapter
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker) : BaseAdapter(), Filterable {
     private val inflater: LayoutInflater
-    private var users: List<UserSuggestion>? = null
+    private var users: List<UserSuggestion> = emptyList()
     private val filter: UserNameSuggestFilter
 
     init {
@@ -27,11 +26,11 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
     }
 
     override fun getCount(): Int {
-        return users!!.size
+        return users.size
     }
 
     override fun getItem(position: Int): Any {
-        return users!![position].id
+        return users[position].id
     }
 
     override fun getItemId(position: Int): Long {
@@ -47,7 +46,7 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
             v = inflater.inflate(R.layout.user_name_suggest_line, parent, false)
         }
 
-        val userSuggestion = users!![position]
+        val userSuggestion = users[position]
         val textView = v.findViewById(R.id.user_name_suggest_name) as TextView
         textView.text = userSuggestion.name
         return v
@@ -59,7 +58,6 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
 
     internal fun setSuggestionList(users: List<UserSuggestion>) {
         this.users = users
-        Log.i("Setting suggestion list: " + users)
         notifyDataSetChanged()
     }
 }
