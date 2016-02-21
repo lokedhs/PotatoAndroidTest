@@ -25,7 +25,7 @@ import com.dhsdevelopments.potato.loadDomainsFromDb
    * Android Design: Settings](http://developer.android.com/design/patterns/settings.html) for design guidelines and the [Settings
    * API Guide](http://developer.android.com/guide/topics/ui/settings.html) for more information on developing a Settings UI.
  */
-class SettingsActivity : PreferenceActivity() {
+class SettingsActivity : AppCompatPreferenceActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class SettingsActivity : PreferenceActivity() {
      * Set up the [android.app.ActionBar], if the API is available.
      */
     private fun setupActionBar() {
-        actionBar.setDisplayHomeAsUpEnabled(true)
+        supportActionBar.setDisplayHomeAsUpEnabled(true)
     }
 
     /**
