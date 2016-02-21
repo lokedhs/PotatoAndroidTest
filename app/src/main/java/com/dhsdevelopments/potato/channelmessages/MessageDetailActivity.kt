@@ -3,7 +3,6 @@ package com.dhsdevelopments.potato.channelmessages
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -57,7 +56,7 @@ class MessageDetailActivity : AppCompatActivity() {
                 StorageType.SHORT,
                 object : LoadImageCallback {
                     override fun bitmapLoaded(bitmap: Bitmap) {
-                        senderImageView.setImageDrawable(BitmapDrawable(res, bitmap))
+                        senderImageView.setImageBitmap(bitmap)
                     }
 
                     override fun bitmapNotFound() {

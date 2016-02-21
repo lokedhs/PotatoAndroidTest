@@ -25,7 +25,7 @@ object ImageHelpers {
         val ratio = Math.max(options.outWidth / width.toDouble(), options.outHeight / height.toDouble())
         val exp = Math.max(Math.floor(Math.log(ratio) / LOG_2).toInt(), 0)
         val scale = 1 shl exp
-        Log.d("orig:(" + options.outWidth + "," + options.outHeight + "), req:(" + width + "," + height + "), scale=" + scale)
+        Log.d("orig:(${options.outWidth},${options.outHeight}), req:($width,$height), scale=$scale")
 
         val o2 = BitmapFactory.Options()
         o2.inSampleSize = scale
@@ -38,9 +38,6 @@ object ImageHelpers {
         val srcRect = RectF(0f, 0f, w.toFloat(), h.toFloat())
         val destRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
         matrix.setRectToRect(srcRect, destRect, Matrix.ScaleToFit.CENTER)
-        val bitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, w, h, matrix, true)
-        tmpBitmap.recycle()
-
-        return bitmap
+        return Bitmap.createBitmap(tmpBitmap, 0, 0, w, h, matrix, true)
     }
 }

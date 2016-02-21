@@ -318,18 +318,17 @@ class ImageCache(private val context: Context) {
 
         override fun onProgressUpdate(vararg values: BackgroundLoadResult) {
             val result = values[0]
-            Log.d("onProgressUpdate. result=" + result)
             val callbacksAndBitmap: Pair<List<LoadImageCallback>, Bitmap?> = synchronized (bitmapCache) {
                 val entry = result.bitmapCacheEntry
-                val bitmap = result.bitmap
-                entry.bitmap = bitmap
-                val callbacksCopy = ArrayList(entry.callbacks)
+                entry.bitmap = result.bitmap
                 entry.loading = false
+
+                val callbacksCopy = ArrayList(entry.callbacks)
                 entry.callbacks.clear()
-                Pair(callbacksCopy, bitmap)
+
+                Pair(callbacksCopy, result.bitmap)
             }
 
-            Log.d("before calling callbacks. n=" + callbacksAndBitmap.first.size + ", bm=" + callbacksAndBitmap.second)
             for (callback in callbacksAndBitmap.first) {
                 val b = callbacksAndBitmap.second
                 if (b == null) {

@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Handler
@@ -307,7 +306,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                     object : LoadImageCallback {
                         override fun bitmapLoaded(bitmap: Bitmap) {
                             if (updateIndex == oldUpdateIndex) {
-                                imageView.setImageDrawable(BitmapDrawable(resources, bitmap))
+                                imageView.setImageBitmap(bitmap)
                             }
                         }
 
@@ -349,7 +348,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                 val callback = object : LoadImageCallback {
                     override fun bitmapLoaded(bitmap: Bitmap) {
                         if (imageLoadIndex == refIndex) {
-                            imageView.setImageDrawable(BitmapDrawable(context.resources, bitmap))
+                            imageView.setImageBitmap(bitmap)
                             imageView.visibility = View.VISIBLE
                         }
                     }
