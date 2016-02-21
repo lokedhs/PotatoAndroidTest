@@ -38,13 +38,13 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val v: View
-        if (convertView != null && convertView.id == R.id.user_name_suggest_line_view) {
-            v = convertView
-        }
-        else {
-            v = inflater.inflate(R.layout.user_name_suggest_line, parent, false)
-        }
+        val v =
+                if (convertView != null && convertView.id == R.id.user_name_suggest_line_view) {
+                    convertView
+                }
+                else {
+                    inflater.inflate(R.layout.user_name_suggest_line, parent, false)
+                }
 
         val userSuggestion = users[position]
         val textView = v.findViewById(R.id.user_name_suggest_name) as TextView
