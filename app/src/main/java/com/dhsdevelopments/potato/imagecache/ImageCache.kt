@@ -11,6 +11,7 @@ import com.squareup.okhttp.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.ref.SoftReference
 import java.util.*
 
 class ImageCache(private val context: Context) {
@@ -90,7 +91,21 @@ class ImageCache(private val context: Context) {
             }
 
             val cacheKey = CacheKey(url, imageWidth, imageHeight, apiKey != null)
-            val cacheEntry = bitmapCache[cacheKey]
+            var cacheEntry = bitmapCache[cacheKey]
+            var cachedBitmap: Bitmap? = null
+            if(cacheEntry != null) {
+                val ref = cacheEntry.bitmap
+                if(ref != null) {
+                    val bm = ref.get()
+                    if(bm == null) {
+                        bitmapCache.remove(cacheKey)
+                        cacheEntry = null
+                    }
+                    else {
+                        cachedBitmap = bm
+                    }
+                }
+            }
             if (cacheEntry == null) {
                 val e = BitmapCacheEntry(true)
                 bitmapCache.put(cacheKey, e)
@@ -108,7 +123,7 @@ class ImageCache(private val context: Context) {
                 }
                 else {
                     if (cacheEntry.bitmap != null) {
-                        callback.bitmapLoaded(cacheEntry.bitmap!!)
+                        callback.bitmapLoaded(cachedBitmap!!)
                     }
                     else {
                         callback.bitmapNotFound()
@@ -318,19 +333,19 @@ class ImageCache(private val context: Context) {
 
         override fun onProgressUpdate(vararg values: BackgroundLoadResult) {
             val result = values[0]
-            val callbacksAndBitmap: Pair<List<LoadImageCallback>, Bitmap?> = synchronized (bitmapCache) {
+            val callbacksCopy: List<LoadImageCallback> = synchronized (bitmapCache) {
                 val entry = result.bitmapCacheEntry
-                entry.bitmap = result.bitmap
+                entry.bitmap = if (result.bitmap != null) SoftReference(result.bitmap) else null
                 entry.loading = false
 
                 val callbacksCopy = ArrayList(entry.callbacks)
                 entry.callbacks.clear()
 
-                Pair(callbacksCopy, result.bitmap)
+                callbacksCopy
             }
 
-            for (callback in callbacksAndBitmap.first) {
-                val b = callbacksAndBitmap.second
+            for (callback in callbacksCopy) {
+                val b = result.bitmap
                 if (b == null) {
                     callback.bitmapNotFound()
                 }
