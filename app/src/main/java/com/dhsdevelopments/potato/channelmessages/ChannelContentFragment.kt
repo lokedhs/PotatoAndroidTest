@@ -279,6 +279,10 @@ class ChannelContentFragment : Fragment() {
         when (item.itemId) {
             android.R.id.home -> {
                 activity.navigateUpTo(Intent(context, ChannelListActivity::class.java))
+                val parent = activity
+                if(parent is ChannelContentActivity) {
+                    parent.overrideAnimExit()
+                }
                 return true
             }
             R.id.menu_option_show_users -> {

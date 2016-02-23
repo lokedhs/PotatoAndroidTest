@@ -62,6 +62,10 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         }
     }
 
+    fun overrideAnimExit() {
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right)
+    }
+
     override fun onBackPressed() {
         val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         if (drawer.isDrawerOpen(GravityCompat.END)) {
@@ -69,6 +73,7 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
         }
         else {
             super.onBackPressed()
+            overrideAnimExit()
         }
     }
 

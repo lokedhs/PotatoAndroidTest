@@ -22,6 +22,7 @@ import android.view.SubMenu
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
@@ -198,16 +199,29 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         startActivityForResult(intent, 0, null)
     }
 
-    fun setActiveChannel(channelId: String, channelName: String) {
-        usersTracker = ChannelUsersTracker.findForChannel(this, channelId)
+    fun setActiveChannel(cid: String, channelName: String) {
+        if (isTwoPane) {
+            switchToChannelTwoPane(cid, channelName)
+        }
+        else {
+            val intent = Intent(this, ChannelContentActivity::class.java)
+            intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, cid)
+            intent.putExtra(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
+            startActivity(intent)
+            overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
+        }
+    }
+
+    private fun switchToChannelTwoPane(cid: String, channelName: String) {
+        usersTracker = ChannelUsersTracker.findForChannel(this, cid)
 
         val arguments = Bundle()
-        arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, channelId)
+        arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, cid)
         arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
         val fragment = ChannelContentFragment()
         fragment.arguments = arguments
 
-        userListFragment = UserListFragment.newInstance(channelId)
+        userListFragment = UserListFragment.newInstance(cid)
 
         fragmentManager
                 .beginTransaction()

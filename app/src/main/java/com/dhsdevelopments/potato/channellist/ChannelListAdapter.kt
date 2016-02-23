@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.channellist
 
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +9,6 @@ import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
-import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
-import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
@@ -147,16 +144,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
             }
 
             view.setOnClickListener { v ->
-                if (parent.isTwoPane) {
-                    parent.setActiveChannel(item.id, item.name)
-                }
-                else {
-                    val context = v.context
-                    val intent = Intent(context, ChannelContentActivity::class.java)
-                    intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, item.id)
-                    intent.putExtra(ChannelContentFragment.ARG_CHANNEL_NAME, item.name)
-                    context.startActivity(intent)
-                }
+                parent.setActiveChannel(item.id, item.name)
             }
         }
     }
