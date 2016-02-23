@@ -255,13 +255,8 @@ class ChannelContentFragment : Fragment() {
 
         val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
         val db = PotatoApplication.getInstance(context).cacheDatabase
-        var notifyUnread = false
-        loadChannelConfigFromDb(db, cid).use { cursor ->
-            if (cursor.moveToNext()) {
-                notifyUnread = cursor.getInt(0) != 0
-            }
-        }
-        notifyUnreadOption.isChecked = notifyUnread
+
+        notifyUnreadOption.isChecked = loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
 
         // Set up search
         //            Log.d("Setting up searchable info for $componentName")
@@ -280,7 +275,7 @@ class ChannelContentFragment : Fragment() {
             android.R.id.home -> {
                 activity.navigateUpTo(Intent(context, ChannelListActivity::class.java))
                 val parent = activity
-                if(parent is ChannelContentActivity) {
+                if (parent is ChannelContentActivity) {
                     parent.overrideAnimExit()
                 }
                 return true
@@ -387,7 +382,7 @@ class ChannelContentFragment : Fragment() {
                 buf.append(" is typing")
             }
             else {
-                for (i in 0..numUsers - 1 - 1) {
+                for (i in 0..numUsers - 2) {
                     buf.append(users[i])
                     if (i < numUsers - 2) {
                         buf.append(", ")
