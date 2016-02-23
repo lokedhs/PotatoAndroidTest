@@ -363,11 +363,6 @@ class ImageCache(private val context: Context) {
         fun copyUrlToFile(cacheDirCopy: File, url: String, tmpFilePrefix: String, apiKey: String?): File? {
             val found = makeRandomFile(cacheDirCopy, tmpFilePrefix)
 
-            if (found == null) {
-                Log.w("failed to create file name")
-                return null
-            }
-
             val client = OkHttpClient()
             val builder = Request.Builder()
             builder.url(url)

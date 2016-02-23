@@ -8,7 +8,7 @@ fun <T> nlazy(getter: () -> T): Lazy<T> {
     }
 }
 
-fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File? {
+fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File {
     val buf = StringBuilder()
     buf.append(tmpFilePrefix)
     for (i in 0..19) {
@@ -24,5 +24,5 @@ fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File? {
         }
     }
 
-    return null
+    throw IllegalStateException("Unable to create temp file")
 }
