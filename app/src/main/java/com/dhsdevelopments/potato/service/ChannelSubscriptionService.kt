@@ -71,6 +71,7 @@ class ChannelSubscriptionService : Service() {
                 is StateUpdateNotification -> processStateUpdateNotification(n)
                 is TypingNotification -> processTypingNotification(n)
                 is OptionNotification -> processOptionNotification(n)
+                is UnknownSlashcommandNotification -> processUnknownSlashcommandNotification(n)
             }
         }
     }
@@ -134,6 +135,10 @@ class ChannelSubscriptionService : Service() {
         Log.d("Got option notification: $notification")
     }
 
+    private fun processUnknownSlashcommandNotification(n: UnknownSlashcommandNotification) {
+        Log.d("Unknown slashcommand: ${n.cmd}")
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -141,6 +146,7 @@ class ChannelSubscriptionService : Service() {
     private inner class Receiver(private val cid: String) : Thread("NotificationReceiver") {
         private val api: PotatoApi
         private val apiKey: String
+        private val sid: String
 
         private var isShutdown = false
         private val subscribedChannels = HashSet<String>()
@@ -153,6 +159,7 @@ class ChannelSubscriptionService : Service() {
 
             api = app.potatoApiLongTimeout
             apiKey = app.apiKey
+            sid = app.sessionId
 
             subscribedChannels.add(cid)
         }
@@ -162,7 +169,7 @@ class ChannelSubscriptionService : Service() {
 
             try {
                 while (!isShutdown && !Thread.interrupted()) {
-                    val call = api.channelUpdates(apiKey, cid, "content,state", eventId)
+                    val call = api.channelUpdates(apiKey, cid, "content,state,session", eventId, sid)
                     synchronized (this) {
                         outstandingCall = call
                     }

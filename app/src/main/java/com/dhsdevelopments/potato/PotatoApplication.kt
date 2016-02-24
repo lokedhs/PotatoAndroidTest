@@ -49,6 +49,12 @@ class PotatoApplication : Application() {
     val potatoApiLongTimeout: PotatoApi
         get() = makePotatoApi(120)
 
+    val sessionId = run {
+        val buf = StringBuilder()
+        makeRandomCharacterSequence(buf, 40)
+        buf.toString()
+    }
+
     private fun makePotatoApi(timeout: Int): PotatoApi {
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

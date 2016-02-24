@@ -402,32 +402,45 @@ class ChannelContentFragment : Fragment() {
         val text = messageInput.text
 
         if (text.length > 0) {
-            val app = PotatoApplication.getInstance(context)
-            val api = app.potatoApi
-            val apiKey = app.apiKey
-            val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
-            call.enqueue(object : Callback<SendMessageResult> {
-                override fun onResponse(response: Response<SendMessageResult>, retrofit: Retrofit) {
-                    if (response.isSuccess) {
-                        Log.i("Created message with id: " + response.body().id)
-                    }
-                    else {
-                        try {
-                            Log.e("Send message error from server: " + response.errorBody().string())
-                        }
-                        catch (e: IOException) {
-                            Log.e("Exception when getting error body after sending message", e)
-                        }
-
-                        displaySnackbarMessage(messageInput, "The server responded with an error")
-                    }
+            if(text[0] == '/') {
+                val result = Regex("^([a-zA-Z0-9_-]+)(?: +([^ ].*))?$").find(text.substring(1))
+                if(result != null) {
+                    val cmd = result.groupValues[1]
+                    val args = result.groupValues[2]
+                    RemoteRequestService.sendCommand(context, cid, cmd, args)
                 }
-
-                override fun onFailure(t: Throwable) {
-                    Log.e("Error sending message to channel", t)
-                    displaySnackbarMessage(messageInput, "Error sending message: " + t.message)
+                else {
+                    displaySnackbarMessage(messageInput, "Illegal characters in command")
                 }
-            })
+            }
+            else {
+                val app = PotatoApplication.getInstance(context)
+                val api = app.potatoApi
+                val apiKey = app.apiKey
+                val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
+                call.enqueue(object : Callback<SendMessageResult> {
+                    override fun onResponse(response: Response<SendMessageResult>, retrofit: Retrofit) {
+                        if (response.isSuccess) {
+                            Log.i("Created message with id: " + response.body().id)
+                        }
+                        else {
+                            try {
+                                Log.e("Send message error from server: " + response.errorBody().string())
+                            }
+                            catch (e: IOException) {
+                                Log.e("Exception when getting error body after sending message", e)
+                            }
+
+                            displaySnackbarMessage(messageInput, "The server responded with an error")
+                        }
+                    }
+
+                    override fun onFailure(t: Throwable) {
+                        Log.e("Error sending message to channel", t)
+                        displaySnackbarMessage(messageInput, "Error sending message: " + t.message)
+                    }
+                })
+            }
 
             messageInput.setText("")
         }

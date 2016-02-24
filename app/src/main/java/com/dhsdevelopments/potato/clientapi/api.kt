@@ -3,6 +3,8 @@ package com.dhsdevelopments.potato.clientapi
 import android.content.Context
 import android.net.Uri
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
+import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
+import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
 import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
@@ -36,7 +38,8 @@ interface PotatoApi {
     fun channelUpdates(@Header("API-token") apiKey: String,
                        @Query("channels") channels: String,
                        @Query("services") services: String,
-                       @Query("event-id") eventId: String?): Call<PotatoNotificationResult>
+                       @Query("event-id") eventId: String?,
+                       @Query("session_id") sid: String?): Call<PotatoNotificationResult>
 
     @POST("channel-updates/update")
     fun channelUpdatesUpdate(@Header("API-token") apiKey: String,
@@ -82,6 +85,35 @@ interface PotatoApi {
                        @Path("cid") channelId: String,
                        @Query("query") query: String,
                        @Query("star-only") starOnly: String): Call<SearchResult>
+
+    @POST("command")
+    fun sendCommand(@Header("API-token") apiKey: String,
+                    @Body request: SendCommandRequest): Call<SendCommandResult>
+}
+
+interface RemoteResult {
+    fun errorMsg(): String?
+}
+
+fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
+    val result = call.execute()
+    if (result.isSuccess) {
+        val body = result.body()
+        val errMsg = body.errorMsg()
+        if (errMsg == null) {
+            successCallback(body)
+        }
+        else {
+            errorCallback(errMsg)
+        }
+    }
+    else {
+        errorCallback("Call failed")
+    }
+}
+
+fun plainErrorHandler(msg: String): Unit {
+    throw RuntimeException("Error while performing remote call: $msg")
 }
 
 class ChannelUpdatesUpdateResult {

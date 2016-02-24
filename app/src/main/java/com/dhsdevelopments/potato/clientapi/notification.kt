@@ -19,7 +19,8 @@ class NotificationTypeAdapter : JsonDeserializer<PotatoNotification> {
             "cu" -> context.deserialize(obj, StateUpdateNotification::class.java)
             "type" -> context.deserialize(obj, TypingNotification::class.java)
             "option" -> context.deserialize(obj, OptionNotification::class.java)
-            else -> context.deserialize(obj, PotatoNotification::class.java)
+            "unknown-slashcommand" -> context.deserialize(obj, UnknownSlashcommandNotification::class.java)
+            else -> context.deserialize(obj, DefaultNotification::class.java)
         }
     }
 }
@@ -28,9 +29,14 @@ open class PotatoNotification : Serializable {
     @SerializedName("type")
     lateinit var type: String
 
-
     override fun toString(): String {
         return "PotatoNotification[type='$type']"
+    }
+}
+
+class DefaultNotification : PotatoNotification() {
+    override fun toString(): String {
+        return "DefaultNotification[type='$type']"
     }
 }
 
@@ -115,4 +121,9 @@ class Option {
 
     @SerializedName("response")
     lateinit var response: String
+}
+
+class UnknownSlashcommandNotification: PotatoNotification() {
+    @SerializedName("cmd")
+    lateinit var cmd: String
 }

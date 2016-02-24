@@ -8,12 +8,16 @@ fun <T> nlazy(getter: () -> T): Lazy<T> {
     }
 }
 
-fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File {
-    val buf = StringBuilder()
-    buf.append(tmpFilePrefix)
+fun makeRandomCharacterSequence(buf: StringBuilder, n: Int) {
     for (i in 0..19) {
         buf.append(('a' + (Math.random() * ('z' - 'a' + 1)).toInt()).toChar())
     }
+}
+
+fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File {
+    val buf = StringBuilder()
+    buf.append(tmpFilePrefix)
+    makeRandomCharacterSequence(buf, 20)
     buf.append('_')
     val s = buf.toString()
     for (i in 0..29) {

@@ -10,6 +10,9 @@ import android.support.v4.content.LocalBroadcastManager
 import android.webkit.MimeTypeMap
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
+import com.dhsdevelopments.potato.clientapi.callService
+import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
+import com.dhsdevelopments.potato.clientapi.plainErrorHandler
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
 import com.google.android.gms.gcm.GoogleCloudMessaging
@@ -17,14 +20,6 @@ import com.google.android.gms.iid.InstanceID
 import java.io.IOException
 import java.util.*
 
-/**
- * An [IntentService] subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- *
- *
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 class RemoteRequestService : IntentService("RemoteRequestService") {
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null) {
@@ -34,6 +29,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_UPDATE_UNREAD_SUBSCRIPTION -> updateUnreadSubscriptionStateImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getBooleanExtra(EXTRA_UPDATE_STATE, false))
                 ACTION_SEND_MESSAGE_WITH_IMAGE -> sendMessageWithImageImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getParcelableExtra<Parcelable>(EXTRA_IMAGE_URI) as Uri)
                 ACTION_DELETE_MESSAGE -> deleteMessageImpl(intent.getStringExtra(EXTRA_MESSAGE_ID))
+                ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS))
             }
         }
     }
@@ -203,8 +199,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val db = PotatoApplication.getInstance(this).cacheDatabase
         db.beginTransaction()
         try {
-            var hasElement = false;
-            loadChannelConfigFromDb(db, cid).use { hasElement = it.moveToNext() }
+            val hasElement = loadChannelConfigFromDb(db, cid).use { it.moveToNext() }
 
             if (hasElement) {
                 val values = ContentValues()
@@ -227,16 +222,26 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
     }
 
+    private fun sendCommandImpl(cid: String, cmd: String, args: String) {
+        val app = PotatoApplication.getInstance(this)
+        callService(app.potatoApi.sendCommand(app.apiKey, SendCommandRequest(cid, app.sessionId, cmd, args)), ::plainErrorHandler) {
+            Log.i("Command sent successfully")
+        }
+    }
+
     companion object {
         private val ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS"
         private val ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS"
         private val ACTION_UPDATE_UNREAD_SUBSCRIPTION = "com.dhsdevelopments.potato.gcm.UPDATE_UNREAD_SUBSCRIPTION"
         private val ACTION_SEND_MESSAGE_WITH_IMAGE = "com.dhsdevelopments.potato.gcm.SEND_MESSAGE_WITH_IMAGE"
         private val ACTION_DELETE_MESSAGE = "com.dhsdevelopments.potato.DELETE_MESSAGE"
+        private val ACTION_SEND_COMMAND = "com.dhsdevelopments.potato.SEND_COMMAND"
         private val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
         private val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
+        private val EXTRA_CMD = "com.dhsdevelopments.potato.cmd"
+        private val EXTRA_ARGS = "com.dhsdevelopments.potato.args"
 
         val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
@@ -266,6 +271,13 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         fun deleteMessage(context: Context, messageId: String) {
             makeAndStartIntent(context, ACTION_DELETE_MESSAGE,
                     EXTRA_MESSAGE_ID to messageId)
+        }
+
+        fun sendCommand(context: Context, cid: String, cmd: String, args: String) {
+            makeAndStartIntent(context, ACTION_SEND_COMMAND,
+                    EXTRA_CHANNEL_ID to cid,
+                    EXTRA_CMD to cmd,
+                    EXTRA_ARGS to args)
         }
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {
