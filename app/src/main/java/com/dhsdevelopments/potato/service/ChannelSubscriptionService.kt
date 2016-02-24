@@ -66,14 +66,11 @@ class ChannelSubscriptionService : Service() {
     private fun processNewNotifications(notifications: List<PotatoNotification>) {
         for (n in notifications) {
             Log.i("Processing notification: " + n)
-            if (n is MessageNotification) {
-                processMessageNotification(n)
-            }
-            else if (n is StateUpdateNotification) {
-                processStateUpdateNotification(n)
-            }
-            else if (n is TypingNotification) {
-                processTypingNotification(n)
+            when (n) {
+                is MessageNotification -> processMessageNotification(n)
+                is StateUpdateNotification -> processStateUpdateNotification(n)
+                is TypingNotification -> processTypingNotification(n)
+                is OptionNotification -> processOptionNotification(n)
             }
         }
     }
@@ -133,6 +130,10 @@ class ChannelSubscriptionService : Service() {
         return result
     }
 
+    private fun processOptionNotification(notification: OptionNotification) {
+        Log.d("Got option notification: $notification")
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -143,7 +144,7 @@ class ChannelSubscriptionService : Service() {
 
         private var isShutdown = false
         private val subscribedChannels = HashSet<String>()
-        private var pendingBinds: MutableSet<String>? = HashSet()
+        private var pendingBinds: MutableSet<String>? = null
         private var eventId: String? = null
         private var outstandingCall: Call<PotatoNotificationResult>? = null
 
@@ -225,7 +226,7 @@ class ChannelSubscriptionService : Service() {
                 if (isShutdown) {
                     return
                 }
-                if (!pendingBinds!!.isEmpty()) {
+                if (pendingBinds != null && !pendingBinds!!.isEmpty()) {
                     pendingBindsCopy = pendingBinds
                     pendingBinds = null
                 }
@@ -248,6 +249,9 @@ class ChannelSubscriptionService : Service() {
                 if (!subscribedChannels.contains(cid)) {
                     subscribedChannels.add(cid)
                     if (eventId == null) {
+                        if(pendingBinds == null) {
+                            pendingBinds = HashSet()
+                        }
                         pendingBinds!!.add(cid)
                     }
                     else {
@@ -286,7 +290,9 @@ class ChannelSubscriptionService : Service() {
             var wasShutdown = false
             synchronized (this) {
                 subscribedChannels.remove(cid)
-                pendingBinds!!.remove(cid)
+                if(pendingBinds != null) {
+                    pendingBinds!!.remove(cid)
+                }
                 if (subscribedChannels.isEmpty()) {
                     requestShutdown()
                     wasShutdown = true
@@ -304,6 +310,15 @@ class ChannelSubscriptionService : Service() {
             outstandingCallCopy?.cancel()
 
             interrupt()
+        }
+
+
+        private inner class ReceiverStoppedException : Exception {
+            constructor() {
+            }
+
+            constructor(e: InterruptedIOException) : super(e) {
+            }
         }
     }
 

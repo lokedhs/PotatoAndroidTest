@@ -4,10 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.preference.PreferenceManager
-import com.dhsdevelopments.potato.clientapi.MessageElementTypeAdapter
-import com.dhsdevelopments.potato.clientapi.NotificationTypeAdapter
 import com.dhsdevelopments.potato.clientapi.PotatoApi
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
+import com.dhsdevelopments.potato.clientapi.message.MessageElementTypeAdapter
+import com.dhsdevelopments.potato.clientapi.notifications.NotificationTypeAdapter
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.google.gson.GsonBuilder
@@ -50,7 +50,11 @@ class PotatoApplication : Application() {
         get() = makePotatoApi(120)
 
     private fun makePotatoApi(timeout: Int): PotatoApi {
-        val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter()).registerTypeAdapter(PotatoNotification::class.java, NotificationTypeAdapter()).create()
+        val gson = GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter())
+                .registerTypeAdapter(PotatoNotification::class.java, NotificationTypeAdapter())
+                .create()
         val httpClient = OkHttpClient()
         if (timeout > 0) {
             httpClient.setReadTimeout(timeout.toLong(), TimeUnit.SECONDS)

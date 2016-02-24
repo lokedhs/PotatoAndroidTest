@@ -6,17 +6,13 @@ import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
 import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
-import com.dhsdevelopments.potato.clientapi.message.*
-import com.dhsdevelopments.potato.clientapi.notifications.*
+import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
+import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationResult
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
@@ -24,8 +20,6 @@ import okio.BufferedSink
 import retrofit.Call
 import retrofit.http.*
 import java.io.IOException
-import java.lang.reflect.Type
-import java.util.*
 
 
 interface PotatoApi {
@@ -131,69 +125,6 @@ class ImageUriRequestBody(private val context: Context, private val imageUri: Ur
                 }
                 out.write(buf, 0, n)
             }
-        }
-    }
-}
-
-class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
-    @Throws(JsonParseException::class)
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): MessageElement {
-        if (json.isJsonPrimitive) {
-            return MessageElementString(json.asString)
-        }
-        else if (json.isJsonArray) {
-            val a = json.asJsonArray
-            val result = ArrayList<MessageElement>(a.size())
-            for (v in a) {
-                val element = context.deserialize<MessageElement>(v, MessageElement::class.java)
-                result.add(element)
-            }
-            return MessageElementList(result)
-        }
-        else {
-            val obj = json.asJsonObject
-            fun makeElement(): MessageElement {
-                return context.deserialize<MessageElement>(obj.get("e"), MessageElement::class.java)
-            }
-
-            val type = obj.get("type").asString
-            return when (type) {
-                "p" -> MessageElementParagraph(makeElement())
-                "b" -> MessageElementBold(makeElement())
-                "i" -> MessageElementItalics(makeElement())
-                "code" -> MessageElementCode(makeElement())
-                "url" -> {
-                    val addr = obj.get("addr").asString
-                    val description = obj.get("description")
-                    MessageElementUrl(addr, if (description.isJsonNull) addr else description.asString)
-                }
-                "code-block" -> {
-                    val language = obj.get("language").asString
-                    val code = obj.get("code").asString
-                    MessageElementCodeBlock(language, code)
-                }
-                "user" -> {
-                    val userId = obj.get("user_id").asString
-                    val userDescription = obj.get("user_description").asString
-                    MessageElementUser(userId, userDescription)
-                }
-                "newline" -> MessageElementNewline()
-                else -> MessageElementUnknownType(type)
-            }
-        }
-    }
-}
-
-class NotificationTypeAdapter : JsonDeserializer<PotatoNotification> {
-    @Throws(JsonParseException::class)
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): PotatoNotification {
-        val obj = json.asJsonObject
-        val type = obj.get("type").asString
-        return when (type) {
-            "m" -> context.deserialize<PotatoNotification>(obj, MessageNotification::class.java)
-            "cu" -> context.deserialize<PotatoNotification>(obj, StateUpdateNotification::class.java)
-            "type" -> context.deserialize<PotatoNotification>(obj, TypingNotification::class.java)
-            else -> context.deserialize<PotatoNotification>(obj, PotatoNotification::class.java)
         }
     }
 }
