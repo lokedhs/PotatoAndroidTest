@@ -16,4 +16,21 @@
             android:text="Send notification"
             android:id="@+id/test_notification_button" android:layout_alignParentTop="true" android:layout_alignParentStart="true"
             tools:ignore="HardcodedText"/>
+
+    <Button
+            android:id="@+id/test_dialog_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open dialog" tools:ignore="HardcodedText" android:layout_below="@+id/test_notification_button"
+            android:layout_alignParentStart="true"/>
+    <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_style_number_picker" android:layout_below="@+id/test_dialog_button"
+            android:layout_alignParentStart="true" android:orientation="vertical"/>
+    <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/theme_picker" android:layout_below="@+id/test_dialog_button"
+            android:layout_toEndOf="@+id/dialog_style_number_picker" android:orientation="vertical"/>
 </RelativeLayout>
