@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.StorageHelper
@@ -116,7 +115,6 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
         init {
             this.titleView = view.findViewById(R.id.header_title_text) as TextView
-            Log.i("Created header view. titleView=" + titleView)
         }
 
         fun setTitle(title: String) {

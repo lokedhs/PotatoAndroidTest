@@ -124,6 +124,9 @@ class Option {
 }
 
 class UnknownSlashcommandNotification: PotatoNotification() {
+    @SerializedName("channel")
+    lateinit var channel: String
+
     @SerializedName("cmd")
     lateinit var cmd: String
 }

@@ -40,6 +40,7 @@ import retrofit.Response
 import retrofit.Retrofit
 import java.io.IOException
 import java.text.Collator
+import java.text.MessageFormat
 import java.util.*
 
 class ChannelContentFragment : Fragment() {
@@ -94,6 +95,7 @@ class ChannelContentFragment : Fragment() {
         intentFilter.addAction(ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_TYPING)
+        intentFilter.addAction(ChannelSubscriptionService.ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
 
         adapter = ChannelContentAdapter(this, cid)
@@ -321,7 +323,6 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun scrollToBottom() {
-        Log.i("Scrolling to bottom")
         messageListView.scrollToPosition(adapter.itemCount - 1)
     }
 
@@ -335,6 +336,15 @@ class ChannelContentFragment : Fragment() {
             ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED -> processMessagePostedNotification(intent)
             ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE -> processChannelUsersNotification(intent)
             ChannelSubscriptionService.ACTION_TYPING -> processTypingNotification(intent)
+            ChannelSubscriptionService.ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE -> processUnknownSlashcommand(intent)
+        }
+    }
+
+    private fun processUnknownSlashcommand(intent: Intent) {
+        if(intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) == cid) {
+            val cmd = intent.getStringExtra(ChannelSubscriptionService.EXTRA_COMMAND_NAME)
+            val fmt = MessageFormat(getString(R.string.illegal_command_reply))
+            showErrorSnackbar(fmt.format(arrayOf(cmd)))
         }
     }
 

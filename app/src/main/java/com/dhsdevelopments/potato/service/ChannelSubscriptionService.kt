@@ -33,7 +33,6 @@ class ChannelSubscriptionService : Service() {
     }
 
     override fun onDestroy() {
-        Log.i("Destroying subscription service")
         if (receiverThread != null) {
             receiverThread!!.requestShutdown()
         }
@@ -53,7 +52,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun bindToChannel(cid: String) {
-        Log.i("Binding to channel: " + cid)
+        Log.d("Binding to channel: " + cid)
         if (receiverThread == null) {
             receiverThread = Receiver(cid)
             receiverThread!!.start()
@@ -65,7 +64,7 @@ class ChannelSubscriptionService : Service() {
 
     private fun processNewNotifications(notifications: List<PotatoNotification>) {
         for (n in notifications) {
-            Log.i("Processing notification: " + n)
+            Log.d("Processing notification: " + n)
             when (n) {
                 is MessageNotification -> processMessageNotification(n)
                 is StateUpdateNotification -> processStateUpdateNotification(n)
@@ -136,7 +135,11 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun processUnknownSlashcommandNotification(n: UnknownSlashcommandNotification) {
-        Log.d("Unknown slashcommand: ${n.cmd}")
+        Log.d("Unknown slashcommand: ${n.cmd}, channel: ${n.channel}")
+        val intent = Intent(ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
+        intent.putExtra(EXTRA_CHANNEL_ID, n.channel)
+        intent.putExtra(EXTRA_COMMAND_NAME, n.cmd)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -219,7 +222,7 @@ class ChannelSubscriptionService : Service() {
                 }
             }
 
-            Log.i("Updates thread shut down")
+            Log.d("Updates thread shut down")
         }
 
         private fun updateEventIdAndCheckPendingBindRequests(eventId: String?) {
@@ -272,7 +275,7 @@ class ChannelSubscriptionService : Service() {
         }
 
         private fun submitBindRequest(cid: String) {
-            Log.i("Submit bind request: " + cid)
+            Log.d("Submit bind request: " + cid)
             val e = eventId ?: throw IllegalStateException("eventId is null")
             val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {
@@ -350,5 +353,8 @@ class ChannelSubscriptionService : Service() {
         val EXTRA_USER_ID = "com.dhsdevelopments.potato.user_id"
         val TYPING_MODE_ADD = "add"
         val TYPING_MODE_REMOVE = "remove"
+
+        val ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE = "com.dhsdevelopments.potato.UNKNOWN_COMMAND"
+        val EXTRA_COMMAND_NAME = "command_name"
     }
 }

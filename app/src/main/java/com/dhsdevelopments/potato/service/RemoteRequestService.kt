@@ -225,7 +225,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     private fun sendCommandImpl(cid: String, cmd: String, args: String) {
         val app = PotatoApplication.getInstance(this)
         callService(app.potatoApi.sendCommand(app.apiKey, SendCommandRequest(cid, app.sessionId, cmd, args)), ::plainErrorHandler) {
-            Log.i("Command sent successfully")
+            Log.i("Command sent successfully, cid=$cid, cmd=$cmd")
         }
     }
 
