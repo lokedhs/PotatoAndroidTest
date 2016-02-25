@@ -26,6 +26,7 @@ import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
+import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
@@ -95,6 +96,7 @@ class ChannelContentFragment : Fragment() {
         intentFilter.addAction(ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_TYPING)
+        intentFilter.addAction(ChannelSubscriptionService.ACTION_OPTIONS)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
 
@@ -337,14 +339,7 @@ class ChannelContentFragment : Fragment() {
             ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE -> processChannelUsersNotification(intent)
             ChannelSubscriptionService.ACTION_TYPING -> processTypingNotification(intent)
             ChannelSubscriptionService.ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE -> processUnknownSlashcommand(intent)
-        }
-    }
-
-    private fun processUnknownSlashcommand(intent: Intent) {
-        if(intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) == cid) {
-            val cmd = intent.getStringExtra(ChannelSubscriptionService.EXTRA_COMMAND_NAME)
-            val fmt = MessageFormat(getString(R.string.illegal_command_reply))
-            showErrorSnackbar(fmt.format(arrayOf(cmd)))
+            ChannelSubscriptionService.ACTION_OPTIONS -> processOptions(intent)
         }
     }
 
@@ -405,6 +400,28 @@ class ChannelContentFragment : Fragment() {
 
             typingTextView.text = buf.toString()
             typingTextView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun processOptions(intent: Intent) {
+        val notification = intent.getSerializableExtra(ChannelSubscriptionService.EXTRA_OPTION_NOTIFICATION) as OptionNotification
+
+        val ft = fragmentManager.beginTransaction()
+        val prev = fragmentManager.findFragmentByTag("dialog")
+        if (prev != null) {
+            ft.remove(prev)
+        }
+        ft.addToBackStack(null)
+
+        val fragment = OptionsDialogFragment.makeDialog(notification)
+        fragment.show(ft, "dialog")
+    }
+
+    private fun processUnknownSlashcommand(intent: Intent) {
+        if(intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) == cid) {
+            val cmd = intent.getStringExtra(ChannelSubscriptionService.EXTRA_COMMAND_NAME)
+            val fmt = MessageFormat(getString(R.string.illegal_command_reply))
+            showErrorSnackbar(fmt.format(arrayOf(cmd)))
         }
     }
 

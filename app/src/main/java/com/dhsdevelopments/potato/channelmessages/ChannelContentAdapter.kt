@@ -300,8 +300,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             val imageWidth = resources.getDimensionPixelSize(R.dimen.chat_image_width)
             val imageHeight = resources.getDimensionPixelSize(R.dimen.chat_image_height)
 
-            updateIndex++
-            val oldUpdateIndex = updateIndex
+            val oldUpdateIndex = ++updateIndex
             imageCache.loadImageFromApi("/users/" + message.sender + "/image", imageWidth, imageHeight, StorageType.LONG,
                     object : LoadImageCallback {
                         override fun bitmapLoaded(bitmap: Bitmap) {

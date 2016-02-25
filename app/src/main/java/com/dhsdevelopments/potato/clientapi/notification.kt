@@ -100,7 +100,7 @@ class TypingNotification : PotatoNotification() {
     }
 }
 
-class OptionNotification : PotatoNotification() {
+class OptionNotification : PotatoNotification(), Serializable {
     @SerializedName("option-code")
     lateinit var optionCode: String
 
@@ -115,12 +115,18 @@ class OptionNotification : PotatoNotification() {
 }
 
 
-class Option {
+class Option : Serializable {
     @SerializedName("title")
     lateinit var title: String
 
     @SerializedName("response")
     lateinit var response: String
+
+    @SerializedName("image-url")
+    var imageUrl: String? = null
+
+    @SerializedName("button-text")
+    var buttonText: String? = null
 }
 
 class UnknownSlashcommandNotification: PotatoNotification() {

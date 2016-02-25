@@ -131,7 +131,10 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun processOptionNotification(notification: OptionNotification) {
-        Log.d("Got option notification: $notification")
+        Log.d("Got option notification")
+        val intent = Intent(ACTION_OPTIONS)
+        intent.putExtra(EXTRA_OPTION_NOTIFICATION, notification)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun processUnknownSlashcommandNotification(n: UnknownSlashcommandNotification) {
@@ -356,5 +359,8 @@ class ChannelSubscriptionService : Service() {
 
         val ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE = "com.dhsdevelopments.potato.UNKNOWN_COMMAND"
         val EXTRA_COMMAND_NAME = "command_name"
+
+        val ACTION_OPTIONS = "com.dhsdevelopments.potato.SESSION_OPTIONS_REQUEST"
+        val EXTRA_OPTION_NOTIFICATION = "options"
     }
 }

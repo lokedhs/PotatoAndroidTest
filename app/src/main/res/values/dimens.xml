@@ -18,4 +18,6 @@
     <dimen name="channel_content_message_block_separator">20dp</dimen>
     <dimen name="message_details_sender_image_width">128dp</dimen>
     <dimen name="message_details_sender_image_height">128dp</dimen>
+    <dimen name="option_image_width">128dp</dimen>
+    <dimen name="option_image_height">128dp</dimen>
 </resources>
