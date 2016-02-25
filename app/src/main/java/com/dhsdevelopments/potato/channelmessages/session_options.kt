@@ -1,9 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages
 
 import android.app.DialogFragment
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -17,8 +14,8 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.notifications.Option
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
 import com.dhsdevelopments.potato.imagecache.ImageCache
-import com.dhsdevelopments.potato.imagecache.LoadImageCallback
-import com.dhsdevelopments.potato.imagecache.StorageType
+import com.koushikdutta.ion.Ion
+import com.koushikdutta.ion.builder.AnimateGifMode
 
 class OptionsDialogFragment : DialogFragment() {
     lateinit var recyclerView: RecyclerView
@@ -89,25 +86,37 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
 
             titleView.text = option.title
 
-            if(option.imageUrl != null) {
+            if (option.imageUrl != null) {
                 val oldUpdateIndex = ++updateIndex
                 val res = parent.context.resources
                 val imageWidth = res.getDimensionPixelSize(R.dimen.option_image_width)
-                val imageHeight =res.getDimensionPixelSize(R.dimen.option_image_height)
-                imageCache.loadImage(option.imageUrl!!, imageWidth, imageHeight, StorageType.DONT_STORE,
-                        object : LoadImageCallback {
-                            override fun bitmapLoaded(bitmap: Bitmap) {
-                                if (updateIndex == oldUpdateIndex) {
-                                    imageView.setImageBitmap(bitmap)
-                                }
-                            }
+                val imageHeight = res.getDimensionPixelSize(R.dimen.option_image_height)
+                //                imageCache.loadImage(option.imageUrl!!, imageWidth, imageHeight, StorageType.DONT_STORE,
+                //                        object : LoadImageCallback {
+                //                            override fun bitmapLoaded(bitmap: Bitmap) {
+                //                                if (updateIndex == oldUpdateIndex) {
+                //                                    imageView.setImageBitmap(bitmap)
+                //                                }
+                //                            }
+                //
+                //                            override fun bitmapNotFound() {
+                //                                if (updateIndex == oldUpdateIndex) {
+                //                                    imageView.setImageDrawable(ColorDrawable(Color.GREEN))
+                //                                }
+                //                            }
+                //                        })
 
-                            override fun bitmapNotFound() {
-                                if (updateIndex == oldUpdateIndex) {
-                                    imageView.setImageDrawable(ColorDrawable(Color.GREEN))
-                                }
-                            }
-                        })
+                Ion.with(parent.context)
+                        .load(option.imageUrl!!)
+                        .withBitmap()
+                        .resize(imageHeight, imageWidth)
+                        .animateGif(AnimateGifMode.ANIMATE)
+                        .intoImageView(imageView)
+
+                //                Picasso.with(parent.context)
+                //                        .load(option.imageUrl!!)
+                //                        .into(imageView)
+
                 imageView.visibility = View.VISIBLE
             }
             else {
