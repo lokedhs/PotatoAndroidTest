@@ -57,7 +57,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun processResults(body: SearchResult) {
-        Log.i("got ${body.numFound} messages:")
+        Log.d("got ${body.numFound} messages:")
         searchResultAdapter.updateSearchResults(body)
     }
 }

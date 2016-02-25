@@ -5,7 +5,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.BackgroundColorSpan
 import android.widget.MultiAutoCompleteTextView
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class UserNameTokeniser(private val userTracker: ChannelUsersTracker) : MultiAutoCompleteTextView.Tokenizer {
@@ -47,7 +46,6 @@ class UserNameTokeniser(private val userTracker: ChannelUsersTracker) : MultiAut
     }
 
     override fun terminateToken(text: CharSequence): CharSequence {
-        Log.i("Terminate token called: '" + text + "', type: " + text.javaClass.name)
         val uid = text.toString()
         val u = userTracker.getUsers()[uid]
         val name = if (u == null) uid else u.name

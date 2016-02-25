@@ -43,8 +43,6 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri))
         map.put("body\"; filename=\"file." + (extension ?: "jpg") + "\" ", ImageUriRequestBody(this, imageUri))
 
-        Log.i("extension=" + extension + ", type map: " + map.keys)
-
         val call = app.potatoApi.sendMessageWithFile(app.apiKey, cid, map)
         try {
             val response = call.execute()

@@ -99,7 +99,7 @@ class MessageDetailActivity : AppCompatActivity() {
     }
 
     fun editMessage() {
-        Log.i("Need to implement message editing")
+        Log.e("Need to implement message editing")
     }
 
     companion object {
