@@ -29,7 +29,7 @@ abstract class AppCompatPreferenceActivity : PreferenceActivity() {
         getDelegate().onPostCreate(savedInstanceState)
     }
 
-    val supportActionBar: ActionBar
+    val supportActionBar: ActionBar?
         get() = getDelegate().supportActionBar
 
     fun setSupportActionBar(toolbar: Toolbar?) {
