@@ -331,7 +331,7 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun handleBroadcastMessage(intent: Intent) {
-        Log.i("received broadcast message of type " + intent.action)
+        Log.d("received broadcast message of type " + intent.action)
         when (intent.action) {
             ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED -> processMessagePostedNotification(intent)
             ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE -> processChannelUsersNotification(intent)
