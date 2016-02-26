@@ -393,12 +393,12 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             return null
         }
 
-        override fun getItemOffsets(outRect: Rect?, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
             var top = 0
-            if (messageFromAdapterPos(parent!!, view!!) != null) {
+            if (messageFromAdapterPos(parent, view) != null) {
                 top = divider.intrinsicHeight + dividerVerticalMargin * 2
             }
-            outRect!!.set(0, top, 0, 0)
+            outRect.set(0, top, 0, 0)
         }
 
         override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
