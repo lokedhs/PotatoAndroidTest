@@ -14,6 +14,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.notifications.Option
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
 import com.dhsdevelopments.potato.imagecache.ImageCache
+import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.koushikdutta.ion.Ion
 import com.koushikdutta.ion.builder.AnimateGifMode
 
@@ -31,6 +32,9 @@ class OptionsDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_options_dialog, container, false)
 
+        val title = view.findViewById(R.id.title_text_view) as TextView
+        title.text = optionsNotification.title
+
         recyclerView = view.findViewById(R.id.options_recycler_view) as RecyclerView
         //recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         //recyclerView.addItemDecoration(MarginDecoration)
@@ -38,6 +42,11 @@ class OptionsDialogFragment : DialogFragment() {
         recyclerView.adapter = OptionsAdapter(this, optionsNotification)
 
         return view;
+    }
+
+    internal fun optionSelected(code: String) {
+        RemoteRequestService.sendCommand(context, optionsNotification.channel, optionsNotification.optionCode, code, true)
+        dialog.dismiss()
     }
 
     companion object {
@@ -82,8 +91,19 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
         val imageView = itemView.findViewById(R.id.option_image) as ImageView
         val selectButton = itemView.findViewById(R.id.option_select_button) as Button
         var updateIndex = 0
+        var currentWrapper: OptionWrapper? = null
+
+        init {
+            selectButton.setOnClickListener { selectClicked() }
+        }
+
+        private fun selectClicked() {
+            val response = currentWrapper!!.option.response
+            parent.optionSelected(response)
+        }
 
         fun fillInView(wrapper: OptionWrapper) {
+            this.currentWrapper = wrapper
             val option = wrapper.option
 
             titleView.text = option.title

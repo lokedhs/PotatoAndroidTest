@@ -16,14 +16,18 @@ class SendCommandRequest {
     @SerializedName("arg")
     lateinit var arg: String
 
+    @SerializedName("reply")
+    var reply: Boolean = false
+
     constructor() {
     }
 
-    constructor(channel: String, session: String, command: String, arg: String) {
+    constructor(channel: String, session: String, command: String, arg: String, reply: Boolean) {
         this.channel = channel
         this.session = session
         this.command = command
         this.arg = arg
+        this.reply = reply
     }
 }
 

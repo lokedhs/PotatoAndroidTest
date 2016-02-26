@@ -29,7 +29,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_UPDATE_UNREAD_SUBSCRIPTION -> updateUnreadSubscriptionStateImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getBooleanExtra(EXTRA_UPDATE_STATE, false))
                 ACTION_SEND_MESSAGE_WITH_IMAGE -> sendMessageWithImageImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getParcelableExtra<Parcelable>(EXTRA_IMAGE_URI) as Uri)
                 ACTION_DELETE_MESSAGE -> deleteMessageImpl(intent.getStringExtra(EXTRA_MESSAGE_ID))
-                ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS))
+                ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS), intent.getBooleanExtra(EXTRA_REPLY, false))
             }
         }
     }
@@ -220,9 +220,9 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
     }
 
-    private fun sendCommandImpl(cid: String, cmd: String, args: String) {
+    private fun sendCommandImpl(cid: String, cmd: String, args: String, reply: Boolean) {
         val app = PotatoApplication.getInstance(this)
-        callService(app.potatoApi.sendCommand(app.apiKey, SendCommandRequest(cid, app.sessionId, cmd, args)), ::plainErrorHandler) {
+        callService(app.potatoApi.sendCommand(app.apiKey, SendCommandRequest(cid, app.sessionId, cmd, args, reply)), ::plainErrorHandler) {
             Log.i("Command sent successfully, cid=$cid, cmd=$cmd")
         }
     }
@@ -240,6 +240,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_MESSAGE_ID = "com.dhsdevelopments.potato.message_id"
         private val EXTRA_CMD = "com.dhsdevelopments.potato.cmd"
         private val EXTRA_ARGS = "com.dhsdevelopments.potato.args"
+        private val EXTRA_REPLY = "com.dhsdevelopments.potato.reply"
 
         val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
@@ -271,11 +272,13 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     EXTRA_MESSAGE_ID to messageId)
         }
 
-        fun sendCommand(context: Context, cid: String, cmd: String, args: String) {
+        fun sendCommand(context: Context, cid: String, cmd: String, args: String, reply: Boolean = false) {
             makeAndStartIntent(context, ACTION_SEND_COMMAND,
                     EXTRA_CHANNEL_ID to cid,
                     EXTRA_CMD to cmd,
-                    EXTRA_ARGS to args)
+                    EXTRA_ARGS to args,
+                    EXTRA_REPLY to reply
+            )
         }
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {

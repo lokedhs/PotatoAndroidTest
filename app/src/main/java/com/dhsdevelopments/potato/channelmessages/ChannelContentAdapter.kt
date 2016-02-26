@@ -161,7 +161,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         }
     }
 
-    fun positionForMessage(messageId: String): Int {
+    internal fun positionForMessage(messageId: String): Int {
         var i = 0;
         for (msg in messages) {
             if (msg.id == messageId) {
