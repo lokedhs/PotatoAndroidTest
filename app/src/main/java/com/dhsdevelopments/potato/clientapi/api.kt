@@ -125,9 +125,13 @@ class ChannelUpdatesUpdateResult {
     }
 }
 
-class ClearNotificationsResult {
+class ClearNotificationsResult : RemoteResult {
     @SerializedName("result")
     lateinit var result: String
+
+    override fun errorMsg(): String? {
+        return if(result == "ok") null else result
+    }
 
     override fun toString(): String {
         return "ClearNotificationsResult[result='$result']"

@@ -44,48 +44,17 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         map.put("body\"; filename=\"file." + (extension ?: "jpg") + "\" ", ImageUriRequestBody(this, imageUri))
 
         val call = app.potatoApi.sendMessageWithFile(app.apiKey, cid, map)
-        try {
-            val response = call.execute()
-            if (response.isSuccess) {
-                if ("ok" == response.body().result) {
-                    Log.i("Uploaded image, messageId=" + response.body().id)
-                }
-                else {
-                    Log.e("Got error code from server: " + response.body().result)
-                }
-            }
-            else {
-                Log.e("HTTP error when uploading image. code=" + response.code() + ", message=" + response.message())
-            }
+        callService(call, ::plainErrorHandler) { response ->
+            Log.i("Uploaded image, messageId=" + response.id)
         }
-        catch (e: IOException) {
-            // TODO: We really need a good generic way of handling IO errors
-            Log.e("Error when uploading image", e)
-        }
-
     }
 
     private fun markNotificationsForChannelImpl(cid: String) {
-        try {
-            val app = PotatoApplication.getInstance(this)
-            val call = app.potatoApi.clearNotificationsForChannel(app.apiKey, cid)
-            val result = call.execute()
-            if (result.isSuccess) {
-                if ("ok" == result.body().result) {
-                    Log.d("Notifications cleared for channel: " + cid)
-                }
-                else {
-                    Log.e("Unexpected result from notification clear request: " + result.body())
-                }
-            }
-            else {
-                Log.e("Unable to clear notifications on server: code=" + result.code() + ", message=" + result.message())
-            }
+        val app = PotatoApplication.getInstance(this)
+        val call = app.potatoApi.clearNotificationsForChannel(app.apiKey, cid)
+        callService(call, ::plainErrorHandler) {
+            Log.d("Notifications cleared for channel: " + cid)
         }
-        catch (e: IOException) {
-            Log.e("Exception when clearing notifications", e)
-        }
-
     }
 
     private fun loadChannelListImpl() {
@@ -148,48 +117,20 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     }
 
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
-        try {
-            val app = PotatoApplication.getInstance(this)
-            val token = InstanceID.getInstance(this).getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
-            val call = app.potatoApi.updateUnreadNotification(app.apiKey, cid, UpdateUnreadNotificationRequest(token, add))
-            val result = call.execute()
-            if (result.isSuccess) {
-                if ("ok" == result.body().result) {
-                    updateRegistrationInDb(cid, add)
-                    Log.d("Subscription updated successfully")
-                }
-                else {
-                    Log.e("Unexpected reply from unread subscription call")
-                }
-            }
-            else {
-                Log.e("Got error from server when subscribing to unread: " + result.message())
-            }
-        }
-        catch (e: IOException) {
-            Log.e("Exception while updating subscription state", e)
+        val app = PotatoApplication.getInstance(this)
+        val token = InstanceID.getInstance(this).getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
+        val call = app.potatoApi.updateUnreadNotification(app.apiKey, cid, UpdateUnreadNotificationRequest(token, add))
+        callService(call, ::plainErrorHandler) {
+            updateRegistrationInDb(cid, add)
+            Log.d("Subscription updated successfully")
         }
     }
 
     private fun deleteMessageImpl(messageId: String) {
-        try {
-            val app = PotatoApplication.getInstance(this)
-            val call = app.potatoApi.deleteMessage(app.apiKey, messageId)
-            val result = call.execute()
-            if (result.isSuccess) {
-                if ("ok" == result.body().result) {
-                    Log.d("Message deleted successfully")
-                }
-                else {
-                    Log.e("Unexpected reply from server")
-                }
-            }
-            else {
-                Log.e("Server error when requesting delete: " + result.message())
-            }
-        }
-        catch(e: IOException) {
-            Log.e("Exception when deleting message", e)
+        val app = PotatoApplication.getInstance(this)
+        val call = app.potatoApi.deleteMessage(app.apiKey, messageId)
+        callService(call, ::plainErrorHandler) {
+            Log.d("Message deleted successfully")
         }
     }
 

@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.clientapi.unreadnotification
 
+import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
 @Suppress("unused")
@@ -10,7 +11,11 @@ class UpdateUnreadNotificationRequest(
         @SerializedName("add")
         var add: Boolean)
 
-class UpdateUnreadNotificationResult {
+class UpdateUnreadNotificationResult : RemoteResult {
     @SerializedName("result")
     lateinit var result: String
+
+    override fun errorMsg(): String? {
+        return if (result == "ok") null else result
+    }
 }
