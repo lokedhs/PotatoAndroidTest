@@ -108,7 +108,7 @@ fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Uni
         }
     }
     else {
-        errorCallback("Call failed")
+        errorCallback("Call failed, code: ${result.code()}, message: ${result.message()}")
     }
 }
 
