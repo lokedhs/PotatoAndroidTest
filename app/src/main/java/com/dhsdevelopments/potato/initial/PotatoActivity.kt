@@ -29,6 +29,7 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             if (uid == "") {
                 throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
             }
+            checkGooglePlayApis()
             startActivity(Intent(this, ChannelListActivity::class.java))
             finish()
         }
@@ -36,7 +37,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
     override fun onResume() {
         super.onResume()
-        checkGooglePlayApis()
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 
     private fun checkGooglePlayApis() {
