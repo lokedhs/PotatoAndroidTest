@@ -24,8 +24,7 @@ class UserListFragment : Fragment() {
         val view = inflater!!.inflate(R.layout.fragment_user_list, container, false)
 
         val recyclerView = view.findViewById(R.id.user_list_recycler_view) as RecyclerView
-        val userListAdapter = UserListAdapter(ChannelUsersTracker.findEnclosingUserTracker(this))
-        recyclerView.adapter = userListAdapter
+        recyclerView.adapter = UserListAdapter(ChannelUsersTracker.findEnclosingUserTracker(this))
 
         return view
     }

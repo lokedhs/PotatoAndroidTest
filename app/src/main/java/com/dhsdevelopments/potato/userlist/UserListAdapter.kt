@@ -15,11 +15,11 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
     private val inactiveUsers = ArrayList<UserWrapper>()
 
     private var listener: ChannelUsersTracker.UserActivityListener = ActivityListener()
-    private val comparator: Comparator<in UserWrapper>
+    private val comparator: Comparator<UserWrapper>
 
     init {
         val collator = Collator.getInstance()
-        comparator = Comparator<com.dhsdevelopments.potato.userlist.UserWrapper> { o1, o2 -> collator.compare(o1.name, o2.name) }
+        comparator = Comparator<UserWrapper> { o1, o2 -> collator.compare(o1.name, o2.name) }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
@@ -116,7 +116,6 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
     }
 
     private inner class ActivityListener : ChannelUsersTracker.UserActivityListener {
-
         override fun activeUserListSync() {
             loadStateFromUserTracker()
         }
