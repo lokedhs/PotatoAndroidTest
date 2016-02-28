@@ -1,34 +1,34 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-            android:key="notifications_private_message"
+            android:key="@string/pref_notifications_private_message"
             android:title="@string/private_message_notifications"
             android:defaultValue="true"/>
     <RingtonePreference
             android:dependency="notifications_private_message"
-            android:key="notifications_private_message_ringtone"
+            android:key="@string/pref_notifications_private_message_ringtone"
             android:title="@string/pref_title_ringtone"
             android:ringtoneType="notification"
             android:defaultValue="content://settings/system/notification_sound"/>
     <SwitchPreference
             android:dependency="notifications_private_message"
-            android:key="notifications_private_message_vibrate"
+            android:key="@string/pref_notifications_private_message_vibrate"
             android:title="@string/pref_title_vibrate"
             android:defaultValue="true"/>
 
     <SwitchPreference
-            android:key="notifications_unread"
+            android:key="@string/pref_notifications_unread"
             android:title="@string/unread_notifications"
             android:defaultValue="true"/>
     <RingtonePreference
             android:dependency="notifications_unread"
-            android:key="notifications_unread_ringtone"
+            android:key="@string/pref_notifications_unread_ringtone"
             android:title="@string/pref_title_ringtone"
             android:ringtoneType="notification"
             android:defaultValue="content://settings/system/notification_sound"/>
     <SwitchPreference
             android:dependency="notifications_unread"
-            android:key="notifications_unread_vibrate"
+            android:key="@string/pref_notifications_unread_vibrate"
             android:title="@string/pref_title_vibrate"
             android:defaultValue="true"/>
 

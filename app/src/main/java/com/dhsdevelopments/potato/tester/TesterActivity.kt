@@ -2,6 +2,10 @@ package com.dhsdevelopments.potato.tester
 
 import android.app.Activity
 import android.app.DialogFragment
+import android.app.Notification
+import android.app.NotificationManager
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +36,29 @@ class TesterActivity : Activity() {
     }
 
     private fun testNotification() {
+        val unread = 1
+        val prefs = getSharedPreferences("com.dhsdevelopments.potato_preferences", MODE_PRIVATE)
+        val builder = Notification.Builder(this)
+                .setSmallIcon(android.R.drawable.ic_dialog_email)
+                .setContentTitle("New Potato messages")
+                .setContentText("You have new messages in ${unread} channel" + if (unread == 1) "" else "s")
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
 
+
+        if (prefs.getBoolean(getString(R.string.pref_notifications_private_message_vibrate), true)) {
+            builder.setVibrate(longArrayOf(0, 500, 0, 500))
+        }
+
+        val ringtone = prefs.getString(getString(R.string.pref_notifications_private_message_ringtone), null)
+        val v = prefs.getBoolean(getString(R.string.pref_notifications_private_message_vibrate), true)
+        Log.d("r=${ringtone}, v=${v}")
+        if (ringtone != null) {
+            builder.setSound(Uri.parse(ringtone))
+        }
+
+        val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        mgr.notify("foo", 1, builder.build())
     }
 
     private fun openDialog() {

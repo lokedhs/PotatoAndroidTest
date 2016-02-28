@@ -29,7 +29,6 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             if (uid == "") {
                 throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
             }
-            checkGooglePlayApis()
             startActivity(Intent(this, ChannelListActivity::class.java))
             finish()
         }
@@ -41,8 +40,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     private fun checkGooglePlayApis() {
+        Log.i("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()
         val result = availability.isGooglePlayServicesAvailable(this)
+        Log.i("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
                 val dialog = availability.getErrorDialog(this, result, 0)
@@ -53,6 +54,7 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
         }
         else {
+            Log.i("registering")
             val intent = Intent(this, RegistrationIntentService::class.java)
             intent.action = RegistrationIntentService.ACTION_REGISTER
             startService(intent)
