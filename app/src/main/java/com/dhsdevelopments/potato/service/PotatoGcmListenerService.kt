@@ -116,7 +116,7 @@ class PotatoGcmListenerService : GcmListenerService() {
                     builder
                             .setSmallIcon(android.R.drawable.ic_dialog_email)
                             .setContentTitle("New Potato messages")
-                            .setContentText("You have new messages in " + unread + " channel" + if (unread == 1) "" else "s")
+                            .setContentText("You have new messages in $unread channel" + if (unread == 1) "" else "s")
                             .setContentIntent(pendingIntent)
 
                 }

@@ -9,9 +9,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
-            android:textAppearance="?attr/textAppearanceListItem" android:layout_weight="2.80"
+            android:textAppearance="?attr/textAppearanceListItem"
             android:layout_alignParentEnd="true" android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"/>
+            android:layout_alignParentTop="true"
+            android:text="Channel name"
+            tools:ignore="HardcodedText"/>
 
     <TextView
             android:id="@+id/unread_messages"

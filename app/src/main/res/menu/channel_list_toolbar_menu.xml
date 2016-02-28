@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_option_join_channel"
           android:icon="@android:drawable/ic_menu_add"
-          android:title="Join channel"
+          android:title="@string/channel_list_menu_entry_join_channel"
           app:showAsAction="ifRoom"/>
 </menu>

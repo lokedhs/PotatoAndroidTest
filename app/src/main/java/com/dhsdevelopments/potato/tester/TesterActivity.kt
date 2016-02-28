@@ -41,7 +41,7 @@ class TesterActivity : Activity() {
         val builder = Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_dialog_email)
                 .setContentTitle("New Potato messages")
-                .setContentText("You have new messages in ${unread} channel" + if (unread == 1) "" else "s")
+                .setContentText("You have new messages in $unread channel" + if (unread == 1) "" else "s")
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
 
@@ -52,7 +52,7 @@ class TesterActivity : Activity() {
 
         val ringtone = prefs.getString(getString(R.string.pref_notifications_private_message_ringtone), null)
         val v = prefs.getBoolean(getString(R.string.pref_notifications_private_message_vibrate), true)
-        Log.d("r=${ringtone}, v=${v}")
+        Log.d("r=$ringtone, v=$v")
         if (ringtone != null) {
             builder.setSound(Uri.parse(ringtone))
         }

@@ -141,10 +141,6 @@ class ChannelUsersTracker private constructor(private val context: Context, priv
         }
     }
 
-    fun getImageNameForUid(uid: String): String? {
-        return getUsers()[uid]?.imageName
-    }
-
     inner class UserDescriptor(
             var name: String,
             var nickname: String,
