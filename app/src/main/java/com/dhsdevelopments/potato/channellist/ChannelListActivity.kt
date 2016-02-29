@@ -157,6 +157,9 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     }
 
     private fun activateSelectedDomain() {
+        if(selectedDomainId == null && domainsMenu.size() > 0) {
+            selectedDomainId = domainsMenu.getItem(0).intent.getStringExtra(EXTRA_DOMAIN_ID)
+        }
         if (selectedDomainId != null) {
             var domainName: String? = null
             val n = domainsMenu.size()
