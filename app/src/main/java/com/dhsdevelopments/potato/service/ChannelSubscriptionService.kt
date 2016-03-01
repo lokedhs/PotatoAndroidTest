@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
+import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult
@@ -25,8 +26,8 @@ class ChannelSubscriptionService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val action = intent.action
         when (action) {
-            ACTION_BIND_TO_CHANNEL -> bindToChannel(intent.getStringExtra(EXTRA_CHANNEL_ID))
-            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(EXTRA_CHANNEL_ID))
+            ACTION_BIND_TO_CHANNEL -> bindToChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
+            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
             else -> throw UnsupportedOperationException("Illegal subscription command: " + action)
         }
         return Service.START_NOT_STICKY
@@ -84,7 +85,7 @@ class ChannelSubscriptionService : Service() {
 
     private fun processStateUpdateNotification(update: StateUpdateNotification) {
         val intent = Intent(ACTION_CHANNEL_USERS_UPDATE)
-        intent.putExtra(EXTRA_CHANNEL_ID, update.channel)
+        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, update.channel)
         when (update.addType) {
             "sync" -> {
                 intent.putExtra(EXTRA_CHANNEL_USERS_TYPE, USER_UPDATE_TYPE_SYNC)
@@ -107,8 +108,8 @@ class ChannelSubscriptionService : Service() {
 
     private fun processTypingNotification(typingNotification: TypingNotification) {
         val intent = Intent(ACTION_TYPING)
-        intent.putExtra(EXTRA_CHANNEL_ID, typingNotification.channelId)
-        intent.putExtra(EXTRA_USER_ID, typingNotification.userId)
+        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, typingNotification.channelId)
+        intent.putExtra(IntentUtil.EXTRA_USER_ID, typingNotification.userId)
         intent.putExtra(EXTRA_TYPING_MODE, typingModeFromJson(typingNotification.addType))
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
@@ -140,7 +141,7 @@ class ChannelSubscriptionService : Service() {
     private fun processUnknownSlashcommandNotification(n: UnknownSlashcommandNotification) {
         Log.d("Unknown slashcommand: ${n.cmd}, channel: ${n.channel}")
         val intent = Intent(ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
-        intent.putExtra(EXTRA_CHANNEL_ID, n.channel)
+        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, n.channel)
         intent.putExtra(EXTRA_COMMAND_NAME, n.cmd)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
@@ -338,7 +339,6 @@ class ChannelSubscriptionService : Service() {
     companion object {
         val ACTION_BIND_TO_CHANNEL = "com.dhsdevelopments.potato.BIND_CHANNEL"
         val ACTION_UNBIND_FROM_CHANNEL = "com.dhsdevelopments.potato.UNBIND_CHANNEL"
-        val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
 
         val ACTION_MESSAGE_RECEIVED = "com.dhsdevelopments.potato.MESSAGE_RECEIVED"
         val EXTRA_MESSAGE = "com.dhsdevelopments.potato.message"
@@ -353,7 +353,6 @@ class ChannelSubscriptionService : Service() {
 
         val ACTION_TYPING = "com.dhsdevelopments.potato.TYPING_UPDATED"
         val EXTRA_TYPING_MODE = "com.dhsdevelopments.potato.typing_mode"
-        val EXTRA_USER_ID = "com.dhsdevelopments.potato.user_id"
         val TYPING_MODE_ADD = "add"
         val TYPING_MODE_REMOVE = "remove"
 

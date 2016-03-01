@@ -6,8 +6,8 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.HasUserTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
@@ -83,7 +83,7 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
      */
     override fun startActivity(intent: Intent) {
         if (intent.action == Intent.ACTION_SEARCH) {
-            intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
+            intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, channelId)
         }
         super.startActivity(intent)
     }

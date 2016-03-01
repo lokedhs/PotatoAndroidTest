@@ -6,6 +6,7 @@ import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
 import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
+import com.dhsdevelopments.potato.clientapi.domainchannels.ChannelsInDomainResult
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
@@ -25,6 +26,10 @@ import java.io.IOException
 
 
 interface PotatoApi {
+    @GET("domain/{domainId}/channels")
+    fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
+                               @Path("domainId") domainId: String): Call<ChannelsInDomainResult>
+
     @GET("channels2")
     fun getChannels2(@Header("API-token") apiKey: String): Call<ChannelsResult>
 
@@ -95,23 +100,6 @@ interface RemoteResult {
     fun errorMsg(): String?
 }
 
-fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
-    val result = call.execute()
-    if (result.isSuccess) {
-        val body = result.body()
-        val errMsg = body.errorMsg()
-        if (errMsg == null) {
-            successCallback(body)
-        }
-        else {
-            errorCallback(errMsg)
-        }
-    }
-    else {
-        errorCallback("Call failed, code: ${result.code()}, message: ${result.message()}")
-    }
-}
-
 fun plainErrorHandler(msg: String): Unit {
     throw RuntimeException("Error while performing remote call: $msg")
 }
@@ -130,7 +118,7 @@ class ClearNotificationsResult : RemoteResult {
     lateinit var result: String
 
     override fun errorMsg(): String? {
-        return if(result == "ok") null else result
+        return if (result == "ok") null else result
     }
 
     override fun toString(): String {

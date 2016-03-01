@@ -19,12 +19,9 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.SubMenu
-import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
-import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
@@ -200,6 +197,14 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         val intent = Intent(this, SelectChannelActivity::class.java)
         intent.putExtra(SelectChannelActivity.EXTRA_DOMAIN_ID, selectedDomainId)
         startActivityForResult(intent, 0, null)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if(resultCode == RESULT_OK) {
+            val cid = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
+            val name = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_NAME)
+            setActiveChannel(cid, name)
+        }
     }
 
     fun setActiveChannel(cid: String, channelName: String) {

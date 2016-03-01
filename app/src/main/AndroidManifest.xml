@@ -51,7 +51,7 @@
         </activity>
         <activity
                 android:name=".selectchannel.SelectChannelActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@android:style/Theme.Material.Light.Dialog">
         </activity>
         <activity android:name=".tester.TesterActivity">
         </activity>

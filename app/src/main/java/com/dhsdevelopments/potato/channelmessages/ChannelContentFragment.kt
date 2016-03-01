@@ -21,9 +21,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.MultiAutoCompleteTextView
 import android.widget.TextView
-import com.dhsdevelopments.potato.Log
-import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
@@ -32,7 +30,6 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
-import com.dhsdevelopments.potato.loadChannelConfigFromDb
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -229,7 +226,7 @@ class ChannelContentFragment : Fragment() {
         super.onStart()
         val intent = Intent(context, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL
-        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
+        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
         context.startService(intent)
         adapter.loadMessages(object : ChannelContentAdapter.LoadMessagesCallback {
             override fun loadSuccessful(messages: List<MessageWrapper>) {
@@ -249,7 +246,7 @@ class ChannelContentFragment : Fragment() {
     override fun onStop() {
         val intent = Intent(context, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
-        intent.putExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID, cid)
+        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
         context.startService(intent)
         super.onStop()
     }
@@ -356,12 +353,12 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun processTypingNotification(intent: Intent) {
-        if (intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) != cid) {
+        if (intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) != cid) {
             // Only process messages on this channel
             return
         }
 
-        val uid = intent.getStringExtra(ChannelSubscriptionService.EXTRA_USER_ID)
+        val uid = intent.getStringExtra(IntentUtil.EXTRA_USER_ID)
         val mode = intent.getStringExtra(ChannelSubscriptionService.EXTRA_TYPING_MODE)
         when (mode) {
             ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, ChannelUsersTracker.findEnclosingUserTracker(this).getNameForUid(uid))
@@ -418,7 +415,7 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun processUnknownSlashcommand(intent: Intent) {
-        if(intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) == cid) {
+        if(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) == cid) {
             val cmd = intent.getStringExtra(ChannelSubscriptionService.EXTRA_COMMAND_NAME)
             val fmt = MessageFormat(getString(R.string.illegal_command_reply))
             showErrorSnackbar(fmt.format(arrayOf(cmd)))

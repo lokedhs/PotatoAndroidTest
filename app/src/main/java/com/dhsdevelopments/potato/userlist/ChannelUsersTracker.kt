@@ -3,6 +3,7 @@ package com.dhsdevelopments.potato.userlist
 import android.app.Fragment
 import android.content.Context
 import android.content.Intent
+import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.LoadUsersResult
@@ -33,7 +34,7 @@ class ChannelUsersTracker private constructor(private val context: Context, priv
             return
         }
 
-        if (intent.getStringExtra(ChannelSubscriptionService.EXTRA_CHANNEL_ID) != cid) {
+        if (intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) != cid) {
             // Only accept notifications for the given channel
             return
         }
