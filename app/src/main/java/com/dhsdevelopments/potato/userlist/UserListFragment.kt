@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 
 class UserListFragment : Fragment() {
 
@@ -24,7 +25,7 @@ class UserListFragment : Fragment() {
         val view = inflater!!.inflate(R.layout.fragment_user_list, container, false)
 
         val recyclerView = view.findViewById(R.id.user_list_recycler_view) as RecyclerView
-        recyclerView.adapter = UserListAdapter(ChannelUsersTracker.findEnclosingUserTracker(this))
+        recyclerView.adapter = UserListAdapter((activity as HasChannelContentActivity).findUserTracker())
 
         return view
     }

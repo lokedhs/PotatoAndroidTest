@@ -10,5 +10,6 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
-            android:id="@+id/channel_name"/>
+            android:id="@+id/channel_name"
+            android:layout_margin="16dp"/>
 </LinearLayout>

@@ -22,15 +22,14 @@ import android.view.SubMenu
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
+import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
-import com.dhsdevelopments.potato.userlist.HasUserTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
-class ChannelListActivity : AppCompatActivity(), HasUserTracker {
-
+class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var selectedDomainId: String? = null
 
     /**
@@ -48,6 +47,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
     private lateinit var receiver: BroadcastReceiver
 
     private var userListFragment: UserListFragment? = null
+    private var channelContentFragment: ChannelContentFragment? = null
 
     private val navigationView: NavigationView         by nlazy { findViewById(R.id.channel_list_nav_view) as NavigationView }
     private val domainsMenu: SubMenu                   by nlazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
@@ -226,6 +226,7 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         val arguments = Bundle()
         arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, cid)
         arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
+
         val fragment = ChannelContentFragment()
         fragment.arguments = arguments
 
@@ -236,11 +237,27 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
                 .replace(R.id.channel_detail_container, fragment)
                 .replace(R.id.user_list_container, userListFragment)
                 .commit()
+
+        channelContentFragment = fragment
+
         invalidateOptionsMenu()
     }
 
     override fun findUserTracker(): ChannelUsersTracker {
         return usersTracker!!
+    }
+
+    override fun closeChannel() {
+        if(channelContentFragment != null) {
+            fragmentManager
+                    .beginTransaction()
+                    .remove(channelContentFragment)
+                    .remove(userListFragment)
+                    .commit()
+
+            channelContentFragment = null
+            userListFragment = null
+        }
     }
 
     fun updateDomainList() {

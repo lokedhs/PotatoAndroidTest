@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.userlist
 
-import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import com.dhsdevelopments.potato.IntentUtil
@@ -155,19 +154,8 @@ class ChannelUsersTracker private constructor(private val context: Context, priv
     }
 
     companion object {
-
         fun findForChannel(context: Context, cid: String): ChannelUsersTracker {
             return ChannelUsersTracker(context, cid)
-        }
-
-        fun findEnclosingUserTracker(fragment: Fragment): ChannelUsersTracker {
-            val activity = fragment.activity
-            if (activity is HasUserTracker) {
-                return activity.findUserTracker()
-            }
-            else {
-                throw IllegalStateException("No tracker registered")
-            }
         }
     }
 }

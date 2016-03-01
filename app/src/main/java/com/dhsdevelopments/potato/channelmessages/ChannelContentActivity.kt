@@ -9,11 +9,9 @@ import android.support.v7.widget.Toolbar
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
-import com.dhsdevelopments.potato.userlist.HasUserTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
-class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
-
+class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     private lateinit var usersTracker: ChannelUsersTracker
     private lateinit var channelId: String
 
@@ -91,4 +89,13 @@ class ChannelContentActivity : AppCompatActivity(), HasUserTracker {
     override fun findUserTracker(): ChannelUsersTracker {
         return usersTracker
     }
+
+    override fun closeChannel() {
+        finish()
+    }
+}
+
+interface HasChannelContentActivity {
+    fun findUserTracker(): ChannelUsersTracker
+    fun closeChannel(): Unit
 }

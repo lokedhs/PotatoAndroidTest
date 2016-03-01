@@ -109,4 +109,13 @@ fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
     return channels
 }
 
+fun isChannelJoined(context: Context, cid: String): Boolean {
+    return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+            arrayOf(StorageHelper.CHANNELS_ID),
+            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+            null, null, null).use { result ->
+        result.moveToNext()
+    }
+}
+
 class DomainDescriptor(val id: String, val name: String)

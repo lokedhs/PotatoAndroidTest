@@ -75,4 +75,5 @@
     <string name="pref_notifications_private_message">notifications_private_message</string>
     <string name="channel_list_menu_entry_join_channel">Join channel</string>
     <string name="registration_text">You have registered as a new user. Please check the your email account {0}, and click on the registration link in the message that was just sent.</string>
+    <string name="channel_content_toolbar_leave_channel">Leave channel</string>
 </resources>

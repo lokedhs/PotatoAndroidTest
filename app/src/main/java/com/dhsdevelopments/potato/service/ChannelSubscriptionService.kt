@@ -11,6 +11,7 @@ import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult
 import com.dhsdevelopments.potato.clientapi.PotatoApi
 import com.dhsdevelopments.potato.clientapi.notifications.*
+import com.dhsdevelopments.potato.isChannelJoined
 import retrofit.Call
 import retrofit.Callback
 import retrofit.Response
@@ -150,6 +151,12 @@ class ChannelSubscriptionService : Service() {
         return null
     }
 
+    private fun updateChannelDatabaseIfNeeded(cid: String) {
+        if(!isChannelJoined(this, cid)) {
+            RemoteRequestService.loadChannelList(this)
+        }
+    }
+
     private inner class Receiver(private val cid: String) : Thread("NotificationReceiver") {
         private val api: PotatoApi
         private val apiKey: String
@@ -287,6 +294,9 @@ class ChannelSubscriptionService : Service() {
                     if (response.isSuccess) {
                         if ("ok" != response.body().result) {
                             Log.wtf("Unexpected result form bind call")
+                        }
+                        else {
+                            updateChannelDatabaseIfNeeded(cid)
                         }
                     }
                     else {

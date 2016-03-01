@@ -9,6 +9,7 @@ import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
 import com.dhsdevelopments.potato.clientapi.domainchannels.ChannelsInDomainResult
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
+import com.dhsdevelopments.potato.clientapi.leavechannel.LeaveChannelResult
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
@@ -94,6 +95,10 @@ interface PotatoApi {
     @POST("command")
     fun sendCommand(@Header("API-token") apiKey: String,
                     @Body request: SendCommandRequest): Call<SendCommandResult>
+
+    @POST("channel/{cid}/leave")
+    fun leaveChannel(@Header("API-token") apiKey: String,
+                     @Path("cid") channelId: String): Call<LeaveChannelResult>
 }
 
 interface RemoteResult {

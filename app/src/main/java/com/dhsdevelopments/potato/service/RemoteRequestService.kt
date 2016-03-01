@@ -29,6 +29,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_SEND_MESSAGE_WITH_IMAGE -> sendMessageWithImageImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getParcelableExtra<Parcelable>(EXTRA_IMAGE_URI) as Uri)
                 ACTION_DELETE_MESSAGE -> deleteMessageImpl(intent.getStringExtra(EXTRA_MESSAGE_ID))
                 ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS), intent.getBooleanExtra(EXTRA_REPLY, false))
+                ACTION_LEAVE_CHANNEL -> leaveChannelImpl(intent.getStringExtra(EXTRA_CHANNEL_ID))
             }
         }
     }
@@ -167,6 +168,18 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         }
     }
 
+    private fun leaveChannelImpl(cid: String) {
+        val app = PotatoApplication.getInstance(this)
+        callService(app.potatoApi.leaveChannel(app.apiKey, cid), ::plainErrorHandler) {
+            val db = PotatoApplication.getInstance(this).cacheDatabase
+            db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+
+            val mgr = LocalBroadcastManager.getInstance(this)
+            val intent = Intent(ACTION_CHANNEL_LIST_UPDATED)
+            mgr.sendBroadcast(intent)
+        }
+    }
+
     companion object {
         private val ACTION_MARK_NOTIFICATIONS = "com.dhsdevelopments.potato.MARK_NOTIFICATIONS"
         private val ACTION_LOAD_CHANNEL_LIST = "com.dhsdevelopments.potato.LOAD_CHANNELS"
@@ -174,6 +187,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val ACTION_SEND_MESSAGE_WITH_IMAGE = "com.dhsdevelopments.potato.gcm.SEND_MESSAGE_WITH_IMAGE"
         private val ACTION_DELETE_MESSAGE = "com.dhsdevelopments.potato.DELETE_MESSAGE"
         private val ACTION_SEND_COMMAND = "com.dhsdevelopments.potato.SEND_COMMAND"
+        private val ACTION_LEAVE_CHANNEL = "com.dhsdevelopments.potato.LEAVE_CHANNEL"
         private val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
@@ -210,6 +224,11 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         fun deleteMessage(context: Context, messageId: String) {
             makeAndStartIntent(context, ACTION_DELETE_MESSAGE,
                     EXTRA_MESSAGE_ID to messageId)
+        }
+
+        fun leaveChannel(context: Context, cid: String) {
+            makeAndStartIntent(context, ACTION_LEAVE_CHANNEL,
+                    EXTRA_CHANNEL_ID to cid)
         }
 
         fun sendCommand(context: Context, cid: String, cmd: String, args: String, reply: Boolean = false) {

@@ -32,7 +32,6 @@ import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
-import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
@@ -177,7 +176,7 @@ class ChannelContentFragment : Fragment() {
             }
         }
 
-        val userTracker = ChannelUsersTracker.findEnclosingUserTracker(this)
+        val userTracker = (activity as HasChannelContentActivity).findUserTracker()
         userNameSuggestAdapter = UserNameSuggestAdapter(context, userTracker)
         messageInput.setAdapter<UserNameSuggestAdapter>(userNameSuggestAdapter)
         messageInput.setTokenizer(UserNameTokeniser(userTracker))
@@ -301,6 +300,10 @@ class ChannelContentFragment : Fragment() {
                 sendImage()
                 return true
             }
+            R.id.menu_option_leave_channel -> {
+                leaveChannel()
+                return true
+            }
         //            R.id.menu_option_search_history -> {
         ////                intent = Intent(this, SearchActivity::class.java)
         ////                intent.putExtra(SearchActivity.EXTRA_CHANNEL_ID, channelId)
@@ -348,9 +351,11 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun processChannelUsersNotification(intent: Intent) {
-        val tracker = ChannelUsersTracker.findEnclosingUserTracker(this)
+        val tracker = findUserTracker()
         tracker.processIncoming(intent)
     }
+
+    private fun findUserTracker() = (activity as HasChannelContentActivity).findUserTracker()
 
     private fun processTypingNotification(intent: Intent) {
         if (intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) != cid) {
@@ -361,7 +366,7 @@ class ChannelContentFragment : Fragment() {
         val uid = intent.getStringExtra(IntentUtil.EXTRA_USER_ID)
         val mode = intent.getStringExtra(ChannelSubscriptionService.EXTRA_TYPING_MODE)
         when (mode) {
-            ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, ChannelUsersTracker.findEnclosingUserTracker(this).getNameForUid(uid))
+            ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, findUserTracker().getNameForUid(uid))
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)
             else -> Log.w("Unexpected typing mode in broadcast message: " + mode)
         }
@@ -479,6 +484,11 @@ class ChannelContentFragment : Fragment() {
 
     private fun updateNotifyUnreadSetting(notifyUnread: Boolean) {
         RemoteRequestService.updateUnreadSubscriptionState(context, cid, notifyUnread)
+    }
+
+    private fun leaveChannel() {
+        RemoteRequestService.leaveChannel(context, cid)
+        (activity as HasChannelContentActivity).closeChannel()
     }
 
     private fun convertUidRefs(text: CharSequence): String {

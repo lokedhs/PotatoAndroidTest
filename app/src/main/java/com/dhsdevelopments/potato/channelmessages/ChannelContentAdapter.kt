@@ -55,7 +55,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
         imageCache = ImageCache(context)
-        userTracker = ChannelUsersTracker.findEnclosingUserTracker(parent)
+        userTracker = (parent.activity as HasChannelContentActivity).findUserTracker()
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
