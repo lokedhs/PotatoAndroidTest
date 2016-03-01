@@ -69,7 +69,7 @@ class PotatoApplication : Application() {
         return retrofit.create(PotatoApi::class.java)
     }
 
-    val serverUrlPrefix: String by lazy {
+    val serverUrlPrefix by lazy {
         val identifier = resources.getIdentifier("${PotatoApplication::class.java.`package`.name}:string/override_server_prefix", null, null)
         Log.d("Got identifier for ${PotatoApplication::class.java.`package`.name}:string/override_server_prefix = $identifier")
         if (identifier == 0) {
@@ -80,7 +80,7 @@ class PotatoApplication : Application() {
         }
     }
 
-    val apiUrlPrefix: String by lazy { serverUrlPrefix + "api/1.0/" }
+    val apiUrlPrefix by lazy { serverUrlPrefix + "api/1.0/" }
 
     companion object {
         private val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS
