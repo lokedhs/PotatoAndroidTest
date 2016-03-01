@@ -199,8 +199,8 @@ class ChannelListActivity : AppCompatActivity(), HasUserTracker {
         startActivityForResult(intent, 0, null)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if(resultCode == RESULT_OK) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == RESULT_OK && data != null) {
             val cid = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
             val name = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_NAME)
             setActiveChannel(cid, name)

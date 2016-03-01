@@ -9,6 +9,7 @@ import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
+import com.dhsdevelopments.potato.loadAllChannelIdsInDomain
 import java.util.*
 
 @Suppress("unused")
@@ -24,8 +25,13 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
         val app = PotatoApplication.getInstance(parent)
         val call = app.potatoApi.getAllChannelsInDomain(app.apiKey, domainId)
         callServiceBackground(call, ::plainErrorHandler) { result ->
+            val chList = loadAllChannelIdsInDomain(parent, domainId)
             channels.clear()
-            channels.addAll(result.groups.flatMap { it.channels.map { AvailableChannel(it) } }.sortedWith(AvailableChannel.COMPARATOR))
+            channels.addAll(result.groups.flatMap {
+                it.channels
+                    .map { AvailableChannel(it) } }
+                    .filter { !chList.contains(it.id) }
+                    .sortedWith(AvailableChannel.COMPARATOR))
             notifyDataSetChanged()
         }
     }

@@ -96,4 +96,17 @@ fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
     return domains
 }
 
+fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
+    val channels = HashSet<String>()
+    PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+            arrayOf(StorageHelper.CHANNELS_ID),
+            "${StorageHelper.CHANNELS_DOMAIN} = ?", arrayOf(domainId),
+            null, null, null).use { result ->
+        while (result.moveToNext()) {
+            channels.add(result.getString(0))
+        }
+    }
+    return channels
+}
+
 class DomainDescriptor(val id: String, val name: String)
