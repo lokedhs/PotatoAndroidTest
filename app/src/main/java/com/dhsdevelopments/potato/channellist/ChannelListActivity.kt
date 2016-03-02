@@ -195,37 +195,34 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
 
     private fun selectAndJoinChannel() {
         val intent = Intent(this, SelectChannelActivity::class.java)
-        intent.putExtra(SelectChannelActivity.EXTRA_DOMAIN_ID, selectedDomainId)
+        intent.putExtra(IntentUtil.EXTRA_DOMAIN_ID, selectedDomainId)
         startActivityForResult(intent, 0, null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(resultCode == RESULT_OK && data != null) {
             val cid = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
-            val name = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_NAME)
-            setActiveChannel(cid, name)
+            setActiveChannel(cid)
         }
     }
 
-    fun setActiveChannel(cid: String, channelName: String) {
+    fun setActiveChannel(cid: String) {
         if (isTwoPane) {
-            switchToChannelTwoPane(cid, channelName)
+            switchToChannelTwoPane(cid)
         }
         else {
             val intent = Intent(this, ChannelContentActivity::class.java)
             intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, cid)
-            intent.putExtra(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
             startActivity(intent)
             overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 
-    private fun switchToChannelTwoPane(cid: String, channelName: String) {
+    private fun switchToChannelTwoPane(cid: String) {
         usersTracker = ChannelUsersTracker.findForChannel(this, cid)
 
         val arguments = Bundle()
         arguments.putString(ChannelContentFragment.ARG_CHANNEL_ID, cid)
-        arguments.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
 
         val fragment = ChannelContentFragment()
         fragment.arguments = arguments

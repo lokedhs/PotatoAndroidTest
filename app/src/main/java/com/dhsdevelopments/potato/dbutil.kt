@@ -37,6 +37,7 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
                 "$CHANNELS_NAME text not null, " +
                 "$CHANNELS_UNREAD text not null, " +
                 "$CHANNELS_PRIVATE text null, " +
+                "$CHANNELS_HIDDEN int not null, " +
                 "foreign key (domain) references $DOMAINS_TABLE($DOMAINS_ID))")
     }
 
@@ -67,11 +68,26 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
         val CHANNELS_NAME = "name"
         val CHANNELS_UNREAD = "unread"
         val CHANNELS_PRIVATE = "private_user"
+        val CHANNELS_HIDDEN = "hidden"
 
         val CHANNEL_CONFIG_TABLE = "channel_config"
         val CHANNEL_CONFIG_ID = "id"
         val CHANNEL_CONFIG_SHOW_NOTIFICATIONS = "show_notification"
         val CHANNEL_CONFIG_NOTIFY_UNREAD = "show_unread"
+    }
+}
+
+class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, hidden: Boolean)
+
+fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
+    return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+            arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_NAME, StorageHelper.CHANNELS_PRIVATE, StorageHelper.CHANNELS_HIDDEN),
+            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+            null, null, null).use { result ->
+        if (!result.moveToNext()) {
+            throw IllegalStateException("Channel not found in database: $cid")
+        }
+        ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0)
     }
 }
 

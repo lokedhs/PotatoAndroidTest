@@ -14,14 +14,10 @@ class SelectChannelActivity : Activity() {
         setContentView(R.layout.activity_select_channel)
         title = "Available channels"
 
-        val domainId = intent.getStringExtra(EXTRA_DOMAIN_ID)
+        val domainId = intent.getStringExtra(IntentUtil.EXTRA_DOMAIN_ID)
 
         val recyclerView = findViewById(R.id.channel_select_list) as RecyclerView
         recyclerView.adapter = AvailableChannelListAdapter(this, domainId)
-    }
-
-    companion object {
-        val EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id"
     }
 
     fun channelSelected(channel: AvailableChannel) {

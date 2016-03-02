@@ -142,7 +142,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
             }
 
             view.setOnClickListener { v ->
-                parent.setActiveChannel(item.id, item.name)
+                parent.setActiveChannel(item.id)
             }
         }
     }

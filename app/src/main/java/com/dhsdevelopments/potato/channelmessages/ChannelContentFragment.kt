@@ -44,13 +44,12 @@ class ChannelContentFragment : Fragment() {
 
     companion object {
         val ARG_CHANNEL_ID = "item_id"
-        val ARG_CHANNEL_NAME = "channel_name"
 
         private val SELECT_IMAGE_RESULT_CODE = 1
     }
 
     private lateinit var cid: String
-    private var name: String? = null
+    private lateinit var channelInfo: ChannelDescriptor
 
     private lateinit var messageListView: RecyclerView
     private lateinit var receiver: BroadcastReceiver
@@ -81,7 +80,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         cid = arguments.getString(ARG_CHANNEL_ID) ?: throw IllegalStateException("channelId argument not specified")
-        name = arguments.getString(ARG_CHANNEL_NAME)
+        channelInfo = loadChannelInfoFromDb(context, cid)
 
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -487,7 +486,12 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun leaveChannel() {
-        RemoteRequestService.leaveChannel(context, cid)
+        if(channelInfo.privateUser == null) {
+            RemoteRequestService.leaveChannel(context, cid)
+        }
+        else {
+            RemoteRequestService.updateChannelVisibility(context, cid, false)
+        }
         (activity as HasChannelContentActivity).closeChannel()
     }
 

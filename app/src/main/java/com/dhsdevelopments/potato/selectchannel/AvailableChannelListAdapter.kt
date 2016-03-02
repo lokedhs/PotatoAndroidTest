@@ -23,12 +23,12 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
 
     private fun loadChannels() {
         val app = PotatoApplication.getInstance(parent)
-        val call = app.potatoApi.getAllChannelsInDomain(app.apiKey, domainId)
+        val call = app.potatoApi.getAllChannelsInDomain(app.apiKey, domainId, "1", "1")
         callServiceBackground(call, ::plainErrorHandler) { result ->
             val chList = loadAllChannelIdsInDomain(parent, domainId)
             channels.clear()
-            channels.addAll(result.groups.flatMap {
-                it.channels
+            channels.addAll(result.groups!!.flatMap {
+                it.channels!!
                     .map { AvailableChannel(it) } }
                     .filter { !chList.contains(it.id) }
                     .sortedWith(AvailableChannel.COMPARATOR))

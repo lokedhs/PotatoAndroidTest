@@ -11,6 +11,7 @@ import android.webkit.MimeTypeMap
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
+import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
 import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
@@ -30,6 +31,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_DELETE_MESSAGE -> deleteMessageImpl(intent.getStringExtra(EXTRA_MESSAGE_ID))
                 ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS), intent.getBooleanExtra(EXTRA_REPLY, false))
                 ACTION_LEAVE_CHANNEL -> leaveChannelImpl(intent.getStringExtra(EXTRA_CHANNEL_ID))
+                ACTION_UPDATE_CHANNEL_VISIBILITY -> updateChannelVisibilityImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getBooleanExtra(EXTRA_VISIBILITY, false))
             }
         }
     }
@@ -86,6 +88,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                                 channelValues.put(StorageHelper.CHANNELS_NAME, c.name)
                                 channelValues.put(StorageHelper.CHANNELS_UNREAD, c.unreadCount)
                                 channelValues.put(StorageHelper.CHANNELS_PRIVATE, c.privateUser)
+                                channelValues.put(StorageHelper.CHANNELS_HIDDEN, c.hide)
                                 db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
                             }
                         }
@@ -173,10 +176,18 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         callService(app.potatoApi.leaveChannel(app.apiKey, cid), ::plainErrorHandler) {
             val db = PotatoApplication.getInstance(this).cacheDatabase
             db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
+        }
+    }
 
-            val mgr = LocalBroadcastManager.getInstance(this)
-            val intent = Intent(ACTION_CHANNEL_LIST_UPDATED)
-            mgr.sendBroadcast(intent)
+    private fun updateChannelVisibilityImpl(cid: String, visibility: Boolean) {
+        val app = PotatoApplication.getInstance(this)
+        callService(app.potatoApi.updateChannelVisibility(app.apiKey, cid, UpdateChannelVisibilityRequest(false)), ::plainErrorHandler) {
+            val db = PotatoApplication.getInstance(this).cacheDatabase
+            val values = ContentValues()
+            values.put(StorageHelper.CHANNELS_HIDDEN, !visibility)
+            db.update(StorageHelper.CHANNELS_TABLE, values, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
         }
     }
 
@@ -188,6 +199,8 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val ACTION_DELETE_MESSAGE = "com.dhsdevelopments.potato.DELETE_MESSAGE"
         private val ACTION_SEND_COMMAND = "com.dhsdevelopments.potato.SEND_COMMAND"
         private val ACTION_LEAVE_CHANNEL = "com.dhsdevelopments.potato.LEAVE_CHANNEL"
+        private val ACTION_UPDATE_CHANNEL_VISIBILITY = "com.dhsdevelopments.potato.UPDATE_CHANNEL_VISIBILITY"
+
         private val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
         private val EXTRA_IMAGE_URI = "com.dhsdevelopments.potato.image"
@@ -195,6 +208,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_CMD = "com.dhsdevelopments.potato.cmd"
         private val EXTRA_ARGS = "com.dhsdevelopments.potato.args"
         private val EXTRA_REPLY = "com.dhsdevelopments.potato.reply"
+        private val EXTRA_VISIBILITY = "com.dhsdevelopments.potato.visibility"
 
         val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
@@ -229,6 +243,12 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         fun leaveChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_LEAVE_CHANNEL,
                     EXTRA_CHANNEL_ID to cid)
+        }
+
+        fun updateChannelVisibility(context: Context, cid: String, visibility: Boolean) {
+            makeAndStartIntent(context, ACTION_UPDATE_CHANNEL_VISIBILITY,
+                    EXTRA_CHANNEL_ID to cid,
+                    EXTRA_VISIBILITY to visibility)
         }
 
         fun sendCommand(context: Context, cid: String, cmd: String, args: String, reply: Boolean = false) {

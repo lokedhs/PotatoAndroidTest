@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.loadChannelInfoFromDb
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
@@ -20,7 +21,6 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
 
         val intent = intent
         channelId = intent.getStringExtra(ChannelContentFragment.ARG_CHANNEL_ID)
-        val channelName = intent.getStringExtra(ChannelContentFragment.ARG_CHANNEL_NAME)
 
         setContentView(R.layout.activity_channel_content)
         val toolbar = findViewById(R.id.detail_toolbar) as Toolbar
@@ -46,7 +46,6 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
 
             val contentFragmentArgs = Bundle()
             contentFragmentArgs.putString(ChannelContentFragment.ARG_CHANNEL_ID, channelId)
-            contentFragmentArgs.putString(ChannelContentFragment.ARG_CHANNEL_NAME, channelName)
             val channelContentFragment = ChannelContentFragment()
             channelContentFragment.arguments = contentFragmentArgs
 
@@ -56,7 +55,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
                     .add(R.id.channel_detail_container, channelContentFragment)
                     .commit()
 
-            title = channelName
+            title = loadChannelInfoFromDb(this, channelId).name
         }
     }
 

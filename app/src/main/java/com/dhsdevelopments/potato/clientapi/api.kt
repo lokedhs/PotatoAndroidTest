@@ -6,10 +6,12 @@ import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
 import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
-import com.dhsdevelopments.potato.clientapi.domainchannels.ChannelsInDomainResult
+import com.dhsdevelopments.potato.clientapi.domainchannels.DomainInfoResult
+import com.dhsdevelopments.potato.clientapi.editchannel.LeaveChannelResult
+import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
+import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityResult
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationResult
-import com.dhsdevelopments.potato.clientapi.leavechannel.LeaveChannelResult
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
@@ -27,9 +29,15 @@ import java.io.IOException
 
 
 interface PotatoApi {
-    @GET("domain/{domainId}/channels")
+    //    @GET("domain/{domainId}/channels")
+    //    fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
+    //                               @Path("domainId") domainId: String): Call<ChannelsInDomainResult>
+
+    @GET("domains/{domainId}")
     fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
-                               @Path("domainId") domainId: String): Call<ChannelsInDomainResult>
+                               @Path("domainId") domainId: String,
+                               @Query("include-groups") includeGroups: String,
+                               @Query("include-channels") includeChannels: String): Call<DomainInfoResult>
 
     @GET("channels2")
     fun getChannels2(@Header("API-token") apiKey: String): Call<ChannelsResult>
@@ -99,6 +107,11 @@ interface PotatoApi {
     @POST("channel/{cid}/leave")
     fun leaveChannel(@Header("API-token") apiKey: String,
                      @Path("cid") channelId: String): Call<LeaveChannelResult>
+
+    @POST("channel/{cid}/show")
+    fun updateChannelVisibility(@Header("API-token") apiKey: String,
+                                @Path("cid") channelId: String,
+                                @Body request: UpdateChannelVisibilityRequest): Call<UpdateChannelVisibilityResult>
 }
 
 interface RemoteResult {
