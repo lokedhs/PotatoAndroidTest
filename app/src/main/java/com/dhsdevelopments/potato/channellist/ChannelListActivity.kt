@@ -15,10 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.SubMenu
+import android.view.*
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
@@ -45,6 +42,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var usersTracker: ChannelUsersTracker? = null
     private lateinit var channelListAdapter: ChannelListAdapter
     private lateinit var receiver: BroadcastReceiver
+    private lateinit var toggle: ActionBarDrawerToggle
 
     private var userListFragment: UserListFragment? = null
     private var channelContentFragment: ChannelContentFragment? = null
@@ -79,11 +77,22 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
             isTwoPane = true
         }
 
-        val toggle = ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer.addDrawerListener(toggle)
-        toggle.syncState()
+        createToggle(toolbar)
 
         swipeRefreshLayout.setOnRefreshListener({ RemoteRequestService.loadChannelList(this) })
+    }
+
+    private fun createToggle(toolbar: Toolbar) {
+        toggle = object: ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                if(drawerView.id == R.id.channel_list_nav_view) {
+                    super.onDrawerSlide(drawerView, slideOffset)
+                }
+            }
+        }
+
+        drawer.addDrawerListener(toggle)
+        toggle.syncState()
     }
 
     override fun onStart() {
@@ -185,6 +194,8 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home ->
+                toggle.onOptionsItemSelected(item)
             R.id.menu_option_join_channel -> {
                 selectAndJoinChannel()
                 true
