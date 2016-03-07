@@ -121,7 +121,9 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     private fun showErrorSnackbar(message: String) {
-        Snackbar.make(channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        Snackbar.make(channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show();
     }
 
     override fun onStop() {
