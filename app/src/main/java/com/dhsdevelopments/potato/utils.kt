@@ -14,8 +14,8 @@ fun <T> nlazy(getter: () -> T): Lazy<T> {
     }
 }
 
-fun makeRandomCharacterSequence(buf: StringBuilder, n: Int) {
-    for (i in 0..19) {
+fun makeRandomCharacterSequence(buf: Appendable, n: Int) {
+    repeat(n) {
         buf.append(('a' + (Math.random() * ('z' - 'a' + 1)).toInt()).toChar())
     }
 }
@@ -56,10 +56,10 @@ fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Uni
 
 fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
     val handler = Handler()
-    call.enqueue(object: Callback<T> {
+    call.enqueue(object : Callback<T> {
         override fun onResponse(response: Response<T>, retrofit: Retrofit) {
             handler.post {
-                if(response.isSuccess) {
+                if (response.isSuccess) {
                     val errorMessage = response.body().errorMsg()
                     if (errorMessage == null) {
                         successCallback(response.body())
@@ -80,5 +80,5 @@ fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (Stri
                 errorCallback("Connection error: ${exception.message}")
             }
         }
-    } )
+    })
 }
