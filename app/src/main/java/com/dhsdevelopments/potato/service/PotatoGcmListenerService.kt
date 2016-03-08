@@ -53,13 +53,13 @@ class PotatoGcmListenerService : GcmListenerService() {
 
     private fun processMessage(data: Bundle) {
         //val messageId = data.getString("message_id")
-        //val notificationType = data.getString("notification_type")
+        val notificationType = data.getString("notification_type")
         val text = data.getString("text")
         //val senderId = data.getString("sender_id")
         val senderName = data.getString("sender_name")
         val channelId = data.getString("channel")
 
-        val config = object: NotificationConfigProvider {
+        val config = object : NotificationConfigProvider {
             override val enabledKey = getString(R.string.pref_notifications_private_message)
             override val vibrateKey = getString(R.string.pref_notifications_private_message_vibrate)
             override val ringtoneKey = getString(R.string.pref_notifications_private_message_ringtone)
@@ -70,7 +70,12 @@ class PotatoGcmListenerService : GcmListenerService() {
             val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
             builder
                     .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                    .setContentTitle("Message from " + senderName)
+                    .setContentTitle(when (notificationType) {
+                        "PRIVATE" -> "Private message from $senderName"
+                        "MENTION" -> "$senderName mentioned you"
+                        "WORD" -> "Keyword mentioned from $senderName"
+                        else -> "Notification in channel from $senderName"
+                    })
                     .setContentText(text).setAutoCancel(true)
                     .setContentIntent(pendingIntent)
         }
@@ -105,7 +110,7 @@ class PotatoGcmListenerService : GcmListenerService() {
                 mgr.cancel(UNREAD_NOTIFICATIONS_TAG, UNREAD_NOTIFICATION_ID)
             }
             else {
-                val config = object: NotificationConfigProvider {
+                val config = object : NotificationConfigProvider {
                     override val enabledKey = getString(R.string.pref_notifications_unread)
                     override val vibrateKey = getString(R.string.pref_notifications_unread_vibrate)
                     override val ringtoneKey = getString(R.string.pref_notifications_unread_ringtone)
