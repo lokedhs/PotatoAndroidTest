@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.service
 
 import android.app.Service
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Handler
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
@@ -23,12 +24,14 @@ import java.util.*
 class ChannelSubscriptionService : Service() {
 
     private var receiverThread: Receiver? = null
+    private var lastStartId: Int? = null
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        lastStartId = startId
         val action = intent.action
         when (action) {
             ACTION_BIND_TO_CHANNEL -> bindToChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
-            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID), startId)
+            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
             else -> throw UnsupportedOperationException("Illegal subscription command: " + action)
         }
         return Service.START_NOT_STICKY
@@ -42,15 +45,15 @@ class ChannelSubscriptionService : Service() {
         super.onDestroy()
     }
 
-    private fun unbindFromChannel(cid: String, startId: Int) {
+    private fun unbindFromChannel(cid: String) {
+        Log.d("unbinding from $cid, hasThread=${receiverThread != null}")
         if (receiverThread == null) {
-            throw IllegalStateException("Attempt to unbind with no thread running")
+            IllegalStateException("Attempt to unbind with no thread running")
         }
         else {
             val wasShutdown = receiverThread!!.unbindFromChannel(cid)
             if (wasShutdown) {
                 receiverThread = null
-                stopSelf(startId)
             }
         }
     }
@@ -197,8 +200,8 @@ class ChannelSubscriptionService : Service() {
                         }
 
                         if (response.isSuccess) {
-                            val body = response.body()
-
+                            // It seems as though response.body() is null when the outstanding call has been cancelled.
+                            val body = response.body() ?: throw ReceiverStoppedException()
                             updateEventIdAndCheckPendingBindRequests(body.eventId)
 
                             val notifications = body.notifications
@@ -212,6 +215,7 @@ class ChannelSubscriptionService : Service() {
                         }
                     }
                     catch (e: InterruptedIOException) {
+                        Log.d("Subscriber interrupted")
                         throw ReceiverStoppedException(e)
                     }
                     catch (e: IOException) {
@@ -236,6 +240,10 @@ class ChannelSubscriptionService : Service() {
             }
 
             Log.d("Updates thread shut down")
+
+            if(lastStartId != null) {
+                stopSelf(lastStartId!!)
+            }
         }
 
         private fun updateEventIdAndCheckPendingBindRequests(eventId: String?) {
@@ -331,20 +339,26 @@ class ChannelSubscriptionService : Service() {
         internal fun requestShutdown() {
             val outstandingCallCopy = synchronized (this) {
                 isShutdown = true
-                outstandingCall
+                val call = outstandingCall
+                outstandingCall = null
+                call
             }
-            outstandingCallCopy?.cancel()
+            if(outstandingCallCopy != null) {
+                val task = object : AsyncTask<Unit, Unit, Unit>() {
+                    override fun doInBackground(vararg params: Unit?) {
+                        outstandingCallCopy.cancel()
+                    }
+                }
+                task.execute()
+            }
 
             interrupt()
         }
 
 
         private inner class ReceiverStoppedException : Exception {
-            constructor() {
-            }
-
-            constructor(e: InterruptedIOException) : super(e) {
-            }
+            constructor()
+            constructor(e: InterruptedIOException) : super(e)
         }
     }
 

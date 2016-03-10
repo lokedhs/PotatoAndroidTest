@@ -245,7 +245,9 @@ class ChannelContentFragment : Fragment() {
         val intent = Intent(context, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
         intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
+        Log.d("Requesting unbind for $cid")
         context.startService(intent)
+        Log.d("After request for unbind for $cid")
         super.onStop()
     }
 
