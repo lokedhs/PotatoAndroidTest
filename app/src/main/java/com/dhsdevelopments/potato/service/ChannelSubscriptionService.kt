@@ -28,7 +28,7 @@ class ChannelSubscriptionService : Service() {
         val action = intent.action
         when (action) {
             ACTION_BIND_TO_CHANNEL -> bindToChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
-            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
+            ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID), startId)
             else -> throw UnsupportedOperationException("Illegal subscription command: " + action)
         }
         return Service.START_NOT_STICKY
@@ -38,17 +38,19 @@ class ChannelSubscriptionService : Service() {
         if (receiverThread != null) {
             receiverThread!!.requestShutdown()
         }
+        Log.d("Receiver service destroyed")
         super.onDestroy()
     }
 
-    private fun unbindFromChannel(cid: String) {
+    private fun unbindFromChannel(cid: String, startId: Int) {
         if (receiverThread == null) {
-            Log.w("Attempt to unbind with no thread running")
+            throw IllegalStateException("Attempt to unbind with no thread running")
         }
         else {
             val wasShutdown = receiverThread!!.unbindFromChannel(cid)
             if (wasShutdown) {
                 receiverThread = null
+                stopSelf(startId)
             }
         }
     }
