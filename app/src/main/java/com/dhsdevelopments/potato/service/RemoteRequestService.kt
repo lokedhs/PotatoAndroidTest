@@ -82,14 +82,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                             db.insert(StorageHelper.DOMAINS_TABLE, null, values)
 
                             for (c in d.channels) {
-                                val channelValues = ContentValues()
-                                channelValues.put(StorageHelper.CHANNELS_ID, c.id)
-                                channelValues.put(StorageHelper.CHANNELS_DOMAIN, d.id)
-                                channelValues.put(StorageHelper.CHANNELS_NAME, c.name)
-                                channelValues.put(StorageHelper.CHANNELS_UNREAD, c.unreadCount)
-                                channelValues.put(StorageHelper.CHANNELS_PRIVATE, c.privateUser)
-                                channelValues.put(StorageHelper.CHANNELS_HIDDEN, c.hide)
-                                db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
+                                insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)
                             }
                         }
                     }

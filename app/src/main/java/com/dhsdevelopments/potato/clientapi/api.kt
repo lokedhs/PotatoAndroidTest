@@ -3,6 +3,7 @@ package com.dhsdevelopments.potato.clientapi
 import android.content.Context
 import android.net.Uri
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
+import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
 import com.dhsdevelopments.potato.clientapi.deletemessage.DeleteMessageResult
@@ -61,6 +62,10 @@ interface PotatoApi {
                              @Query("cmd") cmd: String,
                              @Query("channel") channelId: String,
                              @Query("services") services: String): Call<ChannelUpdatesUpdateResult>
+
+    @GET("channel/{cid}")
+    fun loadChannelInfo(@Header("API-token") apiKey: String,
+                        @Path("cid") channelId: String): Call<LoadChannelInfoResult>
 
     @POST("channel/{cid}/create")
     fun sendMessage(@Header("API-token") apiKey: String,
