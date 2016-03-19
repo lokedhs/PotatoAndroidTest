@@ -16,7 +16,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "override_server_prefix", "http://potato.dhsdevelopments.com/"
+            resValue "string", "override_server_prefix", "https://potato.dhsdevelopments.com/"
         }
         debugLocal {
             resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
@@ -46,11 +46,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:support-v4:23.2.0'
-    compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:design:23.2.1'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
@@ -62,7 +62,7 @@ dependencies {
 apply plugin: 'com.google.gms.google-services'
 
 buildscript {
-    ext.kotlin_version = '1.0.0'
+    ext.kotlin_version = '1.0.1'
     repositories {
         mavenCentral()
     }
