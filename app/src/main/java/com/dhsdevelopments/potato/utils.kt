@@ -1,5 +1,8 @@
 package com.dhsdevelopments.potato
 
+import android.app.ProgressDialog
+import android.content.Context
+import android.os.AsyncTask
 import android.os.Handler
 import com.dhsdevelopments.potato.clientapi.RemoteResult
 import retrofit.Call
@@ -81,4 +84,27 @@ fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (Stri
             }
         }
     })
+}
+
+abstract class BackgroundTask<T>(val context: Context, val message: CharSequence) : AsyncTask<Unit,Unit,T>() {
+    val dialog = ProgressDialog(context)
+
+    override fun onPreExecute() {
+        dialog.setMessage(message)
+        dialog.show()
+    }
+
+    override fun onPostExecute(result: T) {
+        if(dialog.isShowing) {
+            dialog.dismiss()
+        }
+    }
+
+    abstract fun runTask(): T
+
+    abstract fun taskFinished(result: T)
+
+    override fun doInBackground(vararg params: Unit?): T {
+        return runTask()
+    }
 }

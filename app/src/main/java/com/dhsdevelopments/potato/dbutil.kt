@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -132,6 +133,17 @@ fun isChannelJoined(context: Context, cid: String): Boolean {
             null, null, null).use { result ->
         result.moveToNext()
     }
+}
+
+fun insertChannelIntoChannelsTable(db: SQLiteDatabase, channelId: String, domainId: String, name: String, unreadCount: Int, privateUser: String?, hide: Boolean) {
+    val channelValues = ContentValues()
+    channelValues.put(StorageHelper.CHANNELS_ID, channelId)
+    channelValues.put(StorageHelper.CHANNELS_DOMAIN, domainId)
+    channelValues.put(StorageHelper.CHANNELS_NAME, name)
+    channelValues.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
+    channelValues.put(StorageHelper.CHANNELS_PRIVATE, privateUser)
+    channelValues.put(StorageHelper.CHANNELS_HIDDEN, hide)
+    db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
 }
 
 class DomainDescriptor(val id: String, val name: String)
