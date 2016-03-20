@@ -18,17 +18,13 @@ infix fun (() -> Foo).bar(fn: () -> Foo): FooResult {
     return FooResult(v1.value + v2.value)
 }
 
-fun computeResult(fn: () -> FooResult): FooResult {
-    return fn()
-}
-
 class KtTest {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
             val v1 = Foo(1)
             val v2 = Foo(100)
-            val v3 = computeResult { {v1} bar {v2} }
+            val v3 = {v1} bar {v2}
             println("v3=$v3")
         }
     }
