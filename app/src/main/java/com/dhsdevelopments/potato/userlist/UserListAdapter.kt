@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import java.text.Collator
 import java.util.*
 
-class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
+class UserListAdapter(private val parentActivity: HasChannelContentActivity) : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
 
     private val activeUsers = ArrayList<UserWrapper>()
     private val inactiveUsers = ArrayList<UserWrapper>()
@@ -24,12 +26,12 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
-        userTracker.addUserActivityListener(listener)
+        parentActivity.findUserTracker().addUserActivityListener(listener)
         loadStateFromUserTracker()
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
-        userTracker.removeUserActivityListener(listener)
+        parentActivity.findUserTracker().removeUserActivityListener(listener)
         super.onDetachedFromRecyclerView(recyclerView)
     }
 
@@ -72,7 +74,7 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
     private fun loadStateFromUserTracker() {
         activeUsers.clear()
         inactiveUsers.clear()
-        for ((uid, d) in userTracker.getUsers()) {
+        for ((uid, d) in parentActivity.findUserTracker().getUsers()) {
             val u = UserWrapper(uid, d.name)
             if (d.isActive) {
                 activeUsers.add(u)
@@ -107,6 +109,10 @@ class UserListAdapter(private val userTracker: ChannelUsersTracker) : RecyclerVi
 
         init {
             userDescriptionView = itemView.findViewById(R.id.user_description_view) as TextView
+            itemView.setOnClickListener {
+                parentActivity.closeUserListDrawer()
+                Log.d("Start private chat with: ${user?.id}")
+            }
         }
 
         fun fillInUser(user: UserWrapper) {

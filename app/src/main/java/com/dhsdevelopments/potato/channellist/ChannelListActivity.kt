@@ -27,6 +27,7 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
+
     private var selectedDomainId: String? = null
 
     /**
@@ -143,6 +144,10 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         else {
             super.onBackPressed()
         }
+    }
+
+    override fun closeUserListDrawer() {
+        drawer.closeDrawer(Gravity.END)
     }
 
     private fun handleNavigationItemSelected(item: MenuItem): Boolean {

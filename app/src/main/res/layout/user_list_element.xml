@@ -9,6 +9,8 @@
             android:id="@+id/user_description_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"/>
+            android:text="New Text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_margin="4dp"/>
 
 </LinearLayout>

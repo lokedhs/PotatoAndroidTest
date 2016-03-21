@@ -6,15 +6,19 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.Gravity
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.loadChannelInfoFromDb
+import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     private lateinit var usersTracker: ChannelUsersTracker
     private lateinit var channelId: String
+
+    private val drawer by nlazy { findViewById(R.id.drawer_layout) as DrawerLayout }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +68,6 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
         if (drawer.isDrawerOpen(GravityCompat.END)) {
             drawer.closeDrawer(GravityCompat.END)
         }
@@ -72,6 +75,10 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
             super.onBackPressed()
             overrideAnimExit()
         }
+    }
+
+    override fun closeUserListDrawer() {
+        drawer.closeDrawer(Gravity.END)
     }
 
     /**
@@ -97,4 +104,5 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
 interface HasChannelContentActivity {
     fun findUserTracker(): ChannelUsersTracker
     fun closeChannel(): Unit
+    fun closeUserListDrawer(): Unit
 }
