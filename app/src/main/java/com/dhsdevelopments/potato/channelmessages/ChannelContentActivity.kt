@@ -15,6 +15,7 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
+
     private lateinit var usersTracker: ChannelUsersTracker
     private lateinit var channelId: String
 
@@ -99,10 +100,17 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     override fun closeChannel() {
         finish()
     }
+
+    override fun openChannel(cid: String) {
+        val intent = Intent(this, ChannelContentActivity::class.java)
+        intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, cid)
+        startActivity(intent)
+    }
 }
 
 interface HasChannelContentActivity {
     fun findUserTracker(): ChannelUsersTracker
     fun closeChannel(): Unit
     fun closeUserListDrawer(): Unit
+    fun openChannel(cid: String)
 }

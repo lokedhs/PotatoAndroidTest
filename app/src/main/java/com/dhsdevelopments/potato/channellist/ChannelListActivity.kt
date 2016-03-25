@@ -27,7 +27,6 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
 class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
-
     private var selectedDomainId: String? = null
 
     /**
@@ -273,6 +272,10 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
             channelContentFragment = null
             userListFragment = null
         }
+    }
+
+    override fun openChannel(cid: String) {
+        setActiveChannel(cid)
     }
 
     fun updateDomainList() {

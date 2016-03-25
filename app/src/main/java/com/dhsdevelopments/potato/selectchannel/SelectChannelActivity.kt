@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 
 class SelectChannelActivity : Activity() {
@@ -24,7 +25,7 @@ class SelectChannelActivity : Activity() {
     fun channelSelected(channel: AvailableChannel) {
         val app = PotatoApplication.getInstance(this)
         val call = app.potatoApi.loadChannelInfo(app.apiKey, channel.id)
-        callServiceBackground(call, { returnError(it) }, { updateDatabase(it); returnChannel(channel) } )
+        callServiceBackground(call, { returnError(it) }, { updateDatabase(it); returnChannel(channel) })
     }
 
     private fun updateDatabase(c: LoadChannelInfoResult) {

@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.clientapi.channel2
 
+import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
 class Channel {
@@ -53,5 +54,14 @@ class Domain {
 
     override fun toString(): String {
         return "Domain[id='$id', name='$name', type='$type', channels=$channels]"
+    }
+}
+
+class FindPrivateChannelIdResult : RemoteResult {
+    @SerializedName("channel")
+    lateinit var channel: String
+
+    override fun errorMsg(): String? {
+        return null
     }
 }

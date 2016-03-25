@@ -2,7 +2,10 @@ package com.dhsdevelopments.potato.clientapi
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
+import com.dhsdevelopments.potato.clientapi.channel2.FindPrivateChannelIdResult
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
@@ -25,6 +28,9 @@ import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
 import okio.BufferedSink
 import retrofit.Call
+import retrofit.Callback
+import retrofit.Response
+import retrofit.Retrofit
 import retrofit.http.*
 import java.io.IOException
 
@@ -117,6 +123,11 @@ interface PotatoApi {
     fun updateChannelVisibility(@Header("API-token") apiKey: String,
                                 @Path("cid") channelId: String,
                                 @Body request: UpdateChannelVisibilityRequest): Call<UpdateChannelVisibilityResult>
+
+    @POST("private/{domainId}/{uid}")
+    fun findPrivateChannelId(@Header("API-token") apiKey: String,
+                             @Path("domainId") domainId: String,
+                             @Path("uid") userId: String): Call<FindPrivateChannelIdResult>
 }
 
 interface RemoteResult {
@@ -174,4 +185,50 @@ class ImageUriRequestBody(private val context: Context, private val imageUri: Ur
             }
         }
     }
+}
+
+fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
+    val result = call.execute()
+    if (result.isSuccess) {
+        val body = result.body()
+        val errMsg = body.errorMsg()
+        if (errMsg == null) {
+            successCallback(body)
+        }
+        else {
+            errorCallback(errMsg)
+        }
+    }
+    else {
+        errorCallback("Call failed, code: ${result.code()}, message: ${result.message()}")
+    }
+}
+
+fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
+    val handler = Handler()
+    call.enqueue(object : Callback<T> {
+        override fun onResponse(response: Response<T>, retrofit: Retrofit) {
+            handler.post {
+                if (response.isSuccess) {
+                    val errorMessage = response.body().errorMsg()
+                    if (errorMessage == null) {
+                        successCallback(response.body())
+                    }
+                    else {
+                        errorCallback(errorMessage)
+                    }
+                }
+                else {
+                    errorCallback("Call failed, code: ${response.code()}, message: ${response.message()}")
+                }
+            }
+        }
+
+        override fun onFailure(exception: Throwable) {
+            Log.e("Exception when calling remote service", exception)
+            handler.post {
+                errorCallback("Connection error: ${exception.message}")
+            }
+        }
+    })
 }

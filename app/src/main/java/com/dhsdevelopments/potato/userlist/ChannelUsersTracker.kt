@@ -14,7 +14,7 @@ import retrofit.Retrofit
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
-class ChannelUsersTracker private constructor(private val context: Context, private val cid: String) {
+class ChannelUsersTracker private constructor(private val context: Context, val cid: String) {
     private val users = HashMap<String, UserDescriptor>()
     private val listeners = CopyOnWriteArraySet<UserActivityListener>()
 

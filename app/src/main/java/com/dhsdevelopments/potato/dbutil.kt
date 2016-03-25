@@ -78,17 +78,21 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
     }
 }
 
-class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, hidden: Boolean)
+class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, hidden: Boolean, val domainId: String)
 
 fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
     return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-            arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_NAME, StorageHelper.CHANNELS_PRIVATE, StorageHelper.CHANNELS_HIDDEN),
+            arrayOf(StorageHelper.CHANNELS_ID,
+                    StorageHelper.CHANNELS_NAME,
+                    StorageHelper.CHANNELS_PRIVATE,
+                    StorageHelper.CHANNELS_HIDDEN,
+                    StorageHelper.CHANNELS_DOMAIN),
             "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
             null, null, null).use { result ->
         if (!result.moveToNext()) {
             throw IllegalStateException("Channel not found in database: $cid")
         }
-        ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0)
+        ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0, result.getString(4))
     }
 }
 

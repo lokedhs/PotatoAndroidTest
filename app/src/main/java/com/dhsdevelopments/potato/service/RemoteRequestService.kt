@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager
 import android.webkit.MimeTypeMap
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
+import com.dhsdevelopments.potato.clientapi.callService
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler

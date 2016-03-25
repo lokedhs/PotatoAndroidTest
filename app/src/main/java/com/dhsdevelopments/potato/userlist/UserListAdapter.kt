@@ -1,13 +1,17 @@
 package com.dhsdevelopments.potato.userlist
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dhsdevelopments.potato.Log
+import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
+import com.dhsdevelopments.potato.clientapi.callServiceBackground
+import com.dhsdevelopments.potato.clientapi.plainErrorHandler
+import com.dhsdevelopments.potato.loadChannelInfoFromDb
 import java.text.Collator
 import java.util.*
 
@@ -111,7 +115,15 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
             userDescriptionView = itemView.findViewById(R.id.user_description_view) as TextView
             itemView.setOnClickListener {
                 parentActivity.closeUserListDrawer()
-                Log.d("Start private chat with: ${user?.id}")
+
+                val context = parentActivity as Context
+                val channelInfo = loadChannelInfoFromDb(context, parentActivity.findUserTracker().cid)
+
+                val uid = user!!.id
+                val app = PotatoApplication.getInstance(context)
+                callServiceBackground(app.potatoApi.findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
+                    parentActivity.openChannel(result.channel)
+                }
             }
         }
 

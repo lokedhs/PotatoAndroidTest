@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.callServiceBackground
+import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
 import com.dhsdevelopments.potato.loadAllChannelIdsInDomain
 import java.util.*
@@ -29,7 +29,8 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
             channels.clear()
             channels.addAll(result.groups!!.flatMap {
                 it.channels!!
-                    .map { AvailableChannel(it) } }
+                        .map { AvailableChannel(it) }
+            }
                     .filter { !chList.contains(it.id) }
                     .sortedWith(AvailableChannel.COMPARATOR))
             notifyDataSetChanged()
