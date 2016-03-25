@@ -11,6 +11,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
+import com.dhsdevelopments.potato.ensureChannelInfo
 import com.dhsdevelopments.potato.loadChannelInfoFromDb
 import java.text.Collator
 import java.util.*
@@ -122,7 +123,10 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
                 val uid = user!!.id
                 val app = PotatoApplication.getInstance(context)
                 callServiceBackground(app.potatoApi.findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
-                    parentActivity.openChannel(result.channel)
+                    val privChannelId = result.channel
+                    ensureChannelInfo(context, privChannelId) {
+                        parentActivity.openChannel(privChannelId)
+                    }
                 }
             }
         }

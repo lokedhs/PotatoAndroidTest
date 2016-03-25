@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.dhsdevelopments.potato.clientapi.callServiceBackground
+import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 import java.util.*
 
 @Suppress("ConvertToStringTemplate")
@@ -148,6 +150,47 @@ fun insertChannelIntoChannelsTable(db: SQLiteDatabase, channelId: String, domain
     channelValues.put(StorageHelper.CHANNELS_PRIVATE, privateUser)
     channelValues.put(StorageHelper.CHANNELS_HIDDEN, hide)
     db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
+}
+
+fun ensureChannelInfo(context: Context, cid: String, fn: () -> Unit) {
+    val db = PotatoApplication.getInstance(context)
+    val exists = db.cacheDatabase.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID),
+            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+            null, null, null).use {
+        it.moveToNext()
+    }
+
+    if (exists) {
+        fn()
+    }
+    else {
+        refreshChannelEntryInDb(context, cid,
+                { message -> throw RuntimeException("Error loading channel info: $message") },
+                { fn() })
+    }
+}
+
+fun refreshChannelEntryInDb(context: Context, cid: String, errorFn: (String) -> Unit, successFn: (LoadChannelInfoResult) -> Unit) {
+    val app = PotatoApplication.getInstance(context)
+    val call = app.potatoApi.loadChannelInfo(app.apiKey, cid)
+    callServiceBackground(call, {
+        errorFn(it)
+    }, {
+        updateDatabase(context, it); successFn(it)
+    })
+}
+
+private fun updateDatabase(context: Context, c: LoadChannelInfoResult) {
+    val db = PotatoApplication.getInstance(context).cacheDatabase
+    db.beginTransaction()
+    try {
+        db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
+        insertChannelIntoChannelsTable(db, c.id, c.domainId, c.name, c.unreadCount, c.privateUserId, false)
+        db.setTransactionSuccessful()
+    }
+    finally {
+        db.endTransaction()
+    }
 }
 
 class DomainDescriptor(val id: String, val name: String)

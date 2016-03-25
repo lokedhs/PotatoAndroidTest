@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
-import com.dhsdevelopments.potato.*
-import com.dhsdevelopments.potato.clientapi.callServiceBackground
-import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
+import com.dhsdevelopments.potato.IntentUtil
+import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.nlazy
+import com.dhsdevelopments.potato.refreshChannelEntryInDb
 
 class SelectChannelActivity : Activity() {
 
@@ -23,22 +24,9 @@ class SelectChannelActivity : Activity() {
     }
 
     fun channelSelected(channel: AvailableChannel) {
-        val app = PotatoApplication.getInstance(this)
-        val call = app.potatoApi.loadChannelInfo(app.apiKey, channel.id)
-        callServiceBackground(call, { returnError(it) }, { updateDatabase(it); returnChannel(channel) })
-    }
-
-    private fun updateDatabase(c: LoadChannelInfoResult) {
-        val db = PotatoApplication.getInstance(this).cacheDatabase
-        db.beginTransaction()
-        try {
-            db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
-            insertChannelIntoChannelsTable(db, c.id, c.domainId, c.name, c.unreadCount, c.privateUserId, false)
-            db.setTransactionSuccessful()
-        }
-        finally {
-            db.endTransaction()
-        }
+        refreshChannelEntryInDb(this, channel.id,
+                { message -> returnError(message) },
+                { returnChannel(channel) })
     }
 
     private fun returnChannel(channel: AvailableChannel) {
