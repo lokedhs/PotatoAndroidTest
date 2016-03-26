@@ -217,9 +217,16 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(resultCode == RESULT_OK && data != null) {
-            val cid = data.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
-            setActiveChannel(cid)
+        when(resultCode) {
+            RESULT_OK -> {
+                val cid = data!!.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
+                setActiveChannel(cid)
+            }
+            SelectChannelActivity.RESULT_ERROR_LOADING_CHANNEL -> {
+                val msg = data!!.getStringExtra(IntentUtil.EXTRA_ERROR_MESSAGE)
+                Snackbar.make(channelListRecyclerView, "Error loading channel: $msg", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            }
+            else -> throw RuntimeException("Unexpected return code from select channel activity")
         }
     }
 

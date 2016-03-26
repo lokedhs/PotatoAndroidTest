@@ -11,6 +11,10 @@ import com.dhsdevelopments.potato.refreshChannelEntryInDb
 
 class SelectChannelActivity : Activity() {
 
+    companion object {
+        val RESULT_ERROR_LOADING_CHANNEL = RESULT_FIRST_USER
+    }
+
     val recyclerView by nlazy { findViewById(R.id.channel_select_list) as RecyclerView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +42,9 @@ class SelectChannelActivity : Activity() {
     }
 
     private fun returnError(message: CharSequence) {
-        throw RuntimeException("Got error: $message")
+        val intent = Intent()
+        intent.putExtra(IntentUtil.EXTRA_ERROR_MESSAGE, message)
+        setResult(RESULT_ERROR_LOADING_CHANNEL, intent)
+        finish()
     }
 }
