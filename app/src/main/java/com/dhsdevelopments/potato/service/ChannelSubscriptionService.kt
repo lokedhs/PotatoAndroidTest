@@ -128,13 +128,8 @@ class ChannelSubscriptionService : Service() {
         }
     }
 
-    private fun userListToUserIdArray(userStateSyncMembers: List<UserStateUpdateUser>): Array<String?> {
-        val result = arrayOfNulls<String>(userStateSyncMembers.size)
-        var i = 0
-        for (u in userStateSyncMembers) {
-            result[i++] = u.id
-        }
-        return result
+    private fun userListToUserIdArray(userStateSyncMembers: List<UserStateUpdateUser>): Array<String> {
+        return userStateSyncMembers.map { it.id }.toTypedArray()
     }
 
     private fun processOptionNotification(notification: OptionNotification) {
