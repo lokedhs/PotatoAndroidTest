@@ -6,13 +6,13 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult
 import com.dhsdevelopments.potato.clientapi.PotatoApi
 import com.dhsdevelopments.potato.clientapi.notifications.*
-import com.dhsdevelopments.potato.isChannelJoined
 import retrofit.Call
 import retrofit.Callback
 import retrofit.Response
@@ -152,7 +152,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun updateChannelDatabaseIfNeeded(cid: String) {
-        if(!isChannelJoined(this, cid)) {
+        if(!DbTools.isChannelJoined(this, cid)) {
             RemoteRequestService.loadChannelList(this)
         }
     }

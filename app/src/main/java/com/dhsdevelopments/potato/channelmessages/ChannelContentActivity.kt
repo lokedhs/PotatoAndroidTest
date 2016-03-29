@@ -7,9 +7,9 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Gravity
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.loadChannelInfoFromDb
 import com.dhsdevelopments.potato.nlazy
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
@@ -60,7 +60,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
                     .add(R.id.channel_detail_container, channelContentFragment)
                     .commit()
 
-            title = loadChannelInfoFromDb(this, channelId).name
+            title = DbTools.loadChannelInfoFromDb(this, channelId).name
         }
     }
 

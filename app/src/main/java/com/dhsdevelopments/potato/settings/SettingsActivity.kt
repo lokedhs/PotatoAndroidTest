@@ -11,8 +11,8 @@ import android.os.Bundle
 import android.preference.*
 import android.text.TextUtils
 import android.view.MenuItem
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.loadDomainsFromDb
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -84,7 +84,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
             val pref = findPreference(resources.getString(R.string.pref_key_default_domain)) as ListPreference
 
-            val domains = loadDomainsFromDb(context)
+            val domains = DbTools.loadDomainsFromDb(context)
             val ids = arrayOfNulls<String>(domains.size)
             val names = arrayOfNulls<String>(domains.size)
             var i = 0

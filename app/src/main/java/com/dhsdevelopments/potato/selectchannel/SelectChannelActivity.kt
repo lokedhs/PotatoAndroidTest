@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.IntentUtil
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.nlazy
-import com.dhsdevelopments.potato.refreshChannelEntryInDb
 
 class SelectChannelActivity : Activity() {
 
@@ -28,7 +28,7 @@ class SelectChannelActivity : Activity() {
     }
 
     fun channelSelected(channel: AvailableChannel) {
-        refreshChannelEntryInDb(this, channel.id,
+        DbTools.refreshChannelEntryInDb(this, channel.id,
                 { message -> returnError(message) },
                 { returnChannel(channel) })
     }

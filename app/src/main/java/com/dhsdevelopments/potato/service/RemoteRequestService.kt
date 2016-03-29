@@ -83,7 +83,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                             db.insert(StorageHelper.DOMAINS_TABLE, null, values)
 
                             for (c in d.channels) {
-                                insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)
+                                DbTools.insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)
                             }
                         }
                     }
@@ -135,7 +135,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val db = PotatoApplication.getInstance(this).cacheDatabase
         db.beginTransaction()
         try {
-            val hasElement = loadChannelConfigFromDb(db, cid).use { it.moveToNext() }
+            val hasElement = DbTools.loadChannelConfigFromDb(db, cid).use { it.moveToNext() }
 
             if (hasElement) {
                 val values = ContentValues()

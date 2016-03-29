@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
-import com.dhsdevelopments.potato.loadAllChannelIdsInDomain
 import java.util.*
 
 @Suppress("unused")
@@ -25,7 +25,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
         val app = PotatoApplication.getInstance(parent)
         val call = app.potatoApi.getAllChannelsInDomain(app.apiKey, domainId, "1", "1")
         callServiceBackground(call, ::plainErrorHandler) { result ->
-            val chList = loadAllChannelIdsInDomain(parent, domainId)
+            val chList = DbTools.loadAllChannelIdsInDomain(parent, domainId)
             channels.clear()
             channels.addAll(result.groups!!.flatMap {
                 it.channels!!

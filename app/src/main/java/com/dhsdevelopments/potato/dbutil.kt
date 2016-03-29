@@ -81,116 +81,118 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
 }
 
 class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, hidden: Boolean, val domainId: String)
-
-fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
-    return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-            arrayOf(StorageHelper.CHANNELS_ID,
-                    StorageHelper.CHANNELS_NAME,
-                    StorageHelper.CHANNELS_PRIVATE,
-                    StorageHelper.CHANNELS_HIDDEN,
-                    StorageHelper.CHANNELS_DOMAIN),
-            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-            null, null, null).use { result ->
-        if (!result.moveToNext()) {
-            throw IllegalStateException("Channel not found in database: $cid")
-        }
-        ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0, result.getString(4))
-    }
-}
-
-fun loadChannelConfigFromDb(db: SQLiteDatabase, channelId: String): Cursor {
-    return db.query(StorageHelper.CHANNEL_CONFIG_TABLE,
-            arrayOf(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD),
-            "${StorageHelper.CHANNEL_CONFIG_ID} = ?", arrayOf(channelId),
-            null, null, null, null)
-}
-
-fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
-    val domains = ArrayList<DomainDescriptor>()
-    PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.DOMAINS_TABLE,
-            arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
-            null, null, null, null, null, null).use { result ->
-        while (result.moveToNext()) {
-            val id = result.getString(0)
-            val name = result.getString(1)
-            domains.add(DomainDescriptor(id, name))
-        }
-    }
-    return domains
-}
-
-fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
-    val channels = HashSet<String>()
-    PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-            arrayOf(StorageHelper.CHANNELS_ID),
-            "${StorageHelper.CHANNELS_DOMAIN} = ?", arrayOf(domainId),
-            null, null, null).use { result ->
-        while (result.moveToNext()) {
-            channels.add(result.getString(0))
-        }
-    }
-    return channels
-}
-
-fun isChannelJoined(context: Context, cid: String): Boolean {
-    return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-            arrayOf(StorageHelper.CHANNELS_ID),
-            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-            null, null, null).use { result ->
-        result.moveToNext()
-    }
-}
-
-fun insertChannelIntoChannelsTable(db: SQLiteDatabase, channelId: String, domainId: String, name: String, unreadCount: Int, privateUser: String?, hide: Boolean) {
-    val channelValues = ContentValues()
-    channelValues.put(StorageHelper.CHANNELS_ID, channelId)
-    channelValues.put(StorageHelper.CHANNELS_DOMAIN, domainId)
-    channelValues.put(StorageHelper.CHANNELS_NAME, name)
-    channelValues.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
-    channelValues.put(StorageHelper.CHANNELS_PRIVATE, privateUser)
-    channelValues.put(StorageHelper.CHANNELS_HIDDEN, hide)
-    db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
-}
-
-fun ensureChannelInfo(context: Context, cid: String, fn: () -> Unit) {
-    val db = PotatoApplication.getInstance(context)
-    val exists = db.cacheDatabase.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID),
-            "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-            null, null, null).use {
-        it.moveToNext()
-    }
-
-    if (exists) {
-        fn()
-    }
-    else {
-        refreshChannelEntryInDb(context, cid,
-                { message -> throw RuntimeException("Error loading channel info: $message") },
-                { fn() })
-    }
-}
-
-fun refreshChannelEntryInDb(context: Context, cid: String, errorFn: (String) -> Unit, successFn: (LoadChannelInfoResult) -> Unit) {
-    val app = PotatoApplication.getInstance(context)
-    val call = app.potatoApi.loadChannelInfo(app.apiKey, cid)
-    callServiceBackground(call, {
-        errorFn(it)
-    }, {
-        updateDatabase(context, it); successFn(it)
-    })
-}
-
-private fun updateDatabase(context: Context, c: LoadChannelInfoResult) {
-    val db = PotatoApplication.getInstance(context).cacheDatabase
-    db.beginTransaction()
-    try {
-        db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
-        insertChannelIntoChannelsTable(db, c.id, c.domainId, c.name, c.unreadCount, c.privateUserId, false)
-        db.setTransactionSuccessful()
-    }
-    finally {
-        db.endTransaction()
-    }
-}
-
 class DomainDescriptor(val id: String, val name: String)
+
+object DbTools {
+
+    fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
+        return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+                arrayOf(StorageHelper.CHANNELS_ID,
+                        StorageHelper.CHANNELS_NAME,
+                        StorageHelper.CHANNELS_PRIVATE,
+                        StorageHelper.CHANNELS_HIDDEN,
+                        StorageHelper.CHANNELS_DOMAIN),
+                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+                null, null, null).use { result ->
+            if (!result.moveToNext()) {
+                throw IllegalStateException("Channel not found in database: $cid")
+            }
+            ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0, result.getString(4))
+        }
+    }
+
+    fun loadChannelConfigFromDb(db: SQLiteDatabase, channelId: String): Cursor {
+        return db.query(StorageHelper.CHANNEL_CONFIG_TABLE,
+                arrayOf(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD),
+                "${StorageHelper.CHANNEL_CONFIG_ID} = ?", arrayOf(channelId),
+                null, null, null, null)
+    }
+
+    fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
+        val domains = ArrayList<DomainDescriptor>()
+        PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.DOMAINS_TABLE,
+                arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
+                null, null, null, null, null, null).use { result ->
+            while (result.moveToNext()) {
+                val id = result.getString(0)
+                val name = result.getString(1)
+                domains.add(DomainDescriptor(id, name))
+            }
+        }
+        return domains
+    }
+
+    fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
+        val channels = HashSet<String>()
+        PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+                arrayOf(StorageHelper.CHANNELS_ID),
+                "${StorageHelper.CHANNELS_DOMAIN} = ?", arrayOf(domainId),
+                null, null, null).use { result ->
+            while (result.moveToNext()) {
+                channels.add(result.getString(0))
+            }
+        }
+        return channels
+    }
+
+    fun isChannelJoined(context: Context, cid: String): Boolean {
+        return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+                arrayOf(StorageHelper.CHANNELS_ID),
+                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+                null, null, null).use { result ->
+            result.moveToNext()
+        }
+    }
+
+    fun insertChannelIntoChannelsTable(db: SQLiteDatabase, channelId: String, domainId: String, name: String, unreadCount: Int, privateUser: String?, hide: Boolean) {
+        val channelValues = ContentValues()
+        channelValues.put(StorageHelper.CHANNELS_ID, channelId)
+        channelValues.put(StorageHelper.CHANNELS_DOMAIN, domainId)
+        channelValues.put(StorageHelper.CHANNELS_NAME, name)
+        channelValues.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
+        channelValues.put(StorageHelper.CHANNELS_PRIVATE, privateUser)
+        channelValues.put(StorageHelper.CHANNELS_HIDDEN, hide)
+        db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
+    }
+
+    fun ensureChannelInfo(context: Context, cid: String, fn: () -> Unit) {
+        val db = PotatoApplication.getInstance(context)
+        val exists = db.cacheDatabase.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID),
+                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
+                null, null, null).use {
+            it.moveToNext()
+        }
+
+        if (exists) {
+            fn()
+        }
+        else {
+            refreshChannelEntryInDb(context, cid,
+                    { message -> throw RuntimeException("Error loading channel info: $message") },
+                    { fn() })
+        }
+    }
+
+    fun refreshChannelEntryInDb(context: Context, cid: String, errorFn: (String) -> Unit, successFn: (LoadChannelInfoResult) -> Unit) {
+        val app = PotatoApplication.getInstance(context)
+        val call = app.potatoApi.loadChannelInfo(app.apiKey, cid)
+        callServiceBackground(call, {
+            errorFn(it)
+        }, {
+            updateDatabase(context, it); successFn(it)
+        })
+    }
+
+    private fun updateDatabase(context: Context, c: LoadChannelInfoResult) {
+        val db = PotatoApplication.getInstance(context).cacheDatabase
+        db.beginTransaction()
+        try {
+            db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
+            insertChannelIntoChannelsTable(db, c.id, c.domainId, c.name, c.unreadCount, c.privateUserId, false)
+            db.setTransactionSuccessful()
+        }
+        finally {
+            db.endTransaction()
+        }
+    }
+}

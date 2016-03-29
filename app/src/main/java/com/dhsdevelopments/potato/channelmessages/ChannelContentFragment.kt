@@ -80,7 +80,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         cid = arguments.getString(ARG_CHANNEL_ID) ?: throw IllegalStateException("channelId argument not specified")
-        channelInfo = loadChannelInfoFromDb(context, cid)
+        channelInfo = DbTools.loadChannelInfoFromDb(context, cid)
 
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -257,7 +257,7 @@ class ChannelContentFragment : Fragment() {
         val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
         val db = PotatoApplication.getInstance(context).cacheDatabase
 
-        notifyUnreadOption.isChecked = loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
+        notifyUnreadOption.isChecked = DbTools.loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
 
         // Set up search
         //            Log.d("Setting up searchable info for $componentName")

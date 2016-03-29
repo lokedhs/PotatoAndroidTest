@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
-import com.dhsdevelopments.potato.ensureChannelInfo
-import com.dhsdevelopments.potato.loadChannelInfoFromDb
 import java.text.Collator
 import java.util.*
 
@@ -118,13 +117,13 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
                 parentActivity.closeUserListDrawer()
 
                 val context = parentActivity as Context
-                val channelInfo = loadChannelInfoFromDb(context, parentActivity.findUserTracker().cid)
+                val channelInfo = DbTools.loadChannelInfoFromDb(context, parentActivity.findUserTracker().cid)
 
                 val uid = user!!.id
                 val app = PotatoApplication.getInstance(context)
                 callServiceBackground(app.potatoApi.findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
                     val privChannelId = result.channel
-                    ensureChannelInfo(context, privChannelId) {
+                    DbTools.ensureChannelInfo(context, privChannelId) {
                         parentActivity.openChannel(privChannelId)
                     }
                 }
