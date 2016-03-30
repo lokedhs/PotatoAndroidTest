@@ -3,6 +3,9 @@ package com.dhsdevelopments.potato
 import android.graphics.*
 import android.text.style.ReplacementSpan
 
+/**
+ * Span used to render inline code format. I.e. text that is wrapped in backquotes.
+ */
 class CodeTypefaceSpan : ReplacementSpan() {
     private val typeface = Typeface.MONOSPACE
 
@@ -46,5 +49,24 @@ class CodeTypefaceSpan : ReplacementSpan() {
     companion object {
         private val FRAME_MARGIN = 3
         private val FRAME_WIDTH = 1
+    }
+}
+
+/**
+ * Span used to render code blocks. These are blocks that are wrapped with triple-backquote.
+ */
+class CodeBlockTypefaceSpan : ReplacementSpan() {
+    private val typeface = Typeface.MONOSPACE
+
+    override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
+        val bounds = Rect()
+        paint.typeface = typeface
+        paint.getTextBounds(text.toString(), start, end, bounds)
+        return bounds.right
+    }
+
+    override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
+        paint.typeface = typeface
+        canvas.drawText(text, start, end, x, y.toFloat(), paint)
     }
 }
