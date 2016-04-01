@@ -84,7 +84,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
             val pref = findPreference(resources.getString(R.string.pref_key_default_domain)) as ListPreference
 
-            val domains = DbTools.loadDomainsFromDb(context)
+            val domains = DbTools.loadDomainsFromDb(activity)
             val ids = arrayOfNulls<String>(domains.size)
             val names = arrayOfNulls<String>(domains.size)
             var i = 0

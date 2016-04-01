@@ -49,7 +49,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     val elementDecoration: RecyclerView.ItemDecoration by nlazy { MessageElementItemDecoration() }
 
     init {
-        context = parent.context
+        context = parent.activity
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {

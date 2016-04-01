@@ -38,14 +38,14 @@ class OptionsDialogFragment : DialogFragment() {
         recyclerView = view.findViewById(R.id.options_recycler_view) as RecyclerView
         //recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         //recyclerView.addItemDecoration(MarginDecoration)
-        recyclerView.layoutManager = GridLayoutManager(context, 3)
+        recyclerView.layoutManager = GridLayoutManager(activity, 3)
         recyclerView.adapter = OptionsAdapter(this, optionsNotification)
 
         return view;
     }
 
     internal fun optionSelected(code: String) {
-        RemoteRequestService.sendCommand(context, optionsNotification.channel, optionsNotification.optionCode, code, true)
+        RemoteRequestService.sendCommand(activity, optionsNotification.channel, optionsNotification.optionCode, code, true)
         dialog.dismiss()
     }
 
@@ -70,7 +70,7 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
-        imageCache = ImageCache(parent.context)
+        imageCache = ImageCache(parent.activity)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
@@ -110,7 +110,7 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
 
             if (option.imageUrl != null) {
                 val oldUpdateIndex = ++updateIndex
-                val res = parent.context.resources
+                val res = parent.activity.resources
                 val imageWidth = res.getDimensionPixelSize(R.dimen.option_image_width)
                 val imageHeight = res.getDimensionPixelSize(R.dimen.option_image_height)
 
@@ -129,7 +129,7 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
                 //                            }
                 //                        })
 
-                Ion.with(parent.context)
+                Ion.with(parent.activity)
                         .load(option.imageUrl!!)
                         .withBitmap()
                         .placeholder(R.drawable.image_load_animation)

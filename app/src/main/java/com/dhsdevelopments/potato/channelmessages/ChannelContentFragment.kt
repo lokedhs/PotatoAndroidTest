@@ -80,7 +80,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         cid = arguments.getString(ARG_CHANNEL_ID) ?: throw IllegalStateException("channelId argument not specified")
-        channelInfo = DbTools.loadChannelInfoFromDb(context, cid)
+        channelInfo = DbTools.loadChannelInfoFromDb(activity, cid)
 
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -93,13 +93,13 @@ class ChannelContentFragment : Fragment() {
         intentFilter.addAction(ChannelSubscriptionService.ACTION_TYPING)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_OPTIONS)
         intentFilter.addAction(ChannelSubscriptionService.ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, intentFilter)
+        LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, intentFilter)
 
         adapter = ChannelContentAdapter(this, cid)
     }
 
     override fun onDestroy() {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver)
         super.onDestroy()
     }
 
@@ -176,11 +176,11 @@ class ChannelContentFragment : Fragment() {
         }
 
         val userTracker = (activity as HasChannelContentActivity).findUserTracker()
-        userNameSuggestAdapter = UserNameSuggestAdapter(context, userTracker)
+        userNameSuggestAdapter = UserNameSuggestAdapter(activity, userTracker)
         messageInput.setAdapter<UserNameSuggestAdapter>(userNameSuggestAdapter)
         messageInput.setTokenizer(UserNameTokeniser(userTracker))
 
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val sendButton = rootView.findViewById(R.id.send_button) as Button
         sendButton.setOnClickListener {
             sendMessage(messageInput)
@@ -222,10 +222,10 @@ class ChannelContentFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val intent = Intent(context, ChannelSubscriptionService::class.java)
+        val intent = Intent(activity, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_BIND_TO_CHANNEL
         intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
-        context.startService(intent)
+        activity.startService(intent)
         adapter.loadMessages(object : ChannelContentAdapter.LoadMessagesCallback {
             override fun loadSuccessful(messages: List<MessageWrapper>) {
                 scrollToBottom()
@@ -238,15 +238,15 @@ class ChannelContentFragment : Fragment() {
 
         refreshTypingNotifier()
 
-        RemoteRequestService.markNotificationsForChannel(context, cid)
+        RemoteRequestService.markNotificationsForChannel(activity, cid)
     }
 
     override fun onStop() {
-        val intent = Intent(context, ChannelSubscriptionService::class.java)
+        val intent = Intent(activity, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
         intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
         Log.d("Requesting unbind for $cid")
-        context.startService(intent)
+        activity.startService(intent)
         Log.d("After request for unbind for $cid")
         super.onStop()
     }
@@ -255,7 +255,7 @@ class ChannelContentFragment : Fragment() {
         inflater.inflate(R.menu.channel_content_toolbar_menu, menu)
 
         val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
-        val db = PotatoApplication.getInstance(context).cacheDatabase
+        val db = PotatoApplication.getInstance(activity).cacheDatabase
 
         notifyUnreadOption.isChecked = DbTools.loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
 
@@ -274,7 +274,7 @@ class ChannelContentFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                activity.navigateUpTo(Intent(context, ChannelListActivity::class.java))
+                activity.navigateUpTo(Intent(activity, ChannelListActivity::class.java))
                 val parent = activity
                 if (parent is ChannelContentActivity) {
                     parent.overrideAnimExit()
@@ -320,7 +320,7 @@ class ChannelContentFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_IMAGE_RESULT_CODE) {
                 val uri = data!!.data
-                RemoteRequestService.sendMessageWithImage(context, cid, uri)
+                RemoteRequestService.sendMessageWithImage(activity, cid, uri)
             }
         }
     }
@@ -437,14 +437,14 @@ class ChannelContentFragment : Fragment() {
                 if(result != null) {
                     val cmd = result.groupValues[1]
                     val args = result.groupValues[2]
-                    RemoteRequestService.sendCommand(context, cid, cmd, args)
+                    RemoteRequestService.sendCommand(activity, cid, cmd, args)
                 }
                 else {
                     displaySnackbarMessage(messageInput, "Illegal characters in command")
                 }
             }
             else {
-                val app = PotatoApplication.getInstance(context)
+                val app = PotatoApplication.getInstance(activity)
                 val api = app.potatoApi
                 val apiKey = app.apiKey
                 val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
@@ -484,15 +484,15 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun updateNotifyUnreadSetting(notifyUnread: Boolean) {
-        RemoteRequestService.updateUnreadSubscriptionState(context, cid, notifyUnread)
+        RemoteRequestService.updateUnreadSubscriptionState(activity, cid, notifyUnread)
     }
 
     private fun leaveChannel() {
         if(channelInfo.privateUser == null) {
-            RemoteRequestService.leaveChannel(context, cid)
+            RemoteRequestService.leaveChannel(activity, cid)
         }
         else {
-            RemoteRequestService.updateChannelVisibility(context, cid, false)
+            RemoteRequestService.updateChannelVisibility(activity, cid, false)
         }
         (activity as HasChannelContentActivity).closeChannel()
     }
