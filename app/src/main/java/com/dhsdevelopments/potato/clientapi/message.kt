@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.BackgroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.URLSpan
+import com.dhsdevelopments.potato.CodeBlockBackgroundSpan
 import com.dhsdevelopments.potato.CodeBlockTypefaceSpan
 import com.dhsdevelopments.potato.CodeTypefaceSpan
 import com.google.gson.JsonDeserializationContext
@@ -144,6 +145,7 @@ class MessageElementCodeBlock(private val language: String, private val code: St
     override fun makeSpan(): CharSequence {
         val s = SpannableString(code)
         s.setSpan(CodeBlockTypefaceSpan(), 0, code.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(CodeBlockBackgroundSpan(), 0, code.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
     }
 

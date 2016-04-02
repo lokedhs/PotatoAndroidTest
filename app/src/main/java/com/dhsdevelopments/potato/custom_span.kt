@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato
 
 import android.graphics.*
+import android.text.style.LineBackgroundSpan
 import android.text.style.ReplacementSpan
 
 /**
@@ -68,5 +69,17 @@ class CodeBlockTypefaceSpan : ReplacementSpan() {
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
         paint.typeface = typeface
         canvas.drawText(text, start, end, x, y.toFloat(), paint)
+    }
+}
+
+class CodeBlockBackgroundSpan : LineBackgroundSpan {
+
+    override fun drawBackground(canvas: Canvas, paint: Paint,
+                                left: Int, right: Int, top: Int, baseline: Int, bottom: Int,
+                                text: CharSequence?, start: Int, end: Int, lnum: Int) {
+        val oldColour = paint.color
+        paint.color = Color.rgb(210, 210, 210)
+        canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), paint)
+        paint.color = oldColour
     }
 }
