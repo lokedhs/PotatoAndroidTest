@@ -143,9 +143,10 @@ class MessageElementCode(content: MessageElement) : TypedMessageElement(content)
 
 class MessageElementCodeBlock(private val language: String, private val code: String) : MessageElement() {
     override fun makeSpan(): CharSequence {
-        val s = SpannableString(code)
-        s.setSpan(CodeBlockTypefaceSpan(), 0, code.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        s.setSpan(CodeBlockBackgroundSpan(), 0, code.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val adjustedString = "\n" + code + "\n"
+        val s = SpannableString(adjustedString)
+        s.setSpan(CodeBlockTypefaceSpan(), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(CodeBlockBackgroundSpan(), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
     }
 
