@@ -76,4 +76,6 @@
     <string name="channel_list_menu_entry_join_channel">Join channel</string>
     <string name="registration_text">You have registered as a new user. Please check the your email account {0}, and click on the registration link in the message that was just sent.</string>
     <string name="channel_content_toolbar_leave_channel">Leave channel</string>
+    <!-- Title for the context menu for a message. {0} = Sender name -->
+    <string name="message_popup_title">Message from {0}</string>
 </resources>

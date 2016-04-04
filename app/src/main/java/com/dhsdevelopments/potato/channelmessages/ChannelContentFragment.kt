@@ -220,6 +220,11 @@ class ChannelContentFragment : Fragment() {
         super.onDestroyView()
     }
 
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        registerForContextMenu(messageListView)
+    }
+
     override fun onStart() {
         super.onStart()
         val intent = Intent(activity, ChannelSubscriptionService::class.java)

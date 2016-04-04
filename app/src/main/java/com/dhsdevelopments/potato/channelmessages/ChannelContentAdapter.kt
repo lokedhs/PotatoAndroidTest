@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.text.Html
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
+import java.text.MessageFormat
 import java.util.*
 
 class ChannelContentAdapter(private val parent: ChannelContentFragment, private val cid: String) :
@@ -231,10 +233,10 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         }
     }
 
-    private fun openMessageDetails(msg: MessageWrapper) {
-        val intent = MessageDetailActivity.makeIntent(context, userTracker, msg)
-        context.startActivity(intent)
-    }
+//    private fun openMessageDetails(msg: MessageWrapper) {
+//        val intent = MessageDetailActivity.makeIntent(context, userTracker, msg)
+//        context.startActivity(intent)
+//    }
 
     internal fun shouldHideHeader(reference: MessageWrapper, msg: MessageWrapper): Boolean {
         if (reference.sender != msg.sender) {
@@ -279,7 +281,23 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
             imageView = itemView.findViewById(R.id.image) as ImageView
 
-            itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
+            //itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
+            itemView.setOnCreateContextMenuListener { menu, view, menuInfo -> createContextMenu(menu) }
+        }
+
+        private fun createContextMenu(menu: ContextMenu) {
+            Log.d("Creating context menu for $menu")
+            val msg = currentMessage!!
+            val app = PotatoApplication.getInstance(context)
+
+            val fmt = MessageFormat(context.getString(R.string.message_popup_title))
+            menu.setHeaderTitle(fmt.format(arrayOf(msg.senderName)))
+
+//            if(msg.sender == app.userId) {
+//                menu.add(0, 0, 0, R.string.message_popup_delete_message)
+//            }
+
+            parent.activity.menuInflater.inflate(R.menu.message_popup, menu)
         }
 
         open fun fillInView(message: MessageWrapper) {
