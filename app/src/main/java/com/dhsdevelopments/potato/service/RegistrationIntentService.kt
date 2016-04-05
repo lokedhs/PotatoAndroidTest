@@ -3,6 +3,7 @@ package com.dhsdevelopments.potato.service
 import android.app.IntentService
 import android.content.Intent
 import android.preference.PreferenceManager
+import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
@@ -45,6 +46,11 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
                 val prefsEditor = prefs.edit()
                 prefsEditor.putBoolean(PREFS_KEY_GCM_REGISTERED, true)
                 prefsEditor.apply()
+
+                // If this was a new registration, we need to clear the channel notification configuration
+                if("token_registered" == result.body().detail) {
+                    DbTools.clearUnreadNotificationSettings(this)
+                }
             }
             else {
                 Log.e("Unexpected reply from gcm registration: ${result.body().result}")

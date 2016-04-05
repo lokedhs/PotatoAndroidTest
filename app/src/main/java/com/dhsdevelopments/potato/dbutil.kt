@@ -195,4 +195,16 @@ object DbTools {
             db.endTransaction()
         }
     }
+
+    /**
+     * Sets the NOTIFY_UNREAD value for all channels to false. This needs to be called
+     * after the GCM registration has been reset (for example, after a full reset of
+     * the device).
+     */
+    fun clearUnreadNotificationSettings(context: Context) {
+        val db = PotatoApplication.getInstance(context).cacheDatabase
+        val values = ContentValues()
+        values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, 0)
+        db.update(StorageHelper.CHANNEL_CONFIG_TABLE, values, null, null)
+    }
 }
