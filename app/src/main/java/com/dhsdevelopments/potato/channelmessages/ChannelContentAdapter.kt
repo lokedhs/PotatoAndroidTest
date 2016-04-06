@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.message.Message
+import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
@@ -316,7 +317,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             senderView.text = message.senderName
             dateView.text = DateHelper.makeDateDiffString(context, message.createdDate.time)
             dateDetailView.text = message.createdDateFormatted
-            contentView.text = message.markupContent
+            contentView.text = message.content.makeSpan(MessageElement.SpanGenerationContext(context))
             senderNicknameView.text = ""
             currentMessage = message
 

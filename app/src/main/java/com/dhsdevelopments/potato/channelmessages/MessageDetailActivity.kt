@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.dhsdevelopments.potato.DateHelper
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
@@ -67,7 +68,7 @@ class MessageDetailActivity : AppCompatActivity() {
         senderNicknameTextView.text = userNickname
         sentDateTextView.text = dateHelper.formatDateTimeOutputFormat(msg.createdDate)
         editedInfo.text = msg.updatedDate ?: ""
-        messageText.text = msg.content.makeSpan()
+        messageText.text = msg.content.makeSpan(MessageElement.SpanGenerationContext(this))
     }
 
     override fun onDestroy() {

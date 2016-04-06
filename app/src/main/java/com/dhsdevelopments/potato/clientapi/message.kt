@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.clientapi.message
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
@@ -70,10 +71,10 @@ class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
 }
 
 class MessageElementList(private val list: List<MessageElement>) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         val builder = SpannableStringBuilder()
         for (element in list) {
-            builder.append(element.makeSpan())
+            builder.append(element.makeSpan(context))
         }
         return builder
     }
@@ -134,15 +135,15 @@ class Message : Serializable {
 }
 
 class MessageElementCode(content: MessageElement) : TypedMessageElement(content) {
-    override fun makeSpan(): CharSequence {
-        val s = SpannableString(content.makeSpan())
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
+        val s = SpannableString(content.makeSpan(context))
         s.setSpan(CodeTypefaceSpan(), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
     }
 }
 
 class MessageElementCodeBlock(private val language: String, private val code: String) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         val adjustedString = "\n" + code + "\n"
         val s = SpannableString(adjustedString)
         s.setSpan(CodeBlockTypefaceSpan(), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -159,14 +160,14 @@ class MessageElementCodeBlock(private val language: String, private val code: St
 }
 
 class MessageElementNewline : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         return "\n"
     }
 }
 
 class MessageElementItalics(content: MessageElement) : TypedMessageElement(content) {
-    override fun makeSpan(): CharSequence {
-        val s = SpannableString(content.makeSpan())
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
+        val s = SpannableString(content.makeSpan(context))
         s.setSpan(StyleSpan(Typeface.ITALIC), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
     }
@@ -184,7 +185,7 @@ class MessageImage : Serializable {
 }
 
 class MessageElementString(private val value: String) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         return value
     }
 
@@ -204,15 +205,15 @@ open class TypedMessageElement(protected var content: MessageElement) : MessageE
 }
 
 class MessageElementBold(content: MessageElement) : TypedMessageElement(content) {
-    override fun makeSpan(): CharSequence {
-        val s = SpannableString(content.makeSpan())
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
+        val s = SpannableString(content.makeSpan(context))
         s.setSpan(StyleSpan(Typeface.BOLD), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
     }
 }
 
 class MessageElementUser(private val userId: String, private val userDescription: String) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         val s = SpannableString(userDescription)
         s.setSpan(BackgroundColorSpan(Color.rgb(0xe3, 0xe3, 0xe3)), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
@@ -220,7 +221,7 @@ class MessageElementUser(private val userId: String, private val userDescription
 }
 
 class MessageElementUnknownType(private val type: String) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         return "[TYPE=$type]"
     }
 
@@ -239,7 +240,7 @@ class MessageHistoryResult {
 }
 
 class MessageElementUrl(private val addr: String, private val description: String) : MessageElement() {
-    override fun makeSpan(): CharSequence {
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
         val s = SpannableString(description)
         s.setSpan(URLSpan(addr), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
@@ -251,13 +252,15 @@ class MessageElementUrl(private val addr: String, private val description: Strin
 }
 
 class MessageElementParagraph(content: MessageElement) : TypedMessageElement(content) {
-    override fun makeSpan(): CharSequence {
-        return content.makeSpan()
+    override fun makeSpan(context: SpanGenerationContext): CharSequence {
+        return content.makeSpan(context)
     }
 }
 
 abstract class MessageElement : Serializable {
-    open fun makeSpan(): CharSequence {
+    open fun makeSpan(context: SpanGenerationContext): CharSequence {
         return "[NOT-IMPLEMENTED type=" + javaClass.name + "]"
     }
+
+    class SpanGenerationContext(val context: Context)
 }

@@ -34,9 +34,6 @@ class MessageWrapper : Serializable {
     val content: MessageElement
         get() = msg.text
 
-    val markupContent: CharSequence
-        get() = msg.text.makeSpan()
-
     val extraHtml: String?
         get() = msg.extraHtml
 
