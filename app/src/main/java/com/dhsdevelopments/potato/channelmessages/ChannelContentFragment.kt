@@ -321,6 +321,14 @@ class ChannelContentFragment : Fragment() {
         }
     }
 
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        Log.i("Context menu selected: $item")
+        when(item.itemId) {
+            R.id.message_popup_delete_message -> Log.i("was delete")
+        }
+        return super.onContextItemSelected(item)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_IMAGE_RESULT_CODE) {

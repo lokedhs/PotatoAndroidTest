@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -22,6 +23,7 @@ import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
+import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
@@ -233,10 +235,10 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         }
     }
 
-//    private fun openMessageDetails(msg: MessageWrapper) {
-//        val intent = MessageDetailActivity.makeIntent(context, userTracker, msg)
-//        context.startActivity(intent)
-//    }
+    //    private fun openMessageDetails(msg: MessageWrapper) {
+    //        val intent = MessageDetailActivity.makeIntent(context, userTracker, msg)
+    //        context.startActivity(intent)
+    //    }
 
     internal fun shouldHideHeader(reference: MessageWrapper, msg: MessageWrapper): Boolean {
         if (reference.sender != msg.sender) {
@@ -257,6 +259,15 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             }
         }
         return false
+    }
+
+    private fun deleteMessage(messageId: String) {
+        AlertDialog.Builder(context).setMessage(R.string.delete_message_confirmation_text)
+                .setPositiveButton(R.string.delete_message_confirm, { dialog, which ->
+                    RemoteRequestService.deleteMessage(context, messageId)
+                })
+                .setNegativeButton(R.string.delete_message_deny, null)
+                .show();
     }
 
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -293,11 +304,12 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             val fmt = MessageFormat(context.getString(R.string.message_popup_title))
             menu.setHeaderTitle(fmt.format(arrayOf(msg.senderName)))
 
-//            if(msg.sender == app.userId) {
-//                menu.add(0, 0, 0, R.string.message_popup_delete_message)
-//            }
-
             parent.activity.menuInflater.inflate(R.menu.message_popup, menu)
+            val item = menu.findItem(R.id.message_popup_delete_message)
+            item.setOnMenuItemClickListener { deleteMessage(msg.id); true }
+            if(msg.sender != app.userId) {
+                item.isEnabled = false
+            }
         }
 
         open fun fillInView(message: MessageWrapper) {
