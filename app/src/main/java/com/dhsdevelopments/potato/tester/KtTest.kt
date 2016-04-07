@@ -1,13 +1,13 @@
 package com.dhsdevelopments.potato.tester
 
 class Foo(val value: Int) {
-    override fun toString(): String{
+    override fun toString(): String {
         return "Foo(value=$value)"
     }
 }
 
 class FooResult(val value: Int) {
-    override fun toString(): String{
+    override fun toString(): String {
         return "FooResult(value=$value)"
     }
 }
@@ -24,8 +24,15 @@ class KtTest {
         fun main(args: Array<String>) {
             val v1 = Foo(1)
             val v2 = Foo(100)
-            val v3 = {v1} bar {v2}
+            val v3 = { v1 } bar { v2 }
             println("v3=$v3")
+
+            var i = 0
+            val l = generateSequence { i++ }
+
+            var i2 = 1000
+            val l2 = generateSequence { if (i2 < 1010) i2++ else null }.plus(l.takeWhile { it < 10 })
+            println("content=${l2.toList()}")
         }
     }
 }
