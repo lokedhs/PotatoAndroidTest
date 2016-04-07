@@ -414,7 +414,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         }
 
         fun messageFromAdapterPos(parent: RecyclerView, view: View): MessageWrapper? {
-            var pos = parent.getChildAdapterPosition(view)
+            val pos = parent.getChildAdapterPosition(view)
             if (pos > 0 && pos < messages.size) {
                 val msg = messages[pos]
                 if (msg.isShouldDisplayHeader) {
