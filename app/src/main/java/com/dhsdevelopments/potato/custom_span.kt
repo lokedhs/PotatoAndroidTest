@@ -1,14 +1,21 @@
 package com.dhsdevelopments.potato
 
-import android.graphics.*
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.Typeface
+import android.support.v4.content.ContextCompat
 import android.text.style.LineBackgroundSpan
 import android.text.style.ReplacementSpan
 
 /**
  * Span used to render inline code format. I.e. text that is wrapped in backquotes.
  */
-class CodeTypefaceSpan : ReplacementSpan() {
+class CodeTypefaceSpan(val context: Context) : ReplacementSpan() {
     private val typeface = Typeface.MONOSPACE
+    val frameColour = ContextCompat.getColor(context, R.color.code_inline_frame)
+    val backgroundColour = ContextCompat.getColor(context, R.color.code_background)
 
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
         val bounds = Rect()
@@ -29,14 +36,14 @@ class CodeTypefaceSpan : ReplacementSpan() {
 
         val oldColour = paint.color
 
-        paint.color = Color.rgb(120, 120, 120)
+        paint.color = frameColour
         val drawX1 = x
         val drawY1 = y + metrics.top
         val drawX2 = x + bounds.right.toFloat() + (FRAME_MARGIN * 2).toFloat()
         val drawY2 = y + metrics.bottom
         canvas.drawRect(drawX1, drawY1, drawX2, drawY2, paint)
 
-        paint.color = Color.rgb(210, 210, 210)
+        paint.color = backgroundColour
         canvas.drawRect(drawX1 + FRAME_WIDTH,
                 drawY1 + FRAME_WIDTH,
                 drawX2 - FRAME_WIDTH,
@@ -72,13 +79,14 @@ class CodeBlockTypefaceSpan : ReplacementSpan() {
     }
 }
 
-class CodeBlockBackgroundSpan : LineBackgroundSpan {
+class CodeBlockBackgroundSpan(context: Context) : LineBackgroundSpan {
+    val colour = ContextCompat.getColor(context, R.color.code_block_background)
 
     override fun drawBackground(canvas: Canvas, paint: Paint,
                                 left: Int, right: Int, top: Int, baseline: Int, bottom: Int,
                                 text: CharSequence?, start: Int, end: Int, lnum: Int) {
         val oldColour = paint.color
-        paint.color = Color.rgb(210, 210, 210)
+        paint.color = colour
         canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), paint)
         paint.color = oldColour
     }
