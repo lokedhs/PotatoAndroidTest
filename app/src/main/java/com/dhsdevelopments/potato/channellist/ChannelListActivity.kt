@@ -226,7 +226,10 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
                 val msg = data!!.getStringExtra(IntentUtil.EXTRA_ERROR_MESSAGE)
                 Snackbar.make(channelListRecyclerView, "Error loading channel: $msg", Snackbar.LENGTH_LONG).setAction("Action", null).show()
             }
-            else -> throw RuntimeException("Unexpected return code from select channel activity")
+            RESULT_CANCELED -> {
+                // Do nothing
+            }
+            else -> throw RuntimeException("Unexpected return code from select channel activity: $resultCode")
         }
     }
 
