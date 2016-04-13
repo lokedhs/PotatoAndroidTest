@@ -79,4 +79,5 @@
     <!-- Title for the context menu for a message. {0} = Sender name -->
     <string name="message_popup_title">Message from {0}</string>
     <string name="activation_panel_try_to_log_in_again">Try to log in again</string>
+    <string name="create_new_channel">Create new channel</string>
 </resources>
