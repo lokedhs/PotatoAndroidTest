@@ -37,7 +37,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
             return if (position == 0) VIEW_TYPE_HEADER else VIEW_TYPE_CHANNEL
         }
         else {
-            if (position == 0 || !privateChannels.isEmpty() && position == publicChannels.size + 1) {
+            if (position == 0 || (!privateChannels.isEmpty() && position == publicChannels.size + 1)) {
                 return VIEW_TYPE_HEADER
             }
             else {
