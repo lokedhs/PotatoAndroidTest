@@ -48,7 +48,7 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
                 prefsEditor.apply()
 
                 // If this was a new registration, we need to clear the channel notification configuration
-                if("token_registered" == result.body().detail) {
+                if ("token_registered" == result.body().detail) {
                     DbTools.clearUnreadNotificationSettings(this)
                 }
             }

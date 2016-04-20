@@ -152,7 +152,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun updateChannelDatabaseIfNeeded(cid: String) {
-        if(!DbTools.isChannelJoined(this, cid)) {
+        if (!DbTools.isChannelJoined(this, cid)) {
             RemoteRequestService.loadChannelList(this)
         }
     }
@@ -236,7 +236,7 @@ class ChannelSubscriptionService : Service() {
 
             Log.d("Updates thread shut down")
 
-            if(lastStartId != null) {
+            if (lastStartId != null) {
                 stopSelf(lastStartId!!)
             }
         }
@@ -275,7 +275,7 @@ class ChannelSubscriptionService : Service() {
                 if (!subscribedChannels.contains(cid)) {
                     subscribedChannels.add(cid)
                     if (eventId == null) {
-                        if(pendingBinds == null) {
+                        if (pendingBinds == null) {
                             pendingBinds = HashSet()
                         }
                         pendingBinds!!.add(cid)
@@ -319,7 +319,7 @@ class ChannelSubscriptionService : Service() {
             var wasShutdown = false
             synchronized (this) {
                 subscribedChannels.remove(cid)
-                if(pendingBinds != null) {
+                if (pendingBinds != null) {
                     pendingBinds!!.remove(cid)
                 }
                 if (subscribedChannels.isEmpty()) {
@@ -338,7 +338,7 @@ class ChannelSubscriptionService : Service() {
                 outstandingCall = null
                 call
             }
-            if(outstandingCallCopy != null) {
+            if (outstandingCallCopy != null) {
                 val task = object : AsyncTask<Unit, Unit, Unit>() {
                     override fun doInBackground(vararg params: Unit?) {
                         outstandingCallCopy.cancel()
@@ -353,6 +353,7 @@ class ChannelSubscriptionService : Service() {
 
         private inner class ReceiverStoppedException : Exception {
             constructor()
+
             constructor(e: InterruptedIOException) : super(e)
         }
     }

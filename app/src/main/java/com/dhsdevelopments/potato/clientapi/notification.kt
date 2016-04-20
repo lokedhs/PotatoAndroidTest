@@ -84,7 +84,7 @@ class PotatoNotificationResult {
     @SerializedName("data")
     var notifications: List<PotatoNotification>? = null
 
-    override fun toString(): String{
+    override fun toString(): String {
         return "PotatoNotificationResult(eventId='$eventId', notifications=$notifications)"
     }
 }
@@ -133,7 +133,7 @@ class Option : Serializable {
     var buttonText: String? = null
 }
 
-class UnknownSlashcommandNotification: PotatoNotification() {
+class UnknownSlashcommandNotification : PotatoNotification() {
     @SerializedName("channel")
     lateinit var channel: String
 

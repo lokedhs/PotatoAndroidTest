@@ -83,9 +83,9 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     private fun createToggle(toolbar: Toolbar) {
-        toggle = object: ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        toggle = object : ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                if(drawerView.id == R.id.channel_list_nav_view) {
+                if (drawerView.id == R.id.channel_list_nav_view) {
                     super.onDrawerSlide(drawerView, slideOffset)
                 }
             }
@@ -169,7 +169,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     private fun activateSelectedDomain() {
-        if(selectedDomainId == null && domainsMenu.size() > 0) {
+        if (selectedDomainId == null && domainsMenu.size() > 0) {
             selectedDomainId = domainsMenu.getItem(0).intent.getStringExtra(EXTRA_DOMAIN_ID)
         }
         if (selectedDomainId != null) {
@@ -217,7 +217,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when(resultCode) {
+        when (resultCode) {
             RESULT_OK -> {
                 val cid = data!!.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
                 setActiveChannel(cid)
@@ -272,7 +272,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     override fun closeChannel() {
-        if(channelContentFragment != null) {
+        if (channelContentFragment != null) {
             fragmentManager
                     .beginTransaction()
                     .remove(channelContentFragment)

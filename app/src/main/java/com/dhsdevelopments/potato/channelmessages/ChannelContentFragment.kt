@@ -323,7 +323,7 @@ class ChannelContentFragment : Fragment() {
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         Log.i("Context menu selected: $item")
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.message_popup_delete_message -> Log.i("was delete")
         }
         return super.onContextItemSelected(item)
@@ -434,7 +434,7 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun processUnknownSlashcommand(intent: Intent) {
-        if(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) == cid) {
+        if (intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID) == cid) {
             val cmd = intent.getStringExtra(ChannelSubscriptionService.EXTRA_COMMAND_NAME)
             val fmt = MessageFormat(getString(R.string.illegal_command_reply))
             showErrorSnackbar(fmt.format(arrayOf(cmd)))
@@ -445,9 +445,9 @@ class ChannelContentFragment : Fragment() {
         val text = messageInput.text
 
         if (text.length > 0) {
-            if(text[0] == '/') {
+            if (text[0] == '/') {
                 val result = Regex("^([a-zA-Z0-9_-]+)(?: +([^ ].*))?$").find(text.substring(1))
-                if(result != null) {
+                if (result != null) {
                     val cmd = result.groupValues[1]
                     val args = result.groupValues[2]
                     RemoteRequestService.sendCommand(activity, cid, cmd, args)
@@ -501,7 +501,7 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun leaveChannel() {
-        if(channelInfo.privateUser == null) {
+        if (channelInfo.privateUser == null) {
             RemoteRequestService.leaveChannel(activity, cid)
         }
         else {

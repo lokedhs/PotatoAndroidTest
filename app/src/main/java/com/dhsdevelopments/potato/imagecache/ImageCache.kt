@@ -93,11 +93,11 @@ class ImageCache(private val context: Context) {
             val cacheKey = CacheKey(url, imageWidth, imageHeight, apiKey != null)
             var cacheEntry = bitmapCache[cacheKey]
             var cachedBitmap: Bitmap? = null
-            if(cacheEntry != null) {
+            if (cacheEntry != null) {
                 val ref = cacheEntry.bitmap
-                if(ref != null) {
+                if (ref != null) {
                     val bm = ref.get()
-                    if(bm == null) {
+                    if (bm == null) {
                         bitmapCache.remove(cacheKey)
                         cacheEntry = null
                     }

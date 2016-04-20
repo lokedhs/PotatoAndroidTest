@@ -37,6 +37,6 @@ class SendCommandResult : RemoteResult {
 
     override fun errorMsg(): String? {
         val res = result;
-        return if(res == "ok") null else res
+        return if (res == "ok") null else res
     }
 }

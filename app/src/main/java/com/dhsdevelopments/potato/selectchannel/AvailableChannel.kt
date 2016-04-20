@@ -5,7 +5,7 @@ import java.text.Collator
 import java.util.*
 
 class AvailableChannel(channel: Channel) {
-    object COMPARATOR: Comparator<AvailableChannel> {
+    object COMPARATOR : Comparator<AvailableChannel> {
         val collator = Collator.getInstance()
 
         override fun compare(p0: AvailableChannel?, p1: AvailableChannel?): Int {

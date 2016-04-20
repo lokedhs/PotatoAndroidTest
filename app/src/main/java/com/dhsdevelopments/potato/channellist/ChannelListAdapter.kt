@@ -11,6 +11,11 @@ import com.dhsdevelopments.potato.StorageHelper
 import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
+    companion object {
+        private val VIEW_TYPE_HEADER = 0
+        private val VIEW_TYPE_CHANNEL = 1
+    }
+
     private var publicChannels: MutableList<ChannelEntry> = ArrayList()
     private var privateChannels: MutableList<ChannelEntry> = ArrayList()
 
@@ -133,7 +138,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
         fun fillInChannelEntry(item: ChannelEntry) {
             contentView.text = item.name
-            if ( item.unread > 0 ) {
+            if (item.unread > 0) {
                 unreadView.text = item.unread.toString()
                 unreadView.visibility = View.VISIBLE
             }
@@ -145,10 +150,5 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
                 parent.setActiveChannel(item.id)
             }
         }
-    }
-
-    companion object {
-        private val VIEW_TYPE_HEADER = 0
-        private val VIEW_TYPE_CHANNEL = 1
     }
 }

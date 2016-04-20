@@ -308,7 +308,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             parent.activity.menuInflater.inflate(R.menu.message_popup, menu)
             val item = menu.findItem(R.id.message_popup_delete_message)
             item.setOnMenuItemClickListener { deleteMessage(msg.id); true }
-            if(msg.sender != app.userId) {
+            if (msg.sender != app.userId) {
                 item.isEnabled = false
             }
         }

@@ -23,6 +23,6 @@ class SendMessageResult : RemoteResult {
     var id: String? = null
 
     override fun errorMsg(): String? {
-        return if(result == "ok") null else result
+        return if (result == "ok") null else result
     }
 }
