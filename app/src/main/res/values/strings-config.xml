@@ -2,4 +2,5 @@
 <resources>
     <string name="server_prefix">https://potato.dhsdevelopments.com/</string>
     <!--<string name="server_prefix">http://10.0.2.2:8080/</string>-->
+    <string name="gcm_sender_id">274254878033</string>
 </resources>

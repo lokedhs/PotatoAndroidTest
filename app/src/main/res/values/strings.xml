@@ -14,7 +14,6 @@
 
     <string name="post_button_text">»</string>
     <string name="message_image_description">Attached image</string>
-    <string name="gcm_sender_id">274254878033</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
