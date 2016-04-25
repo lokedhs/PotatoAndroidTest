@@ -33,6 +33,9 @@ class KtTest {
             var i2 = 1000
             val l2 = generateSequence { if (i2 < 1010) i2++ else null }.plus(l.takeWhile { it < 10 })
             println("content=${l2.toList()}")
+
+            val seq = generateSequence({ 5 }, { it + 4 })
+            println("seq value=${seq.takeWhile { it < 100 }.toList()}")
         }
     }
 }
