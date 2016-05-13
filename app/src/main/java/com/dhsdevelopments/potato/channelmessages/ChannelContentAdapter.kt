@@ -291,7 +291,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             contentView = itemView.findViewById(R.id.content) as TextView
             senderNicknameView = itemView.findViewById(R.id.sender_nickname) as TextView
             dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
-            imageView = itemView.findViewById(R.id.image) as ImageView
+            imageView = itemView.findViewById(R.id.image_content) as ImageView
 
             //itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
             itemView.setOnCreateContextMenuListener { menu, view, menuInfo -> createContextMenu(menu) }
