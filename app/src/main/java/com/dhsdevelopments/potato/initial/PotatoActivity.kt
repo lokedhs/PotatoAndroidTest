@@ -58,7 +58,6 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
         }
         else {
-            Log.i("registering")
             val intent = Intent(this, RegistrationIntentService::class.java)
             intent.action = RegistrationIntentService.ACTION_REGISTER
             startService(intent)
