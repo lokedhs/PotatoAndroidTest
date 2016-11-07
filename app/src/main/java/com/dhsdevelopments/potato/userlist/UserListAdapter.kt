@@ -12,6 +12,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
+import java.lang.IllegalArgumentException
 import java.text.Collator
 import java.util.*
 
@@ -56,12 +57,11 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
         }
         else {
             val activeLength = activeUsers.size
-            val user: UserWrapper
-            if (position <= activeLength) {
-                user = activeUsers[position - 1]
+            val user = if (position <= activeLength) {
+                activeUsers[position - 1]
             }
             else {
-                user = inactiveUsers[position - activeLength - 2]
+                inactiveUsers[position - activeLength - 2]
             }
             (holder as UserElementViewHolder).fillInUser(user)
         }
