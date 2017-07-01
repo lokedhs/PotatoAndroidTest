@@ -55,7 +55,7 @@ class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Ada
             val timestamp = dateHelper.parseDate(message.createdDate)
 
             senderView.text = message.senderName
-            contentView.text = Html.fromHtml(message.content)
+            contentView.text = Html.fromHtml(message.content, 0)
             dateView.text = DateHelper.makeDateDiffString(parent, timestamp.time)
             dateDetailView.text = dateHelper.formatDateTimeOutputFormat(timestamp)
         }

@@ -1,10 +1,10 @@
 package com.dhsdevelopments.potato.login
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.dhsdevelopments.potato.PotatoApplication
@@ -24,16 +24,15 @@ class WebLoginActivity : AppCompatActivity() {
     }
 
     private inner class Client : WebViewClient() {
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            val uri = Uri.parse(url)
-            if (uri.scheme == "potato") {
-                when (uri.host) {
+        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            if (request.url.scheme == "potato") {
+                when (request.url.host) {
                     "authenticated" -> {
-                        val key = uri.getQueryParameter("key")
+                        val key = request.url.getQueryParameter("key")
                         if (key == null || key == "") {
                             throw RuntimeException("did not find key parameter")
                         }
-                        val uid = uri.getQueryParameter("user_id")
+                        val uid = request.url.getQueryParameter("user_id")
                         if (uid == null || key == "") {
                             throw RuntimeException("response did not include user id")
                         }
@@ -50,7 +49,7 @@ class WebLoginActivity : AppCompatActivity() {
                     }
 
                     "sent-registration" -> {
-                        val email = uri.getQueryParameter("email")
+                        val email = request.url.getQueryParameter("email")
                         if (email == null || email == "") {
                             throw RuntimeException("did not find email parameter")
                         }
@@ -65,7 +64,7 @@ class WebLoginActivity : AppCompatActivity() {
                 return true
             }
             else {
-                return super.shouldOverrideUrlLoading(view, url)
+                return super.shouldOverrideUrlLoading(view, request)
             }
         }
     }

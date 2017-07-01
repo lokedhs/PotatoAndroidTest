@@ -51,7 +51,7 @@ class ImageCache(private val context: Context) {
     }
 
     @Synchronized fun close() {
-        synchronized (bitmapCache) {
+        synchronized(bitmapCache) {
             if (loadTaskIsActive) {
                 shuttingDown = true
             }
@@ -85,7 +85,7 @@ class ImageCache(private val context: Context) {
                                   storageType: StorageType, callback: LoadImageCallback,
                                   apiKey: String?): Boolean {
         var shouldStartTask = false
-        synchronized (bitmapCache) {
+        synchronized(bitmapCache) {
             if (shuttingDown || shutDown) {
                 return true
             }
@@ -268,25 +268,26 @@ class ImageCache(private val context: Context) {
 
                 val result = findCachedFileInDatabase(db, queueEntry.url)
                 Log.d("cached image file=" + result + ", for url=" + queueEntry.url)
-                val cachedFile: File?
-                if (result == null) {
-                    try {
-                        cachedFile = copyUrlToFile(cacheDirCopy, queueEntry.url, "", queueEntry.apiKey)
-                        addCacheEntryToDatabase(queueEntry.url, cachedFile, queueEntry.storageType, false)
-                    }
-                    catch (e: IOException) {
-                        Log.w("failed to load image: '" + queueEntry.url + "'", e)
-                        cachedFile = null
-                    }
-                    catch (e: FileDownloadFailedException) {
-                        Log.w("failed to load image: '" + queueEntry.url + "'", e)
-                        cachedFile = null
-                    }
+                val cachedFile =
+                        if (result == null) {
+                            try {
+                                val file = copyUrlToFile(cacheDirCopy, queueEntry.url, "", queueEntry.apiKey)
+                                addCacheEntryToDatabase(queueEntry.url, file, queueEntry.storageType, false)
+                                file
+                            }
+                            catch (e: IOException) {
+                                Log.w("failed to load image: '" + queueEntry.url + "'", e)
+                                null
+                            }
+                            catch (e: FileDownloadFailedException) {
+                                Log.w("failed to load image: '" + queueEntry.url + "'", e)
+                                null
+                            }
 
-                }
-                else {
-                    cachedFile = result.file
-                }
+                        }
+                        else {
+                            result.file
+                        }
 
                 var bitmap: Bitmap? = null
                 if (cachedFile != null) {
@@ -303,7 +304,7 @@ class ImageCache(private val context: Context) {
                         bitmap))
             }
 
-            synchronized (bitmapCache) {
+            synchronized(bitmapCache) {
                 if (shuttingDown) {
                     shutdownReal()
                 }
@@ -313,7 +314,7 @@ class ImageCache(private val context: Context) {
         }
 
         private fun nextEntryAndMaybeUpdateStatus(): LoadQueueEntry? {
-            synchronized (bitmapCache) {
+            synchronized(bitmapCache) {
                 if (loadQueue.isEmpty()) {
                     loadTaskIsActive = false
                     return null
@@ -333,7 +334,7 @@ class ImageCache(private val context: Context) {
 
         override fun onProgressUpdate(vararg values: BackgroundLoadResult) {
             val result = values[0]
-            val callbacksCopy: List<LoadImageCallback> = synchronized (bitmapCache) {
+            val callbacksCopy: List<LoadImageCallback> = synchronized(bitmapCache) {
                 val entry = result.bitmapCacheEntry
                 entry.bitmap = if (result.bitmap != null) SoftReference(result.bitmap) else null
                 entry.loading = false
