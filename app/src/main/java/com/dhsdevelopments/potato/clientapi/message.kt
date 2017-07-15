@@ -22,6 +22,14 @@ import java.io.Serializable
 import java.lang.reflect.Type
 import java.util.*
 
+abstract class MessageElement : Serializable {
+    open fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
+        return "[NOT-IMPLEMENTED type=" + javaClass.name + "]"
+    }
+
+    class SpanGenerationContext(val context: Context)
+}
+
 class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): MessageElement {
@@ -49,6 +57,8 @@ class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
                 "b" -> MessageElementBold(makeElement())
                 "i" -> MessageElementItalics(makeElement())
                 "code" -> MessageElementCode(makeElement())
+                "math" -> MessageElementMath(makeElement())
+                "inline-math" -> MessageElementInlineMath(makeElement())
                 "url" -> {
                     val addr = obj.get("addr").asString
                     val description = obj.get("description")
@@ -160,6 +170,18 @@ class MessageElementCodeBlock(private val language: String, private val code: St
     }
 }
 
+class MessageElementMath(content: MessageElement) : TypedMessageElement(content) {
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
+        return "[math: " + content.makeSpan(spanContext).toString() + "]"
+    }
+}
+
+class MessageElementInlineMath(content: MessageElement) : TypedMessageElement(content) {
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
+        return "[math: " + content.makeSpan(spanContext).toString() + "]"
+    }
+}
+
 class MessageElementNewline : MessageElement() {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
         return "\n"
@@ -257,12 +279,4 @@ class MessageElementParagraph(content: MessageElement) : TypedMessageElement(con
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
         return content.makeSpan(spanContext)
     }
-}
-
-abstract class MessageElement : Serializable {
-    open fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return "[NOT-IMPLEMENTED type=" + javaClass.name + "]"
-    }
-
-    class SpanGenerationContext(val context: Context)
 }

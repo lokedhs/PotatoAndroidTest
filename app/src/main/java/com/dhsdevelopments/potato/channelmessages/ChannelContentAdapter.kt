@@ -80,7 +80,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                 val msg = MessageWrapper(m, dateHelper)
                 result.add(msg)
                 if (i > 0 && shouldHideHeader(result[i - 1], msg)) {
-                    msg.isShouldDisplayHeader = false
+                    msg.shouldDisplayHeader = false
                 }
                 i++
             }
@@ -254,8 +254,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         if (pos < messages.size) {
             val msg = messages[pos]
             val shouldDisplay = pos == 0 || !shouldHideHeader(messages[pos - 1], msg)
-            if (shouldDisplay && !msg.isShouldDisplayHeader || !shouldDisplay && msg.isShouldDisplayHeader) {
-                msg.isShouldDisplayHeader = shouldDisplay
+            if (shouldDisplay && !msg.shouldDisplayHeader || !shouldDisplay && msg.shouldDisplayHeader) {
+                msg.shouldDisplayHeader = shouldDisplay
                 return true
             }
         }
@@ -321,7 +321,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             senderNicknameView.text = ""
             currentMessage = message
 
-            val dh = if (message.isShouldDisplayHeader) View.VISIBLE else View.GONE
+            val dh = if (message.shouldDisplayHeader) View.VISIBLE else View.GONE
             senderView.visibility = dh
             dateWrapperLayout.visibility = dh
             senderNicknameView.visibility = dh
@@ -417,7 +417,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             val pos = parent.getChildAdapterPosition(view)
             if (pos > 0 && pos < messages.size) {
                 val msg = messages[pos]
-                if (msg.isShouldDisplayHeader) {
+                if (msg.shouldDisplayHeader) {
                     return msg
                 }
             }

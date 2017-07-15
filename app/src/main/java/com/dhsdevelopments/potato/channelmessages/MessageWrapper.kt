@@ -7,20 +7,10 @@ import com.dhsdevelopments.potato.clientapi.message.MessageImage
 import java.io.Serializable
 import java.util.*
 
-class MessageWrapper : Serializable {
-    val msg: Message
+class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable {
     val createdDate: Date
     val createdDateFormatted: String
-    var isShouldDisplayHeader: Boolean = false
-
-    constructor(msg: Message, dateHelper: DateHelper) {
-        this.msg = msg
-        this.isShouldDisplayHeader = true
-
-        val date = dateHelper.parseDate(msg.createdDate)
-        this.createdDate = date
-        this.createdDateFormatted = dateHelper.formatDateTimeOutputFormat(date)
-    }
+    var shouldDisplayHeader: Boolean = false
 
     val id: String
         get() = msg.id
@@ -45,4 +35,14 @@ class MessageWrapper : Serializable {
 
     val updatedDate: String?
         get() = msg.updatedDate
+
+    val useMath: Boolean
+        get() = msg.useMath
+
+    init {
+        this.shouldDisplayHeader = true
+        val date = dateHelper.parseDate(msg.createdDate)
+        this.createdDate = date
+        this.createdDateFormatted = dateHelper.formatDateTimeOutputFormat(date)
+    }
 }
