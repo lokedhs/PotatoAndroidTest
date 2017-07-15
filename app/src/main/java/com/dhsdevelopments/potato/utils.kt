@@ -34,7 +34,7 @@ fun makeRandomFile(dir: File, tmpFilePrefix: String = ""): File {
     throw IllegalStateException("Unable to create temp file")
 }
 
-abstract class BackgroundTask<T>(val context: Context, val message: CharSequence) : AsyncTask<Unit, Unit, T>() {
+abstract class BackgroundTask<T>(context: Context, val message: CharSequence) : AsyncTask<Unit, Unit, T>() {
     val dialog = ProgressDialog(context)
 
     override fun onPreExecute() {
