@@ -7,8 +7,6 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import java.text.Collator
 import java.util.*
 
-internal class UserSuggestion(val id: String, val name: String)
-
 internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTracker, private val userNameSuggestAdapter: UserNameSuggestAdapter) : Filter() {
 
     private val listener: UserTrackerListener

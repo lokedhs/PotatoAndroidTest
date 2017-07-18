@@ -149,7 +149,6 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     interface UserActivityListener {
         fun activeUserListSync()
-
         fun userUpdated(uid: String)
     }
 
