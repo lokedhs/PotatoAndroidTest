@@ -9,7 +9,10 @@ class UpdateUnreadNotificationRequest(
         var token: String,
 
         @SerializedName("add")
-        var add: Boolean)
+        var add: Boolean,
+
+        @SerializedName("provider")
+        var provider: String)
 
 class UpdateUnreadNotificationResult : RemoteResult {
     @SerializedName("result")

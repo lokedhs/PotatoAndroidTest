@@ -116,7 +116,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
         val app = PotatoApplication.getInstance(this)
         val token = InstanceID.getInstance(this).getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
-        val call = app.potatoApi.updateUnreadNotification(app.apiKey, cid, UpdateUnreadNotificationRequest(token, add))
+        val call = app.potatoApi.updateUnreadNotification(app.apiKey, cid, UpdateUnreadNotificationRequest(token, add, "gcm"))
         callService(call, ::plainErrorHandler) {
             updateRegistrationInDb(cid, add)
             Log.d("Subscription updated successfully")

@@ -5,12 +5,15 @@ import com.google.gson.annotations.SerializedName
 class GcmRegistrationRequest {
     @SerializedName("token")
     lateinit var token: String
+    @SerializedName("provider")
+    lateinit var provider: String
 
     constructor() {
     }
 
-    constructor(token: String) {
+    constructor(token: String, provider: String) {
         this.token = token
+        this.provider = provider
     }
 }
 

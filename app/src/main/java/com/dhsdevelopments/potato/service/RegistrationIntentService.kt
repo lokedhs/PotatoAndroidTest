@@ -32,7 +32,7 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             Log.d("Got token: " + token)
 
             val app = PotatoApplication.getInstance(this)
-            val call = app.potatoApi.registerGcm(app.apiKey, GcmRegistrationRequest(token))
+            val call = app.potatoApi.registerGcm(app.apiKey, GcmRegistrationRequest(token, "gcm"))
             val result = call.execute()
             if (!result.isSuccess) {
                 if (result.code() == 503) {
