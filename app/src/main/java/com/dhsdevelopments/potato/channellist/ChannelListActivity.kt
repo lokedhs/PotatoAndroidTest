@@ -123,7 +123,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private fun showErrorSnackbar(message: String) {
         Snackbar.make(channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
-                .show();
+                .show()
     }
 
     override fun onStop() {
@@ -213,7 +213,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private fun selectAndJoinChannel() {
         val intent = Intent(this, SelectChannelActivity::class.java)
         intent.putExtra(IntentUtil.EXTRA_DOMAIN_ID, selectedDomainId)
-        startActivityForResult(intent, 0, null)
+        startActivityForResult(intent, 0)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
