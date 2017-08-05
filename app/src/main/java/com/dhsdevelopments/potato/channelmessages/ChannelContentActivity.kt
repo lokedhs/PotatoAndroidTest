@@ -19,7 +19,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     private lateinit var usersTracker: ChannelUsersTracker
     private lateinit var channelId: String
 
-    private val drawer by nlazy { findViewById(R.id.drawer_layout) as DrawerLayout }
+    private val drawer by nlazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +28,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
         channelId = intent.getStringExtra(ChannelContentFragment.ARG_CHANNEL_ID)
 
         setContentView(R.layout.activity_channel_content)
-        val toolbar = findViewById(R.id.detail_toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.detail_toolbar)
         setSupportActionBar(toolbar)
 
         // Show the Up button in the action bar.

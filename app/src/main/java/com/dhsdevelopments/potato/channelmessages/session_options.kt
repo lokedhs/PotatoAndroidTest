@@ -32,10 +32,10 @@ class OptionsDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_options_dialog, container, false)
 
-        val title = view.findViewById(R.id.title_text_view) as TextView
+        val title = view.findViewById<TextView>(R.id.title_text_view)
         title.text = optionsNotification.title
 
-        recyclerView = view.findViewById(R.id.options_recycler_view) as RecyclerView
+        recyclerView = view.findViewById<RecyclerView>(R.id.options_recycler_view)
         //recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         //recyclerView.addItemDecoration(MarginDecoration)
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
@@ -87,9 +87,9 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleView = itemView.findViewById(R.id.option_title) as TextView
-        val imageView = itemView.findViewById(R.id.option_image) as ImageView
-        val selectButton = itemView.findViewById(R.id.option_select_button) as Button
+        val titleView = itemView.findViewById<TextView>(R.id.option_title)
+        val imageView = itemView.findViewById<ImageView>(R.id.option_image)
+        val selectButton = itemView.findViewById<Button>(R.id.option_select_button)
         var updateIndex = 0
         var currentWrapper: OptionWrapper? = null
 
@@ -151,10 +151,4 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
     }
 }
 
-class OptionWrapper {
-    var option: Option
-
-    constructor(option: Option) {
-        this.option = option
-    }
-}
+class OptionWrapper(var option: Option)

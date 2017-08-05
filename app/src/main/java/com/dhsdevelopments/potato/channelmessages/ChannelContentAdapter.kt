@@ -285,13 +285,13 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         private var currentMessage: MessageWrapper? = null
 
         init {
-            senderView = itemView.findViewById(R.id.sender) as TextView
-            dateView = itemView.findViewById(R.id.date) as TextView
-            dateDetailView = itemView.findViewById(R.id.date_detail) as TextView
-            contentView = itemView.findViewById(R.id.content) as TextView
-            senderNicknameView = itemView.findViewById(R.id.sender_nickname) as TextView
+            senderView = itemView.findViewById<TextView>(R.id.sender)
+            dateView = itemView.findViewById<TextView>(R.id.date)
+            dateDetailView = itemView.findViewById<TextView>(R.id.date_detail)
+            contentView = itemView.findViewById<TextView>(R.id.content) as TextView
+            senderNicknameView = itemView.findViewById<TextView>(R.id.sender_nickname)
             dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
-            imageView = itemView.findViewById(R.id.image_content) as ImageView
+            imageView = itemView.findViewById<ImageView>(R.id.image_content)
 
             //itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
             itemView.setOnCreateContextMenuListener { menu, view, menuInfo -> createContextMenu(menu) }
@@ -350,14 +350,9 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     }
 
     inner class MessageViewHolderExtraContent(itemView: View) : MessageViewHolder(itemView) {
-        private val imageView: ImageView
-        private val htmlContentView: TextView
+        private val imageView: ImageView = itemView.findViewById<ImageView>(R.id.message_image)
+        private val htmlContentView: TextView = itemView.findViewById<TextView>(R.id.extra_content_html)
         private var imageLoadIndex: Long = 0
-
-        init {
-            imageView = itemView.findViewById(R.id.message_image) as ImageView
-            htmlContentView = itemView.findViewById(R.id.extra_content_html) as TextView
-        }
 
         override fun fillInView(message: MessageWrapper) {
             super.fillInView(message)

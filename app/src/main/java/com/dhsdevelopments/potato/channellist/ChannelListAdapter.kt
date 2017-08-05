@@ -116,11 +116,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     inner class HeaderViewHolder(view: View) : ViewHolder(view) {
-        private val titleView: TextView
-
-        init {
-            this.titleView = view.findViewById(R.id.header_title_text) as TextView
-        }
+        private val titleView: TextView = view.findViewById<TextView>(R.id.header_title_text)
 
         fun setTitle(title: String) {
             titleView.text = title
@@ -128,13 +124,8 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     }
 
     inner class ChannelViewHolder(private val view: View) : ViewHolder(view) {
-        private val contentView: TextView
-        private val unreadView: TextView
-
-        init {
-            contentView = view.findViewById(R.id.content) as TextView
-            unreadView = view.findViewById(R.id.unread_messages) as TextView
-        }
+        private val contentView: TextView = view.findViewById(R.id.content)
+        private val unreadView: TextView = view.findViewById(R.id.unread_messages)
 
         fun fillInChannelEntry(item: ChannelEntry) {
             contentView.text = item.name

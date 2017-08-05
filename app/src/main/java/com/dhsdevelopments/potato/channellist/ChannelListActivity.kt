@@ -47,11 +47,11 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var userListFragment: UserListFragment? = null
     private var channelContentFragment: ChannelContentFragment? = null
 
-    private val navigationView: NavigationView         by nlazy { findViewById(R.id.channel_list_nav_view) as NavigationView }
+    private val navigationView: NavigationView         by nlazy { findViewById<NavigationView>(R.id.channel_list_nav_view) }
     private val domainsMenu: SubMenu                   by nlazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
-    private val swipeRefreshLayout: SwipeRefreshLayout by nlazy { findViewById(R.id.channel_list_refresh) as SwipeRefreshLayout }
-    private val channelListRecyclerView: RecyclerView  by nlazy { findViewById(R.id.channel_list) as RecyclerView }
-    private val drawer: DrawerLayout                   by nlazy { findViewById(R.id.drawer_layout) as DrawerLayout }
+    private val swipeRefreshLayout: SwipeRefreshLayout by nlazy { findViewById<SwipeRefreshLayout>(R.id.channel_list_refresh) }
+    private val channelListRecyclerView: RecyclerView  by nlazy { findViewById<RecyclerView>(R.id.channel_list) }
+    private val drawer: DrawerLayout                   by nlazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +64,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             selectedDomainId = prefs.getString(resources.getString(R.string.pref_key_default_domain), null)
         }
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.title = title
 
@@ -73,7 +73,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         channelListAdapter = ChannelListAdapter(this)
         channelListRecyclerView.adapter = channelListAdapter
 
-        if (findViewById(R.id.channel_detail_container) != null) {
+        if (findViewById<View>(R.id.channel_detail_container) != null) {
             isTwoPane = true
         }
 

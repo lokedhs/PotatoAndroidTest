@@ -37,18 +37,14 @@ class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Ada
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val senderView: TextView
-        private val dateView: TextView
-        private val dateDetailView: TextView
-        private val contentView: TextView
+        private val senderView: TextView = itemView.findViewById<TextView>(R.id.sender)
+        private val dateView: TextView = itemView.findViewById<TextView>(R.id.date)
+        private val dateDetailView: TextView = itemView.findViewById<TextView>(R.id.date_detail)
+        private val contentView: TextView = itemView.findViewById<TextView>(R.id.content)
         private val senderNicknameView: TextView
 
         init {
-            senderView = itemView.findViewById(R.id.sender) as TextView
-            dateView = itemView.findViewById(R.id.date) as TextView
-            dateDetailView = itemView.findViewById(R.id.date_detail) as TextView
-            contentView = itemView.findViewById(R.id.content) as TextView
-            senderNicknameView = itemView.findViewById(R.id.sender_nickname) as TextView
+            senderNicknameView = itemView.findViewById<TextView>(R.id.sender_nickname)
         }
 
         fun fillInMessage(message: SearchResultMessage) {

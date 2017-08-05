@@ -51,7 +51,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val titleView = view.findViewById(R.id.channel_name) as TextView
+        private val titleView = view.findViewById<TextView>(R.id.channel_name)
         private var channel: AvailableChannel? = null
 
         init {

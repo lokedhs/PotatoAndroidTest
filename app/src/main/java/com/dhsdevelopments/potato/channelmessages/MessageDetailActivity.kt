@@ -24,12 +24,12 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class MessageDetailActivity : AppCompatActivity() {
 
-    private val senderImageView        by nlazy { findViewById(R.id.message_detail_sender_image) as ImageView }
-    private val senderNameTextView     by nlazy { findViewById(R.id.message_detail_sender_name) as TextView }
-    private val senderNicknameTextView by nlazy { findViewById(R.id.message_detail_sender_nickname) as TextView }
-    private val sentDateTextView       by nlazy { findViewById(R.id.message_detail_sent_date) as TextView }
-    private val editedInfo             by nlazy { findViewById(R.id.message_detail_edited_ref) as TextView }
-    private val messageText            by nlazy { findViewById(R.id.message_detail_message_text) as TextView }
+    private val senderImageView        by nlazy { findViewById<ImageView>(R.id.message_detail_sender_image) }
+    private val senderNameTextView     by nlazy { findViewById<TextView>(R.id.message_detail_sender_name) }
+    private val senderNicknameTextView by nlazy { findViewById<TextView>(R.id.message_detail_sender_nickname) }
+    private val sentDateTextView       by nlazy { findViewById<TextView>(R.id.message_detail_sent_date) }
+    private val editedInfo             by nlazy { findViewById<TextView>(R.id.message_detail_edited_ref) }
+    private val messageText            by nlazy { findViewById<TextView>(R.id.message_detail_message_text) }
 
     private lateinit var msg: MessageWrapper
     private lateinit var imageCache: ImageCache
@@ -37,7 +37,7 @@ class MessageDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message_detail)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         title = "Details"

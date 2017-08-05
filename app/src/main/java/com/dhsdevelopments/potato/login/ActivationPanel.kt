@@ -15,8 +15,8 @@ class ActivationPanel : AppCompatActivity() {
         val EXTRA_EMAIL_ADDRESS = "com.dhsdevelopments.potato.email"
     }
 
-    val registeredMessage by nlazy { findViewById(R.id.registered_message) as TextView }
-    val loginButton by nlazy { findViewById(R.id.login_button) as Button }
+    val registeredMessage by nlazy { findViewById<TextView>(R.id.registered_message) }
+    val loginButton by nlazy { findViewById<Button>(R.id.login_button) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

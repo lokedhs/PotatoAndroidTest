@@ -12,7 +12,6 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
-import java.lang.IllegalArgumentException
 import java.text.Collator
 import java.util.*
 
@@ -99,7 +98,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
         private val headerText: TextView
 
         init {
-            headerText = view.findViewById(R.id.header_text) as TextView
+            headerText = view.findViewById<TextView>(R.id.header_text)
         }
 
         fun setHeaderTitle(title: String) {
@@ -112,7 +111,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
         private val userDescriptionView: TextView
 
         init {
-            userDescriptionView = itemView.findViewById(R.id.user_description_view) as TextView
+            userDescriptionView = itemView.findViewById<TextView>(R.id.user_description_view)
             itemView.setOnClickListener {
                 parentActivity.closeUserListDrawer()
 

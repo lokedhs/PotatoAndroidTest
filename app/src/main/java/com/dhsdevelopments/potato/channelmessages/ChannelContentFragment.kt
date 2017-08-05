@@ -107,7 +107,7 @@ class ChannelContentFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_channel_content, container, false)
-        messageListView = rootView.findViewById(R.id.message_list) as RecyclerView
+        messageListView = rootView.findViewById<RecyclerView>(R.id.message_list)
 
         setHasOptionsMenu(true)
 
@@ -163,7 +163,7 @@ class ChannelContentFragment : Fragment() {
             }
         })
 
-        val messageInput = rootView.findViewById(R.id.message_input_field) as MultiAutoCompleteTextView
+        val messageInput = rootView.findViewById<MultiAutoCompleteTextView>(R.id.message_input_field)
         messageInput.setImeActionLabel("Send", KeyEvent.KEYCODE_ENTER)
         messageInput.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -181,20 +181,20 @@ class ChannelContentFragment : Fragment() {
         messageInput.setTokenizer(UserNameTokeniser(userTracker))
 
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        val sendButton = rootView.findViewById(R.id.send_button) as Button
+        val sendButton = rootView.findViewById<Button>(R.id.send_button)
         sendButton.setOnClickListener {
             sendMessage(messageInput)
             imm.hideSoftInputFromWindow(messageInput.windowToken, 0)
         }
 
-        typingTextView = rootView.findViewById(R.id.typing_text_view) as TextView
+        typingTextView = rootView.findViewById<TextView>(R.id.typing_text_view)
 
-        swipeRefreshLayout = rootView.findViewById(R.id.channel_content_refresh) as SwipeRefreshLayout
+        swipeRefreshLayout = rootView.findViewById<SwipeRefreshLayout>(R.id.channel_content_refresh)
         swipeRefreshLayout.setOnRefreshListener {
             adapter.loadMoreMessages(object : ChannelContentAdapter.LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
                     swipeRefreshLayout.isRefreshing = false
-                    if (messages.size > 0) {
+                    if (messages.isNotEmpty()) {
                         messageListView.scrollToPosition(adapter.positionForMessage(messages[messages.size - 1].id))
                     }
                 }
@@ -207,7 +207,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         scrollDownPanel = rootView.findViewById(R.id.scroll_down_panel)
-        scrollDownButton = scrollDownPanel.findViewById(R.id.scroll_to_bottom) as Button
+        scrollDownButton = scrollDownPanel.findViewById<Button>(R.id.scroll_to_bottom)
         scrollDownButton.setOnClickListener({ scrollToBottom() })
 
         return rootView
@@ -287,7 +287,7 @@ class ChannelContentFragment : Fragment() {
                 return true
             }
             R.id.menu_option_show_users -> {
-                val drawer = activity.findViewById(R.id.drawer_layout) as DrawerLayout
+                val drawer = activity.findViewById<DrawerLayout>(R.id.drawer_layout)
                 if (drawer.isDrawerOpen(GravityCompat.END)) {
                     drawer.closeDrawer(GravityCompat.END)
                 }
