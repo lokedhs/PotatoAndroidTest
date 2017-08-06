@@ -7,7 +7,7 @@ import com.dhsdevelopments.potato.clientapi.message.MessageImage
 import java.io.Serializable
 import java.util.*
 
-class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable {
+class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable, Comparable<MessageWrapper> {
     val createdDate: Date
     val createdDateFormatted: String
     var shouldDisplayHeader: Boolean = false
@@ -44,5 +44,9 @@ class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable {
         val date = dateHelper.parseDate(msg.createdDate)
         this.createdDate = date
         this.createdDateFormatted = dateHelper.formatDateTimeOutputFormat(date)
+    }
+
+    override fun compareTo(other: MessageWrapper): Int {
+        return createdDate.compareTo(other.createdDate)
     }
 }

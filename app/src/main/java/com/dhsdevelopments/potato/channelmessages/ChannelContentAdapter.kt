@@ -179,17 +179,12 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == messages.size) {
-            return VIEW_TYPE_END_OF_CHANNEL_MARKER
+        return if (position == messages.size) {
+            VIEW_TYPE_END_OF_CHANNEL_MARKER
         }
         else {
             val m = messages[position]
-            if (m.extraHtml == null && m.image == null) {
-                return VIEW_TYPE_PLAIN_MESSAGE
-            }
-            else {
-                return VIEW_TYPE_EXTRA_CONTENT
-            }
+            if (m.extraHtml == null && m.image == null) VIEW_TYPE_PLAIN_MESSAGE else VIEW_TYPE_EXTRA_CONTENT
         }
     }
 
@@ -198,7 +193,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
      */
     fun newMessage(msg: Message) {
         val w = MessageWrapper(msg, dateHelper)
-        val pos = Collections.binarySearch(messages, w) { m1, m2 -> m1.createdDate.compareTo(m2.createdDate) }
+        val pos = messages.binarySearch(w)
 
         if (msg.updated == null) {
             // This is a new message, add it at the appropriate position.
