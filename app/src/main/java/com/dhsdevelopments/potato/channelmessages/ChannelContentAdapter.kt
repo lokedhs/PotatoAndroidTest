@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View

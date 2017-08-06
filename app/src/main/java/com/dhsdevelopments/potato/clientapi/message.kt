@@ -147,26 +147,23 @@ class Message : Serializable {
 
 class MessageElementCode(content: MessageElement) : TypedMessageElement(content) {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        val s = SpannableString(content.makeSpan(spanContext))
-        s.setSpan(CodeTypefaceSpan(spanContext.context), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return s
+        return SpannableString(content.makeSpan(spanContext)).apply {
+            setSpan(CodeTypefaceSpan(spanContext.context), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 }
 
 class MessageElementCodeBlock(private val language: String, private val code: String) : MessageElement() {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
         val adjustedString = "\n" + code + "\n"
-        val s = SpannableString(adjustedString)
-        s.setSpan(CodeBlockTypefaceSpan(), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        s.setSpan(CodeBlockBackgroundSpan(spanContext.context), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return s
+        return SpannableString(adjustedString).apply {
+            setSpan(CodeBlockTypefaceSpan(), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(CodeBlockBackgroundSpan(spanContext.context), 1, adjustedString.length - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 
     override fun toString(): String {
-        return "MessageElementCodeBlock[" +
-                "language='" + language + '\'' +
-                ", code='" + code + '\'' +
-                "] " + super.toString()
+        return "MessageElementCodeBlock[language='${language}', code='${code}'] ${super.toString()}"
     }
 }
 
@@ -213,34 +210,30 @@ class MessageElementString(private val value: String) : MessageElement() {
     }
 
     override fun toString(): String {
-        return "MessageElementString[" +
-                "value='" + value + '\'' +
-                "] " + super.toString()
+        return "MessageElementString[value='${value}'] ${super.toString()}"
     }
 }
 
-open class TypedMessageElement(protected var content: MessageElement) : MessageElement() {
+open class TypedMessageElement(protected val content: MessageElement) : MessageElement() {
     override fun toString(): String {
-        return "TypedMessageElement[type=" + javaClass.name +
-                ", content=" + content +
-                "] " + super.toString()
+        return "TypedMessageElement[type=${javaClass.name}, content=${content}] ${super.toString()}"
     }
 }
 
 class MessageElementBold(content: MessageElement) : TypedMessageElement(content) {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        val s = SpannableString(content.makeSpan(spanContext))
-        s.setSpan(StyleSpan(Typeface.BOLD), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return s
+        return SpannableString(content.makeSpan(spanContext)).apply {
+            setSpan(StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 }
 
 class MessageElementUser(private val userId: String, private val userDescription: String) : MessageElement() {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        val s = SpannableString(userDescription)
-        val colour = ContextCompat.getColor(spanContext.context, R.color.user_background)
-        s.setSpan(BackgroundColorSpan(colour), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return s
+        return SpannableString(userDescription).apply {
+            val colour = ContextCompat.getColor(spanContext.context, R.color.user_background)
+            setSpan(BackgroundColorSpan(colour), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 }
 
@@ -265,9 +258,9 @@ class MessageHistoryResult {
 
 class MessageElementUrl(private val addr: String, private val description: String) : MessageElement() {
     override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        val s = SpannableString(description)
-        s.setSpan(URLSpan(addr), 0, s.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return s
+        return SpannableString(description).apply {
+            setSpan(URLSpan(addr), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 
     override fun toString(): String {

@@ -17,5 +17,6 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/extra_content_html"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:autoLink="all"/>
 </LinearLayout>
