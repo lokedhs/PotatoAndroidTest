@@ -211,8 +211,9 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     private fun selectAndJoinChannel() {
-        val intent = Intent(this, SelectChannelActivity::class.java)
-        intent.putExtra(IntentUtil.EXTRA_DOMAIN_ID, selectedDomainId)
+        val intent = Intent(this, SelectChannelActivity::class.java).apply {
+            putExtra(IntentUtil.EXTRA_DOMAIN_ID, selectedDomainId)
+        }
         startActivityForResult(intent, 0)
     }
 
@@ -238,8 +239,9 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
             switchToChannelTwoPane(cid)
         }
         else {
-            val intent = Intent(this, ChannelContentActivity::class.java)
-            intent.putExtra(ChannelContentFragment.ARG_CHANNEL_ID, cid)
+            val intent = Intent(this, ChannelContentActivity::class.java).apply {
+                putExtra(ChannelContentFragment.ARG_CHANNEL_ID, cid)
+            }
             startActivity(intent)
             overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
@@ -301,9 +303,10 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
                 val domainName = result.getString(1)
 
                 val item = domainsMenu.add(domainName)
-                val intent = Intent()
-                intent.putExtra(EXTRA_DOMAIN_ID, domainId)
-                intent.putExtra(EXTRA_DOMAIN_NAME, domainName)
+                val intent = Intent().apply {
+                    putExtra(EXTRA_DOMAIN_ID, domainId)
+                    putExtra(EXTRA_DOMAIN_NAME, domainName)
+                }
                 item.intent = intent
             }
         }

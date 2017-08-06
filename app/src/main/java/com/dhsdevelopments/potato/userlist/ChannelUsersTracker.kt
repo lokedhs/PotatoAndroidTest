@@ -55,9 +55,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         }
 
         if (fireEvent) {
-            for (l in listeners) {
-                l.userUpdated(uid)
-            }
+            listeners.forEach { it.userUpdated(uid) }
         }
     }
 
@@ -68,9 +66,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         for (d in users.values) {
             d.isActive = false
         }
-        for (uid in uids) {
-            processAddRemove(uid, true, false)
-        }
+        uids.forEach { uid -> processAddRemove(uid, true, false) }
         fireUserListSync()
     }
 
@@ -89,9 +85,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     }
 
     private fun fireUserListSync() {
-        for (l in listeners) {
-            l.activeUserListSync()
-        }
+        listeners.forEach(UserActivityListener::activeUserListSync)
     }
 
     fun addUserActivityListener(listener: UserActivityListener) {
@@ -123,22 +117,12 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     fun getNameForUid(uid: String): String {
         val user = getUsers()[uid]
-        if (user == null) {
-            return "unknown"
-        }
-        else {
-            return user.name
-        }
+        return user?.name ?: "unknown"
     }
 
     fun getNicknameForUid(uid: String): String {
         val user = getUsers()[uid]
-        if (user == null) {
-            return "unknown"
-        }
-        else {
-            return user.nickname
-        }
+        return user?.nickname ?: "unknown"
     }
 
     inner class UserDescriptor(

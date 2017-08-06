@@ -66,6 +66,3 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
         val ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER"
     }
 }
-/**
- * Creates an IntentService.  Invoked by your subclass's constructor.
- */

@@ -89,7 +89,7 @@ class PotatoGcmListenerService : GcmListenerService() {
         val db = PotatoApplication.getInstance(this).cacheDatabase
         val values = ContentValues()
         values.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
-        val res = db.update(StorageHelper.CHANNELS_TABLE, values, StorageHelper.CHANNELS_ID + " = ?", arrayOf(cid))
+        val res = db.update(StorageHelper.CHANNELS_TABLE, values, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
         if (res > 0) {
             sendUnreadNotification(db)
         }
@@ -98,7 +98,7 @@ class PotatoGcmListenerService : GcmListenerService() {
     private fun sendUnreadNotification(db: SQLiteDatabase) {
         db.query(StorageHelper.CHANNELS_TABLE,
                 arrayOf("count(*)"),
-                StorageHelper.CHANNELS_UNREAD + " > ?", arrayOf("0"),
+                "${StorageHelper.CHANNELS_UNREAD} > ?", arrayOf("0"),
                 null, null, null, null).use { result ->
             if (!result.moveToNext()) {
                 Log.e("No result when loading number of unread channels")

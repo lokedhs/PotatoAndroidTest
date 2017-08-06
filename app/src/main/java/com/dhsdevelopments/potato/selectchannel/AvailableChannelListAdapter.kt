@@ -28,8 +28,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
             val chList = DbTools.loadAllChannelIdsInDomain(parent, domainId)
             channels.clear()
             channels.addAll(result.groups!!.flatMap {
-                it.channels!!
-                        .map { AvailableChannel(it) }
+                it.channels!!.map { AvailableChannel(it) }
             }
                     .filter { !chList.contains(it.id) }
                     .sortedWith(AvailableChannel.COMPARATOR))

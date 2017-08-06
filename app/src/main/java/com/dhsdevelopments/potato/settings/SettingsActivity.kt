@@ -87,11 +87,9 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             val domains = DbTools.loadDomainsFromDb(activity)
             val ids = arrayOfNulls<String>(domains.size)
             val names = arrayOfNulls<String>(domains.size)
-            var i = 0
-            for (d in domains) {
+            for ((i, d) in domains.withIndex()) {
                 names[i] = d.name
                 ids[i] = d.id
-                i++
             }
             pref.entries = names
             pref.entryValues = ids

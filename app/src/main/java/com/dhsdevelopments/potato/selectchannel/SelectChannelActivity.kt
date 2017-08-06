@@ -38,16 +38,18 @@ class SelectChannelActivity : Activity() {
     }
 
     private fun returnChannel(channel: AvailableChannel) {
-        val intent = Intent()
-        intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, channel.id)
-        intent.putExtra(IntentUtil.EXTRA_CHANNEL_NAME, channel.name)
+        val intent = Intent().apply {
+            putExtra(IntentUtil.EXTRA_CHANNEL_ID, channel.id)
+            putExtra(IntentUtil.EXTRA_CHANNEL_NAME, channel.name)
+        }
         setResult(RESULT_OK, intent)
         finish()
     }
 
     private fun returnError(message: CharSequence) {
-        val intent = Intent()
-        intent.putExtra(IntentUtil.EXTRA_ERROR_MESSAGE, message)
+        val intent = Intent().apply {
+            putExtra(IntentUtil.EXTRA_ERROR_MESSAGE, message)
+        }
         setResult(RESULT_ERROR_LOADING_CHANNEL, intent)
         finish()
     }
