@@ -48,7 +48,7 @@ class UserNameTokeniser(private val userTracker: ChannelUsersTracker) : MultiAut
     override fun terminateToken(text: CharSequence): CharSequence {
         val uid = text.toString()
         val u = userTracker.getUsers()[uid]
-        val name = if (u == null) uid else u.name
+        val name = u?.name ?: uid
 
         val s = SpannableString(name)
         s.setSpan(BackgroundColorSpan(Color.rgb(210, 210, 210)), 0, name.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

@@ -127,7 +127,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         loadMessageHistory(null, {
             val msgs = parseMessageList(it)
 
-            messages.clear();
+            messages.clear()
             messages.addAll(msgs)
 
             notifyDataSetChanged()
@@ -167,14 +167,11 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     }
 
     internal fun positionForMessage(messageId: String): Int {
-        var i = 0;
-        for (msg in messages) {
-            if (msg.id == messageId) {
-                return i;
-            }
-            i++;
+        val i = messages.indexOfFirst { it.id == messageId }
+        if (i == -1) {
+            throw IllegalStateException("Message with id: $messageId not found")
         }
-        throw IllegalStateException("Message with id: $messageId not found")
+        return i
     }
 
     override fun getItemCount(): Int {
@@ -268,31 +265,23 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                     RemoteRequestService.deleteMessage(context, messageId)
                 })
                 .setNegativeButton(R.string.delete_message_deny, null)
-                .show();
+                .show()
     }
 
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val senderView: TextView
-        private val dateView: TextView
-        private val dateDetailView: TextView
-        private val contentView: TextView
-        private val senderNicknameView: TextView
-        private val dateWrapperLayout: View
-        private val imageView: ImageView
+        private val senderView: TextView = itemView.findViewById<TextView>(R.id.sender)
+        private val dateView: TextView = itemView.findViewById<TextView>(R.id.date)
+        private val dateDetailView: TextView = itemView.findViewById<TextView>(R.id.date_detail)
+        private val contentView: TextView = itemView.findViewById<TextView>(R.id.content)
+        private val senderNicknameView: TextView = itemView.findViewById<TextView>(R.id.sender_nickname)
+        private val dateWrapperLayout: View = itemView.findViewById(R.id.date_wrapper_layout)
+        private val imageView: ImageView = itemView.findViewById<ImageView>(R.id.image_content)
         private var updateIndex: Long = 0
         private var currentMessage: MessageWrapper? = null
 
         init {
-            senderView = itemView.findViewById<TextView>(R.id.sender)
-            dateView = itemView.findViewById<TextView>(R.id.date)
-            dateDetailView = itemView.findViewById<TextView>(R.id.date_detail)
-            contentView = itemView.findViewById<TextView>(R.id.content) as TextView
-            senderNicknameView = itemView.findViewById<TextView>(R.id.sender_nickname)
-            dateWrapperLayout = itemView.findViewById(R.id.date_wrapper_layout)
-            imageView = itemView.findViewById<ImageView>(R.id.image_content)
-
             //itemView.setOnLongClickListener { openMessageDetails(currentMessage!!); true }
             itemView.setOnCreateContextMenuListener { menu, view, menuInfo -> createContextMenu(menu) }
         }
@@ -428,8 +417,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         }
 
         override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
-            val left = parent.paddingLeft;
-            val right = parent.width - parent.paddingRight;
+            val left = parent.paddingLeft
+            val right = parent.width - parent.paddingRight
 
             for (i in 0..(parent.childCount - 1)) {
                 val view = parent.getChildAt(i)

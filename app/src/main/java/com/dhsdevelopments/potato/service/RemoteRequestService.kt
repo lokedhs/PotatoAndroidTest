@@ -145,16 +145,16 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                         StorageHelper.CHANNEL_CONFIG_ID + " = ?", arrayOf(cid))
             }
             else {
-                val values = ContentValues();
-                values.put(StorageHelper.CHANNEL_CONFIG_ID, cid);
-                values.put(StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0);
-                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0);
-                db.insert(StorageHelper.CHANNEL_CONFIG_TABLE, null, values);
+                val values = ContentValues()
+                values.put(StorageHelper.CHANNEL_CONFIG_ID, cid)
+                values.put(StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0)
+                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0)
+                db.insert(StorageHelper.CHANNEL_CONFIG_TABLE, null, values)
             }
-            db.setTransactionSuccessful();
+            db.setTransactionSuccessful()
         }
         finally {
-            db.endTransaction();
+            db.endTransaction()
         }
     }
 
@@ -257,9 +257,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {
             val intent = Intent(context, RemoteRequestService::class.java)
             intent.action = action
-            for (v in extraElements) {
-                val key = v.first
-                val value = v.second
+            for ((key, value) in extraElements) {
                 when (value) {
                     is String -> intent.putExtra(key, value)
                     is Boolean -> intent.putExtra(key, value)

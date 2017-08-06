@@ -96,7 +96,7 @@ class MessageDetailActivity : AppCompatActivity() {
                     finish()
                 })
                 .setNegativeButton(R.string.delete_message_deny, null)
-                .show();
+                .show()
     }
 
     fun editMessage() {

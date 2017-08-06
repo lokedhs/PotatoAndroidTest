@@ -12,14 +12,9 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker) : BaseAdapter(), Filterable {
-    private val inflater: LayoutInflater
+    private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var users: List<UserSuggestion> = emptyList()
-    private val filter: UserNameSuggestFilter
-
-    init {
-        filter = UserNameSuggestFilter(usersTracker, this)
-        inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
+    private val filter: UserNameSuggestFilter = UserNameSuggestFilter(usersTracker, this)
 
     fun shutdown() {
         filter.shutdown()
