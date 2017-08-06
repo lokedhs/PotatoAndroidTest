@@ -141,6 +141,7 @@ class ChannelContentFragment : Fragment() {
         messageListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 val pos = layoutManager.findLastVisibleItemPosition()
+                // Adjust the last visible item to take the end of channel market into account
                 lastVisibleItem = if (pos == adapter.itemCount - 1) pos - 1 else pos
 
                 // Check if the scroll down button should be displayed
@@ -163,9 +164,23 @@ class ChannelContentFragment : Fragment() {
             }
         })
 
+        messageListView.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            // If the view height has been decreased, and we're looking at the bottom of the
+            // message list, make sure that the last element is shown. This usually happens
+            // because the soft keyboard has been opened.
+            val height = bottom - top
+            val oldHeight = oldBottom - oldTop
+            if (height < oldHeight) {
+                // Ideally we want to scroll down only in the case where we were looking at the bottom
+                // of the list, but the tricks I've come up with to detect if this is the case has
+                // not been very reliable, so for now we'll just keep the bottom element in view.
+                messageListView.scrollBy(0, oldHeight - height)
+            }
+        }
+
         val messageInput = rootView.findViewById<MultiAutoCompleteTextView>(R.id.message_input_field)
         messageInput.setImeActionLabel("Send", KeyEvent.KEYCODE_ENTER)
-        messageInput.setOnKeyListener { v, keyCode, event ->
+        messageInput.setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 sendMessage(messageInput)
                 true
@@ -444,7 +459,7 @@ class ChannelContentFragment : Fragment() {
     private fun sendMessage(messageInput: EditText) {
         val text = messageInput.text
 
-        if (text.length > 0) {
+        if (text.isNotEmpty()) {
             if (text[0] == '/') {
                 val result = Regex("^([a-zA-Z0-9_-]+)(?: +([^ ].*))?$").find(text.substring(1))
                 if (result != null) {
