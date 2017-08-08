@@ -80,7 +80,7 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
     }
 }
 
-class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, hidden: Boolean, val domainId: String)
+class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, val hidden: Boolean, val domainId: String)
 class DomainDescriptor(val id: String, val name: String)
 
 object DbTools {

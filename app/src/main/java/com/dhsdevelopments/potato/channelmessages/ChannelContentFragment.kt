@@ -2,10 +2,8 @@ package com.dhsdevelopments.potato.channelmessages
 
 import android.app.Activity
 import android.app.Fragment
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.SearchManager
+import android.content.*
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.LocalBroadcastManager
@@ -14,13 +12,11 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.text.Spanned
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.MultiAutoCompleteTextView
-import android.widget.TextView
+import android.widget.*
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
@@ -30,6 +26,7 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
+import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import retrofit.Callback
@@ -280,15 +277,12 @@ class ChannelContentFragment : Fragment() {
         notifyUnreadOption.isChecked = DbTools.loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
 
         // Set up search
-        //            Log.d("Setting up searchable info for $componentName")
-        //            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        //            val item = menu.findItem(R.id.menu_option_search_history)
-        //            Log.d("got item: $item")
-        //            val searchView = item.actionView as SearchView
-        //            //searchView.setSearchableInfo(searchManager.getSearchableInfo(ComponentName(this, SearchActivity::class.java)))
-        //            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        //            searchView.setIconifiedByDefault(true)
-        //            searchView.queryHint = getString(R.string.searchable_hint)
+        val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val item = menu.findItem(R.id.menu_option_search_history)
+        val searchView = item.actionView as SearchView
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(ComponentName(activity, SearchActivity::class.java)))
+        searchView.setIconifiedByDefault(true)
+        searchView.queryHint = getString(R.string.searchable_hint)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

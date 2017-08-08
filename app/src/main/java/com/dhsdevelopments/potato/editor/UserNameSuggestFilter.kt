@@ -7,7 +7,8 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import java.text.Collator
 import java.util.*
 
-internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTracker, private val userNameSuggestAdapter: UserNameSuggestAdapter) : Filter() {
+internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTracker,
+                                     private val userNameSuggestAdapter: UserNameSuggestAdapter) : Filter() {
 
     private val listener: UserTrackerListener
     private var users: List<UserSuggestion>? = null
@@ -64,7 +65,7 @@ internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTrack
     @Synchronized private fun getUsers(): List<UserSuggestion> {
         if (users == null) {
             val userlist = usersTracker.getUsers()
-            users = userlist.entries.map { UserSuggestion(it.key, it.value.name) }.sortedWith(userSuggestionComparator)
+            users = userlist.entries.map { (key, value) -> UserSuggestion(key, value.name) }.sortedWith(userSuggestionComparator)
         }
         return users!!
     }

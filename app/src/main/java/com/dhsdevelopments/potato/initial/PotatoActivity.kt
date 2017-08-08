@@ -25,7 +25,7 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             finish()
         }
         else {
-            val uid = prefs.getString(getString(R.string.pref_user_id), "");
+            val uid = prefs.getString(getString(R.string.pref_user_id), "")
             if (uid == "") {
                 throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
             }
