@@ -28,7 +28,7 @@ class ActivationPanel : AppCompatActivity() {
         registeredMessage.text = fmt.format(arrayOf(email))
 
         loginButton.setOnClickListener {
-            val intent = Intent(ActivationPanel@this, PotatoActivity::class.java)
+            val intent = Intent(ActivationPanel@ this, PotatoActivity::class.java)
             startActivity(intent)
             finish()
         }

@@ -184,13 +184,13 @@ class ChannelSubscriptionService : Service() {
             try {
                 while (!isShutdown && !Thread.interrupted()) {
                     val call = api.channelUpdates(apiKey, cid, "content,state,session", eventId, sid)
-                    synchronized (this) {
+                    synchronized(this) {
                         outstandingCall = call
                     }
                     try {
                         val response = call.execute()
 
-                        synchronized (this) {
+                        synchronized(this) {
                             outstandingCall = null
                         }
 
@@ -247,7 +247,7 @@ class ChannelSubscriptionService : Service() {
             }
 
             var pendingBindsCopy: Set<String>? = null
-            synchronized (this) {
+            synchronized(this) {
                 this.eventId = eventId
                 if (isShutdown) {
                     return
@@ -267,7 +267,7 @@ class ChannelSubscriptionService : Service() {
 
         fun bindToChannel(cid: String) {
             var willAdd = false
-            synchronized (this) {
+            synchronized(this) {
                 if (isShutdown) {
                     Log.w("Not binding since the connection is being shut down")
                     return
@@ -317,7 +317,7 @@ class ChannelSubscriptionService : Service() {
 
         fun unbindFromChannel(cid: String): Boolean {
             var wasShutdown = false
-            synchronized (this) {
+            synchronized(this) {
                 subscribedChannels.remove(cid)
                 if (pendingBinds != null) {
                     pendingBinds!!.remove(cid)
@@ -332,7 +332,7 @@ class ChannelSubscriptionService : Service() {
         }
 
         internal fun requestShutdown() {
-            val outstandingCallCopy = synchronized (this) {
+            val outstandingCallCopy = synchronized(this) {
                 isShutdown = true
                 val call = outstandingCall
                 outstandingCall = null

@@ -24,12 +24,12 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class MessageDetailActivity : AppCompatActivity() {
 
-    private val senderImageView        by nlazy { findViewById<ImageView>(R.id.message_detail_sender_image) }
-    private val senderNameTextView     by nlazy { findViewById<TextView>(R.id.message_detail_sender_name) }
+    private val senderImageView by nlazy { findViewById<ImageView>(R.id.message_detail_sender_image) }
+    private val senderNameTextView by nlazy { findViewById<TextView>(R.id.message_detail_sender_name) }
     private val senderNicknameTextView by nlazy { findViewById<TextView>(R.id.message_detail_sender_nickname) }
-    private val sentDateTextView       by nlazy { findViewById<TextView>(R.id.message_detail_sent_date) }
-    private val editedInfo             by nlazy { findViewById<TextView>(R.id.message_detail_edited_ref) }
-    private val messageText            by nlazy { findViewById<TextView>(R.id.message_detail_message_text) }
+    private val sentDateTextView by nlazy { findViewById<TextView>(R.id.message_detail_sent_date) }
+    private val editedInfo by nlazy { findViewById<TextView>(R.id.message_detail_edited_ref) }
+    private val messageText by nlazy { findViewById<TextView>(R.id.message_detail_message_text) }
 
     private lateinit var msg: MessageWrapper
     private lateinit var imageCache: ImageCache
@@ -83,8 +83,8 @@ class MessageDetailActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_option_delete_message -> run { deleteMessage() ; true }
-            R.id.menu_option_edit_message -> run { editMessage() ; true }
+            R.id.menu_option_delete_message -> run { deleteMessage(); true }
+            R.id.menu_option_edit_message -> run { editMessage(); true }
             else -> super.onOptionsItemSelected(item)
         }
     }
