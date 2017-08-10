@@ -9,9 +9,9 @@ import java.util.*
 
 class DateHelper {
     private val inputFormat: DateFormat by lazy {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-        inputFormat
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        format.timeZone = TimeZone.getTimeZone("UTC")
+        format
     }
 
     private val dateTimeOutputFormat: DateFormat by lazy {
