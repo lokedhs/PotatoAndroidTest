@@ -11,14 +11,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import com.dhsdevelopments.potato.DateHelper
+import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
-import com.dhsdevelopments.potato.nlazy
+import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 

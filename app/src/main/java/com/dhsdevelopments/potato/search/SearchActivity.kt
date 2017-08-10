@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
+import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.nlazy
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit

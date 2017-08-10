@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dhsdevelopments.potato.DateHelper
+import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResultMessage

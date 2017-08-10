@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="code_block_background">#D2D2D2</color>
+    <color name="code_inline_frame">#787878</color>
+    <color name="code_background">#D2D2D2</color>
+    <color name="user_background">#E3E3E3</color>
+</resources>

@@ -9,6 +9,8 @@ import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageElementTypeAdapter
 import com.dhsdevelopments.potato.clientapi.notifications.NotificationTypeAdapter
 import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification
+import com.dhsdevelopments.potato.common.DateHelper
+import com.dhsdevelopments.potato.common.makeRandomCharacterSequence
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.google.gson.GsonBuilder
 import com.squareup.okhttp.OkHttpClient

@@ -2,11 +2,11 @@ package com.dhsdevelopments.potato.userlist
 
 import android.content.Context
 import android.content.Intent
-import com.dhsdevelopments.potato.IntentUtil
+import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
-import com.dhsdevelopments.potato.clientapi.LoadUsersResult
-import com.dhsdevelopments.potato.clientapi.User
+import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
+import com.dhsdevelopments.potato.clientapi.users.User
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import retrofit.Callback
 import retrofit.Response
@@ -62,10 +62,8 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     private fun processSync(intent: Intent) {
         val uids = intent.getStringArrayExtra(ChannelSubscriptionService.EXTRA_CHANNEL_USERS_SYNC_USERS)
         Log.d("Got sync message. userList = " + Arrays.toString(uids))
-        // Clear the activate state of all current users
-        for (d in users.values) {
-            d.isActive = false
-        }
+        // Clear the active state of all current users
+        users.values.forEach { it.isActive = false }
         uids.forEach { uid -> processAddRemove(uid, true, false) }
         fireUserListSync()
     }
@@ -88,13 +86,8 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         listeners.forEach(UserActivityListener::activeUserListSync)
     }
 
-    fun addUserActivityListener(listener: UserActivityListener) {
-        listeners.add(listener)
-    }
-
-    fun removeUserActivityListener(listener: UserActivityListener) {
-        listeners.remove(listener)
-    }
+    fun addUserActivityListener(listener: UserActivityListener) = listeners.add(listener)
+    fun removeUserActivityListener(listener: UserActivityListener) = listeners.remove(listener)
 
     fun loadUsers() {
         val app = PotatoApplication.getInstance(context)

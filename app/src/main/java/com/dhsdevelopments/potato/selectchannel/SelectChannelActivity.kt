@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
 import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.nlazy
 
 class SelectChannelActivity : Activity() {
 

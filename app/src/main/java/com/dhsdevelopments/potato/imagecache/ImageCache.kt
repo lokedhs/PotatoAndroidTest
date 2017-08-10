@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.os.AsyncTask
 import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.common.makeRandomFile
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import java.io.File

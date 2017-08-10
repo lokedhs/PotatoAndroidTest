@@ -14,7 +14,7 @@ import android.widget.Button
 import android.widget.NumberPicker
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.nlazy
+import com.dhsdevelopments.potato.common.nlazy
 
 class TesterActivity : Activity() {
     val testNotificationButton by nlazy { findViewById<Button>(R.id.test_notification_button) }
@@ -116,6 +116,6 @@ class TestDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_test_dialog, container, false)
         dialog.setTitle("Test title")
-        return view;
+        return view
     }
 }

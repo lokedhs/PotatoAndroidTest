@@ -20,6 +20,8 @@ import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
+import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity

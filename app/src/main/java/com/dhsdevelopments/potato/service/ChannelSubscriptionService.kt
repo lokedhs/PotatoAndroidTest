@@ -7,7 +7,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import com.dhsdevelopments.potato.DbTools
-import com.dhsdevelopments.potato.IntentUtil
+import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult

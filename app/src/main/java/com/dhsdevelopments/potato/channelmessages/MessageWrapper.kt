@@ -1,6 +1,6 @@
 package com.dhsdevelopments.potato.channelmessages
 
-import com.dhsdevelopments.potato.DateHelper
+import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageImage

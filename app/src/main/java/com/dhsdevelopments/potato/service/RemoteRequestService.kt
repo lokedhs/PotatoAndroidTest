@@ -14,8 +14,8 @@ import com.dhsdevelopments.potato.clientapi.callService
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
-import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
-import com.dhsdevelopments.potato.clientapi.unreadnotification.UpdateUnreadNotificationRequest
+import com.dhsdevelopments.potato.clientapi.UpdateUnreadNotificationRequest
+import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
 import java.io.IOException

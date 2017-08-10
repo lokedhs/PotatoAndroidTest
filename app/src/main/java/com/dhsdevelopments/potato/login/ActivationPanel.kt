@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.initial.PotatoActivity
-import com.dhsdevelopments.potato.nlazy
+import com.dhsdevelopments.potato.common.nlazy
 import java.text.MessageFormat
 
 class ActivationPanel : AppCompatActivity() {

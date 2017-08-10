@@ -21,8 +21,9 @@ import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
-import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageRequest
-import com.dhsdevelopments.potato.clientapi.sendmessage.SendMessageResult
+import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
+import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageResult
+import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
