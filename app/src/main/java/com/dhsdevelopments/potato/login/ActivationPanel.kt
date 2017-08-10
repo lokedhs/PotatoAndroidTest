@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.TextView
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.initial.PotatoActivity
-import com.dhsdevelopments.potato.common.nlazy
 import java.text.MessageFormat
 
 class ActivationPanel : AppCompatActivity() {
@@ -15,8 +14,8 @@ class ActivationPanel : AppCompatActivity() {
         val EXTRA_EMAIL_ADDRESS = "com.dhsdevelopments.potato.email"
     }
 
-    val registeredMessage by nlazy { findViewById<TextView>(R.id.registered_message) }
-    val loginButton by nlazy { findViewById<Button>(R.id.login_button) }
+    val registeredMessage by lazy { findViewById<TextView>(R.id.registered_message) }
+    val loginButton by lazy { findViewById<Button>(R.id.login_button) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

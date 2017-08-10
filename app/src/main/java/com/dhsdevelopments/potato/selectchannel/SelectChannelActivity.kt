@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.widget.Button
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.common.nlazy
 
 class SelectChannelActivity : Activity() {
 
@@ -15,8 +14,8 @@ class SelectChannelActivity : Activity() {
         val RESULT_ERROR_LOADING_CHANNEL = RESULT_FIRST_USER
     }
 
-    val recyclerView by nlazy { findViewById<RecyclerView>(R.id.channel_select_list) }
-    val createChannelButton by nlazy { findViewById<Button>(R.id.channel_select_new_channel) }
+    val recyclerView by lazy { findViewById<RecyclerView>(R.id.channel_select_list) }
+    val createChannelButton by lazy { findViewById<Button>(R.id.channel_select_new_channel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

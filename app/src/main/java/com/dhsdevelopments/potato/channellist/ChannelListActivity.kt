@@ -21,7 +21,6 @@ import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
@@ -49,11 +48,11 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var userListFragment: UserListFragment? = null
     private var channelContentFragment: ChannelContentFragment? = null
 
-    private val navigationView: NavigationView         by nlazy { findViewById<NavigationView>(R.id.channel_list_nav_view) }
-    private val domainsMenu: SubMenu                   by nlazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
-    private val swipeRefreshLayout: SwipeRefreshLayout by nlazy { findViewById<SwipeRefreshLayout>(R.id.channel_list_refresh) }
-    private val channelListRecyclerView: RecyclerView  by nlazy { findViewById<RecyclerView>(R.id.channel_list) }
-    private val drawer: DrawerLayout                   by nlazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
+    private val navigationView: NavigationView         by lazy { findViewById<NavigationView>(R.id.channel_list_nav_view) }
+    private val domainsMenu: SubMenu                   by lazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
+    private val swipeRefreshLayout: SwipeRefreshLayout by lazy { findViewById<SwipeRefreshLayout>(R.id.channel_list_refresh) }
+    private val channelListRecyclerView: RecyclerView  by lazy { findViewById<RecyclerView>(R.id.channel_list) }
+    private val drawer: DrawerLayout                   by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

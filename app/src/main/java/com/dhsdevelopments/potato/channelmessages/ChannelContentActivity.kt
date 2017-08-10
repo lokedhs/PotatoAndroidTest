@@ -10,7 +10,6 @@ import android.view.Gravity
 import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
 
@@ -19,7 +18,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
     private lateinit var usersTracker: ChannelUsersTracker
     private lateinit var channelId: String
 
-    private val drawer by nlazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
+    private val drawer by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

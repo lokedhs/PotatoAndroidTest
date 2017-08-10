@@ -14,13 +14,12 @@ import android.widget.Button
 import android.widget.NumberPicker
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.common.nlazy
 
 class TesterActivity : Activity() {
-    val testNotificationButton by nlazy { findViewById<Button>(R.id.test_notification_button) }
-    val openDialogButton by nlazy { findViewById<Button>(R.id.test_dialog_button) }
-    val dialogStylePicker by nlazy { findViewById<NumberPicker>(R.id.dialog_style_number_picker) }
-    val themePicker by nlazy { findViewById<NumberPicker>(R.id.theme_picker) }
+    val testNotificationButton by lazy { findViewById<Button>(R.id.test_notification_button) }
+    val openDialogButton by lazy { findViewById<Button>(R.id.test_dialog_button) }
+    val dialogStylePicker by lazy { findViewById<NumberPicker>(R.id.dialog_style_number_picker) }
+    val themePicker by lazy { findViewById<NumberPicker>(R.id.theme_picker) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

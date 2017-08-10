@@ -8,13 +8,12 @@ import android.support.v7.widget.RecyclerView
 import com.dhsdevelopments.potato.*
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.common.nlazy
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
 
 class SearchActivity : AppCompatActivity() {
-    val recyclerView: RecyclerView by nlazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
+    val recyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
     lateinit var searchResultAdapter: SearchResultAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

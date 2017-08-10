@@ -5,12 +5,6 @@ import android.content.Context
 import android.os.AsyncTask
 import java.io.File
 
-fun <T> nlazy(getter: () -> T): Lazy<T> {
-    return lazy(LazyThreadSafetyMode.NONE) {
-        getter()
-    }
-}
-
 fun makeRandomCharacterSequence(buf: Appendable, n: Int) {
     repeat(n) {
         buf.append('a' + (Math.random() * ('z' - 'a' + 1)).toInt())

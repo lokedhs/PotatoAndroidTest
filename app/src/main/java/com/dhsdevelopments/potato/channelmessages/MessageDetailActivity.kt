@@ -18,18 +18,17 @@ import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
-import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class MessageDetailActivity : AppCompatActivity() {
 
-    private val senderImageView by nlazy { findViewById<ImageView>(R.id.message_detail_sender_image) }
-    private val senderNameTextView by nlazy { findViewById<TextView>(R.id.message_detail_sender_name) }
-    private val senderNicknameTextView by nlazy { findViewById<TextView>(R.id.message_detail_sender_nickname) }
-    private val sentDateTextView by nlazy { findViewById<TextView>(R.id.message_detail_sent_date) }
-    private val editedInfo by nlazy { findViewById<TextView>(R.id.message_detail_edited_ref) }
-    private val messageText by nlazy { findViewById<TextView>(R.id.message_detail_message_text) }
+    private val senderImageView by lazy { findViewById<ImageView>(R.id.message_detail_sender_image) }
+    private val senderNameTextView by lazy { findViewById<TextView>(R.id.message_detail_sender_name) }
+    private val senderNicknameTextView by lazy { findViewById<TextView>(R.id.message_detail_sender_nickname) }
+    private val sentDateTextView by lazy { findViewById<TextView>(R.id.message_detail_sent_date) }
+    private val editedInfo by lazy { findViewById<TextView>(R.id.message_detail_edited_ref) }
+    private val messageText by lazy { findViewById<TextView>(R.id.message_detail_message_text) }
 
     private lateinit var msg: MessageWrapper
     private lateinit var imageCache: ImageCache

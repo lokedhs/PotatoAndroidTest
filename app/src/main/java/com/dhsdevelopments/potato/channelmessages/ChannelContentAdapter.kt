@@ -22,7 +22,6 @@ import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.common.DateHelper
-import com.dhsdevelopments.potato.common.nlazy
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
@@ -53,7 +52,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     private var messages: MutableList<MessageWrapper> = ArrayList()
     private var isLoading = false
 
-    val elementDecoration: RecyclerView.ItemDecoration by nlazy { MessageElementItemDecoration() }
+    val elementDecoration: RecyclerView.ItemDecoration by lazy { MessageElementItemDecoration() }
 
     init {
         context = parent.activity
