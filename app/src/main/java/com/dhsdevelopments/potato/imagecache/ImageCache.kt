@@ -14,6 +14,12 @@ import java.io.IOException
 import java.lang.ref.SoftReference
 import java.util.*
 
+internal data class CacheKey(
+        private val url: String,
+        private val width: Int,
+        private val height: Int,
+        private val fromApi: Boolean)
+
 class ImageCache(private val context: Context) {
 
     private val bitmapCache = HashMap<CacheKey, BitmapCacheEntry>()
