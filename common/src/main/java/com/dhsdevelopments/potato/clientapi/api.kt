@@ -161,11 +161,7 @@ class ClearNotificationsResult : RemoteResult {
 }
 
 class ImageUriRequestBody(private val context: Context, private val imageUri: Uri) : RequestBody() {
-    private val mediaType: MediaType
-
-    init {
-        this.mediaType = MediaType.parse(context.contentResolver.getType(imageUri))
-    }
+    private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri))
 
     override fun contentType(): MediaType {
         return mediaType

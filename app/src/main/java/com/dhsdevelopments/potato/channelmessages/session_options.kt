@@ -61,12 +61,8 @@ class OptionsDialogFragment : DialogFragment() {
 }
 
 class OptionsAdapter(private val parent: OptionsDialogFragment, notification: OptionNotification) : RecyclerView.Adapter<OptionsAdapter.ViewHolder>() {
-    private val options: List<OptionWrapper>
+    private val options: List<OptionWrapper> = notification.options.map { OptionWrapper(it) }
     private lateinit var imageCache: ImageCache
-
-    init {
-        options = notification.options.map({ OptionWrapper(it) })
-    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)

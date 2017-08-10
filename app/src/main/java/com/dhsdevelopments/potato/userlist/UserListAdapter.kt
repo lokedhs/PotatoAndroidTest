@@ -95,11 +95,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
     abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
-        private val headerText: TextView
-
-        init {
-            headerText = view.findViewById<TextView>(R.id.header_text)
-        }
+        private val headerText: TextView = view.findViewById<TextView>(R.id.header_text)
 
         fun setHeaderTitle(title: String) {
             headerText.text = title
@@ -108,10 +104,9 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
 
     private inner class UserElementViewHolder(itemView: View) : ViewHolder(itemView) {
         private var user: UserWrapper? = null
-        private val userDescriptionView: TextView
+        private val userDescriptionView: TextView = itemView.findViewById<TextView>(R.id.user_description_view)
 
         init {
-            userDescriptionView = itemView.findViewById<TextView>(R.id.user_description_view)
             itemView.setOnClickListener {
                 parentActivity.closeUserListDrawer()
 
