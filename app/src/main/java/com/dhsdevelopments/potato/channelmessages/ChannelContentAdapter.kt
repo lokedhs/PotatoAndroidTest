@@ -347,7 +347,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             super.fillInView(message)
 
             if (message.extraHtml != null) {
-                htmlContentView.text = Html.fromHtml(message.extraHtml)
+                htmlContentView.text = Html.fromHtml(message.extraHtml, 0)
                 htmlContentView.visibility = View.VISIBLE
             }
             else {
