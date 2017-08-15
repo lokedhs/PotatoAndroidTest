@@ -21,7 +21,9 @@ import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResu
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageResult
+import com.dhsdevelopments.potato.clientapi.users.LoadUserResult
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
+import com.dhsdevelopments.potato.clientapi.users.User
 import com.google.gson.annotations.SerializedName
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
@@ -90,6 +92,10 @@ interface PotatoApi {
     @GET("channel/{cid}/users")
     fun loadUsers(@Header("API-token") apiKey: String,
                   @Path("cid") channelId: String): Call<LoadUsersResult>
+
+    @GET("users/{uid}")
+    fun loadUser(@Header("API-token") apiKey: String,
+                 @Path("uid") userId: String): Call<LoadUserResult>
 
     @POST("register-gcm")
     fun registerGcm(@Header("API-token") apiKey: String,

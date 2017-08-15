@@ -18,11 +18,21 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            resValue "string", "override_server_prefix", "https://potato.dhsdevelopments.com/"
         }
-//        debugLocal {
-//            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
-//        }
+    }
+    flavorDimensions "serverAddress"
+    productFlavors {
+        serverLocal {
+            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
+            dimension "serverAddress"
+        }
+        serverTesting {
+            resValue "string", "override_server_prefix", "https://potato.dhsdevelopments.com/"
+            dimension "serverAddress"
+        }
+    }
+    defaultConfig {
+        flavorSelection "serverAddress", "serverTesting"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -58,6 +68,11 @@ dependencies {
     compile 'com.google.android.gms:play-services-wearable:11.0.4'
     compile 'com.koushikdutta.ion:ion:2.1.8'
     implementation project(':common')
+
+    compile 'nz.bradcampbell:paperparcel:2.0.2'
+    compile 'nz.bradcampbell:paperparcel-kotlin:2.0.2' // Optional
+    kapt 'nz.bradcampbell:paperparcel-compiler:2.0.2'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

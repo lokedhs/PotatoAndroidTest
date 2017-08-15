@@ -1,10 +1,12 @@
 package com.dhsdevelopments.potato.userlist
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
 import com.dhsdevelopments.potato.clientapi.users.User
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
@@ -133,5 +135,10 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         fun findForChannel(context: Context, cid: String): ChannelUsersTracker {
             return ChannelUsersTracker(context, cid)
         }
+
+        fun findForActivity(activity: Activity): ChannelUsersTracker {
+            return (activity as HasChannelContentActivity).findUserTracker()
+        }
     }
+
 }

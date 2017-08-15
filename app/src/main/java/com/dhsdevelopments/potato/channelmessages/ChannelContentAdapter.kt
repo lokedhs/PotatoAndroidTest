@@ -267,13 +267,15 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val senderView: TextView = itemView.findViewById<TextView>(R.id.sender)
-        private val dateView: TextView = itemView.findViewById<TextView>(R.id.date)
-        private val dateDetailView: TextView = itemView.findViewById<TextView>(R.id.date_detail)
-        private val contentView: TextView = itemView.findViewById<TextView>(R.id.content)
-        private val senderNicknameView: TextView = itemView.findViewById<TextView>(R.id.sender_nickname)
-        private val dateWrapperLayout: View = itemView.findViewById(R.id.date_wrapper_layout)
-        private val imageView: ImageView = itemView.findViewById<ImageView>(R.id.image_content)
+        // @formatter:off
+        private val senderView         = itemView.findViewById<TextView>(R.id.sender)
+        private val dateView           = itemView.findViewById<TextView>(R.id.date)
+        private val dateDetailView     = itemView.findViewById<TextView>(R.id.date_detail)
+        private val contentView        = itemView.findViewById<TextView>(R.id.content)
+        private val senderNicknameView = itemView.findViewById<TextView>(R.id.sender_nickname)
+        private val dateWrapperLayout  = itemView.findViewById<View>(R.id.date_wrapper_layout)
+        private val imageView          = itemView.findViewById<ImageView>(R.id.image_content)
+        // @formatter:on
         private var updateIndex: Long = 0
         private var currentMessage: MessageWrapper? = null
 
@@ -303,8 +305,10 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             dateView.text = DateHelper.makeDateDiffString(context, message.createdDate.time)
             dateDetailView.text = message.createdDateFormatted
             contentView.text = message.content.makeSpan(MessageElement.SpanGenerationContext(context))
-            senderNicknameView.text = ""
             currentMessage = message
+
+            val userTracker = ChannelUsersTracker.findForActivity(parent.activity)
+            senderNicknameView.text = userTracker.getNicknameForUid(message.sender)
 
             val dh = if (message.shouldDisplayHeader) View.VISIBLE else View.GONE
             senderView.visibility = dh
