@@ -59,7 +59,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun bindToChannel(cid: String) {
-        Log.d("Binding to channel: " + cid)
+        Log.d("Binding to channel: $cid")
         if (receiverThread == null) {
             receiverThread = Receiver(cid)
             receiverThread!!.start()
@@ -71,7 +71,7 @@ class ChannelSubscriptionService : Service() {
 
     private fun processNewNotifications(notifications: List<PotatoNotification>) {
         for (n in notifications) {
-            Log.d("Processing notification: " + n)
+            Log.d("Processing notification: $n")
             when (n) {
                 is MessageNotification -> processMessageNotification(n)
                 is StateUpdateNotification -> processStateUpdateNotification(n)
@@ -291,7 +291,7 @@ class ChannelSubscriptionService : Service() {
         }
 
         private fun submitBindRequest(cid: String) {
-            Log.d("Submit bind request: " + cid)
+            Log.d("Submit bind request: $cid")
             val e = eventId ?: throw IllegalStateException("eventId is null")
             val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {

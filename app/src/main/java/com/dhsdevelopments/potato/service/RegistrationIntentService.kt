@@ -29,7 +29,7 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             val instanceId = InstanceID.getInstance(this)
             val token = instanceId.getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
 
-            Log.d("Got token: " + token)
+            Log.d("Got token: $token")
 
             val app = PotatoApplication.getInstance(this)
             val call = app.potatoApi.registerGcm(app.apiKey, GcmRegistrationRequest(token, "gcm"))

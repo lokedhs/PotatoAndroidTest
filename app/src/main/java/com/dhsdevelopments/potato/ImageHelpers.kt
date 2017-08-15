@@ -18,7 +18,7 @@ object ImageHelpers {
         BitmapFactory.decodeFile(file, options)
 
         if (minimumWidth != -1 && minimumHeight != -1 && (options.outWidth < minimumWidth || options.outHeight < minimumHeight)) {
-            Log.d("skipping: w=" + options.outWidth + ", h=" + options.outHeight)
+            Log.d("skipping: w=${options.outWidth}, h=${options.outHeight}")
             return null
         }
 

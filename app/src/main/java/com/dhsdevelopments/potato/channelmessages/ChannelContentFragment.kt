@@ -118,7 +118,7 @@ class ChannelContentFragment : Fragment() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 // Only scroll if the message was inserted at the bottom, and we're already looking at
                 // the bottom element.
-                Log.d("rangeInserted. posStart=" + positionStart + ", count=" + itemCount + ", lastVis=" + lastVisibleItem + ", itemCount=" + adapter.itemCount)
+                Log.d("rangeInserted. posStart=$positionStart, count=$itemCount, lastVis=$lastVisibleItem, itemCount=$adapter.itemCount")
                 val numItems = adapter.itemCount - 1
                 if (lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount) {
                     Log.d("scrolling view to " + (numItems + 1))
@@ -474,7 +474,7 @@ class ChannelContentFragment : Fragment() {
                 call.enqueue(object : Callback<SendMessageResult> {
                     override fun onResponse(response: Response<SendMessageResult>, retrofit: Retrofit) {
                         if (response.isSuccess) {
-                            Log.i("Created message with id: " + response.body().id)
+                            Log.i("Created message with id: ${response.body().id}")
                         }
                         else {
                             try {

@@ -20,7 +20,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        Log.d("Search activity started. intent=" + intent)
+        Log.d("Search activity started. intent=$intent")
         if (intent.action != Intent.ACTION_SEARCH) {
             throw IllegalArgumentException("Search activity not started with ACTION_SEARCH")
         }

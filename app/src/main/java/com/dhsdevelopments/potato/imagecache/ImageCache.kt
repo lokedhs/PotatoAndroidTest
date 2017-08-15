@@ -122,7 +122,7 @@ class ImageCache(private val context: Context) {
                     loadTaskIsActive = true
                     shouldStartTask = true
                 }
-                Log.d("created new cache entry. current load queue size=" + loadQueue.size + ", willStartNewTask=" + shouldStartTask)
+                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
             }
             else {
                 if (cacheEntry.loading) {
@@ -274,7 +274,7 @@ class ImageCache(private val context: Context) {
                 }
 
                 val result = findCachedFileInDatabase(db, queueEntry.url)
-                Log.d("cached image file=" + result + ", for url=" + queueEntry.url)
+                Log.d("cached image file=$result, for url=${queueEntry.url}")
                 val cachedFile =
                         if (result == null) {
                             try {

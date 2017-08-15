@@ -29,7 +29,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     }
 
     fun processIncoming(intent: Intent) {
-        Log.d("processing channel user intent: " + intent)
+        Log.d("processing channel user intent: $intent")
         if (intent.action != ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE) {
             // We only want to process channel users notifications
             return
@@ -63,7 +63,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     private fun processSync(intent: Intent) {
         val uids = intent.getStringArrayExtra(ChannelSubscriptionService.EXTRA_CHANNEL_USERS_SYNC_USERS)
-        Log.d("Got sync message. userList = " + Arrays.toString(uids))
+        Log.d("Got sync message. userList = ${Arrays.toString(uids)}")
         // Clear the active state of all current users
         users.values.forEach { it.isActive = false }
         uids.forEach { uid -> processAddRemove(uid, true, false) }

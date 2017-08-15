@@ -48,7 +48,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
         val call = app.potatoApi.sendMessageWithFile(app.apiKey, cid, map)
         callService(call, ::plainErrorHandler) { response ->
-            Log.i("Uploaded image, messageId=" + response.id)
+            Log.i("Uploaded image, messageId=${response.id}")
         }
     }
 
@@ -56,7 +56,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val app = PotatoApplication.getInstance(this)
         val call = app.potatoApi.clearNotificationsForChannel(app.apiKey, cid)
         callService(call, ::plainErrorHandler) {
-            Log.d("Notifications cleared for channel: " + cid)
+            Log.d("Notifications cleared for channel: $cid")
         }
     }
 
