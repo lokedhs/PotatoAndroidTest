@@ -7,7 +7,7 @@ android {
     buildToolsVersion "26.0.1"
 
     defaultConfig {
-        applicationId "com.dhsdevelopments.watch"
+        applicationId "com.dhsdevelopments.potato"
         minSdkVersion 25
         targetSdkVersion 26
         versionCode 1

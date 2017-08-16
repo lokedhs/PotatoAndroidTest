@@ -26,6 +26,7 @@ import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
+import com.dhsdevelopments.potato.wearable.WatchSendService
 
 class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var selectedDomainId: String? = null
@@ -111,6 +112,8 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
 
         updateDomainList()
         RemoteRequestService.loadChannelList(this)
+
+        WatchSendService.sendApiKey(this)
     }
 
     private fun handleBroadcastMessage(intent: Intent) {
