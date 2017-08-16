@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
+import com.google.android.gms.wearable.DataApi
+import com.google.android.gms.wearable.Wearable
+import com.google.android.gms.wearable.internal.zzbi
 import java.util.*
 
 @Suppress("ConvertToStringTemplate")
@@ -179,11 +182,11 @@ object DbTools {
         callServiceBackground(call, {
             errorFn(it)
         }, {
-            updateDatabase(context, it); successFn(it)
+            updateChannelInDatabase(context, it); successFn(it)
         })
     }
 
-    private fun updateDatabase(context: Context, c: LoadChannelInfoResult) {
+    private fun updateChannelInDatabase(context: Context, c: LoadChannelInfoResult) {
         val db = PotatoApplication.getInstance(context).cacheDatabase
         db.beginTransaction()
         try {
@@ -207,4 +210,16 @@ object DbTools {
         values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, 0)
         db.update(StorageHelper.CHANNEL_CONFIG_TABLE, values, null, null)
     }
+
+//    fun syncChannelDbToDataApi(context: Context) {
+//        val db = PotatoApplication.getInstance(context).cacheDatabase
+//        val result = db.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_DOMAIN, StorageHelper.CHANNELS_NAME),
+//                null, null, null, null, null, null)
+//        while (result.moveToNext()) {
+//            val id = result.getString(0)
+//            val domain = result.getString(1)
+//            val name = result.getString(2)
+//            Wearable.DataApi.putDataItem(apiClient)
+//        }
+//    }
 }

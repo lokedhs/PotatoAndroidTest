@@ -59,17 +59,19 @@ class WatchTestActivity : WearableActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_watch_test)
 
-        Log.i("Creating apiclient")
         apiClient = GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(connectionCallbacks)
                 .addOnConnectionFailedListener(connectionFailedListener)
                 .build()
-        Log.i("Connecting to apiclient")
         apiClient.connect()
-        Log.i("Should connect at some point")
 
         Wearable.CapabilityApi.addCapabilityListener(apiClient, capabilityListener, POTATO_CAPABILITY_NAME)
+    }
+
+    override fun onDestroy() {
+        apiClient.disconnect()
+        super.onDestroy()
     }
 
     fun sendTestMessageClickHandler(@Suppress("UNUSED_PARAMETER") view: View) {

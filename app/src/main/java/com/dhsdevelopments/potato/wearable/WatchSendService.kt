@@ -58,6 +58,11 @@ class WatchSendService : IntentService("WatchSendService") {
         apiClient.connect()
     }
 
+    override fun onDestroy() {
+        apiClient.disconnect()
+        super.onDestroy()
+    }
+
     override fun onHandleIntent(intent: Intent) {
         when (intent.action) {
             ACTION_SEND_API_KEY -> updateWearableDataMap()
