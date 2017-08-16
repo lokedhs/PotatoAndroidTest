@@ -23,15 +23,11 @@ import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendM
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageResult
 import com.dhsdevelopments.potato.clientapi.users.LoadUserResult
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
-import com.dhsdevelopments.potato.clientapi.users.User
 import com.google.gson.annotations.SerializedName
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
 import okio.BufferedSink
-import retrofit.Call
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit.*
 import retrofit.http.*
 import java.io.IOException
 

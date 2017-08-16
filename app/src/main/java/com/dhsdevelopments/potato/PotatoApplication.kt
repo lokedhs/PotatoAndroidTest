@@ -4,23 +4,16 @@ import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.preference.PreferenceManager
+import com.dhsdevelopments.potato.clientapi.ApiProvider
 import com.dhsdevelopments.potato.clientapi.PotatoApi
-import com.dhsdevelopments.potato.clientapi.message.MessageElement
-import com.dhsdevelopments.potato.clientapi.message.MessageElementTypeAdapter
-import com.dhsdevelopments.potato.clientapi.notifications.NotificationTypeAdapter
-import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification
 import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.common.makeRandomCharacterSequence
 import com.dhsdevelopments.potato.imagecache.ImageCache
-import com.google.gson.GsonBuilder
-import com.squareup.okhttp.OkHttpClient
-import retrofit.GsonConverterFactory
-import retrofit.Retrofit
-import java.util.concurrent.TimeUnit
 
 class PotatoApplication : Application() {
 
     val cacheDatabase: SQLiteDatabase by lazy { StorageHelper(this).writableDatabase }
+    val apiProvider = ApiProvider(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -39,6 +32,12 @@ class PotatoApplication : Application() {
         return value
     }
 
+    val serverUrlPrefix
+        get() = apiProvider.serverUrlPrefix
+
+    val apiUrlPrefix: String
+        get() = apiProvider.apiUrlPrefix
+
     val apiKey: String
         get() = getPrefByName(R.string.pref_apikey)
 
@@ -46,43 +45,16 @@ class PotatoApplication : Application() {
         get() = getPrefByName(R.string.pref_user_id)
 
     val potatoApi: PotatoApi
-        get() = makePotatoApi(-1)
+        get() = apiProvider.potatoApi
 
     val potatoApiLongTimeout: PotatoApi
-        get() = makePotatoApi(120)
+        get() = apiProvider.potatoApiLongTimeout
 
     val sessionId = run {
         val buf = StringBuilder()
         makeRandomCharacterSequence(buf, 40)
         buf.toString()
     }
-
-    private fun makePotatoApi(timeout: Int): PotatoApi {
-        val gson = GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                .registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter())
-                .registerTypeAdapter(PotatoNotification::class.java, NotificationTypeAdapter())
-                .create()
-        val httpClient = OkHttpClient()
-        if (timeout > 0) {
-            httpClient.setReadTimeout(timeout.toLong(), TimeUnit.SECONDS)
-        }
-        val retrofit = Retrofit.Builder().baseUrl(apiUrlPrefix).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient).build()
-        return retrofit.create(PotatoApi::class.java)
-    }
-
-    val serverUrlPrefix by lazy {
-        val identifier = resources.getIdentifier("${PotatoApplication::class.java.`package`.name}:string/override_server_prefix", null, null)
-        Log.d("Got identifier for ${PotatoApplication::class.java.`package`.name}:string/override_server_prefix = $identifier")
-        if (identifier == 0) {
-            resources.getString(R.string.server_prefix)
-        }
-        else {
-            resources.getString(identifier)
-        }
-    }
-
-    val apiUrlPrefix by lazy { serverUrlPrefix + "api/1.0/" }
 
     companion object {
         private val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS
