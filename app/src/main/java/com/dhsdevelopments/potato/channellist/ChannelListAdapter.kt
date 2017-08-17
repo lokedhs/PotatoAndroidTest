@@ -137,9 +137,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
                 unreadView.visibility = View.GONE
             }
 
-            view.setOnClickListener { v ->
-                parent.setActiveChannel(item.id)
-            }
+            view.setOnClickListener { parent.setActiveChannel(item.id) }
         }
     }
 }
