@@ -98,7 +98,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         val handler = Handler()
 
         val app = PotatoApplication.getInstance(context)
-        val call = app.potatoApi.loadHistoryAsJson(app.apiKey, cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
+        val call = app.apiProvider.makePotatoApi().loadHistoryAsJson(app.apiKey, cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
         isLoading = true
         call.enqueue(object : Callback<MessageHistoryResult> {
             override fun onResponse(response: Response<MessageHistoryResult>, retrofit: Retrofit) {

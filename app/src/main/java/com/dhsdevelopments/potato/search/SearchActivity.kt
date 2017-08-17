@@ -33,7 +33,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.adapter = searchResultAdapter
 
         val app = PotatoApplication.getInstance(this)
-        val call = app.potatoApi.searchMessages(app.apiKey, channelId, query, "0")
+        val call = app.apiProvider.makePotatoApi().searchMessages(app.apiKey, channelId, query, "0")
         call.enqueue(object : Callback<SearchResult?> {
             override fun onResponse(result: Response<SearchResult?>, retrofit: Retrofit) {
                 if (result.isSuccess) {

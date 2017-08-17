@@ -18,23 +18,18 @@ class ApiProvider(val context: Context) {
     val serverUrlPrefix by lazy {
         val identifier = context.resources.getIdentifier("com.dhsdevelopments.potato:string/override_server_prefix", null, null)
         Log.d("Got identifier for com.dhsdevelopments.potato:string/override_server_prefix = $identifier")
-        if (identifier == 0) {
+        val p = if (identifier == 0) {
             context.resources.getString(R.string.server_prefix)
         }
         else {
             context.resources.getString(identifier)
         }
+        p ?: throw IllegalStateException("No server prefix found")
     }
 
     val apiUrlPrefix by lazy { serverUrlPrefix + "api/1.0/" }
 
-    val potatoApi: PotatoApi
-        get() = makePotatoApi(serverUrlPrefix, -1)
-
-    val potatoApiLongTimeout: PotatoApi
-        get() = makePotatoApi(serverUrlPrefix, 120)
-
-    fun makePotatoApi(apiUrlPrefix: String, timeout: Int): PotatoApi {
+    fun makePotatoApi(timeout: Int = -1): PotatoApi {
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter())

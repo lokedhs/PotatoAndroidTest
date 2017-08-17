@@ -7,9 +7,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
-import com.google.android.gms.wearable.DataApi
-import com.google.android.gms.wearable.Wearable
-import com.google.android.gms.wearable.internal.zzbi
 import java.util.*
 
 @Suppress("ConvertToStringTemplate")
@@ -178,7 +175,7 @@ object DbTools {
 
     fun refreshChannelEntryInDb(context: Context, cid: String, errorFn: (String) -> Unit, successFn: (LoadChannelInfoResult) -> Unit) {
         val app = PotatoApplication.getInstance(context)
-        val call = app.potatoApi.loadChannelInfo(app.apiKey, cid)
+        val call = app.apiProvider.makePotatoApi().loadChannelInfo(app.apiKey, cid)
         callServiceBackground(call, {
             errorFn(it)
         }, {

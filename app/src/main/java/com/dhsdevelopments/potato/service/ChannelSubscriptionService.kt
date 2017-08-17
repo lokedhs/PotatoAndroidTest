@@ -171,7 +171,7 @@ class ChannelSubscriptionService : Service() {
         init {
             val app = PotatoApplication.getInstance(this@ChannelSubscriptionService)
 
-            api = app.potatoApiLongTimeout
+            api = app.apiProvider.makePotatoApi(120)
             apiKey = app.apiKey
             sid = app.sessionId
 

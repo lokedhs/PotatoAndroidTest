@@ -81,7 +81,7 @@ class ImageCache(private val context: Context) {
     fun loadImageFromApi(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {
         val app = PotatoApplication.getInstance(context)
         val apiKey = app.apiKey
-        return loadImageInternal(app.apiUrlPrefix + (if (url.startsWith("/")) url.substring(1) else url), imageWidth, imageHeight, storageType, callback, apiKey)
+        return loadImageInternal(app.apiProvider.apiUrlPrefix + (if (url.startsWith("/")) url.substring(1) else url), imageWidth, imageHeight, storageType, callback, apiKey)
     }
 
     fun loadImage(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {

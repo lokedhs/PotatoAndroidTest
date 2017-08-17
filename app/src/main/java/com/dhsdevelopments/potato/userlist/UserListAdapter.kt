@@ -115,7 +115,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
 
                 val uid = user!!.id
                 val app = PotatoApplication.getInstance(context)
-                callServiceBackground(app.potatoApi.findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
+                callServiceBackground(app.apiProvider.makePotatoApi().findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
                     val privChannelId = result.channel
                     DbTools.ensureChannelInfo(context, privChannelId) {
                         parentActivity.openChannel(privChannelId)

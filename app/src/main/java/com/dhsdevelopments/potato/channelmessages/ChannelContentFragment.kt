@@ -468,7 +468,7 @@ class ChannelContentFragment : Fragment() {
             }
             else {
                 val app = PotatoApplication.getInstance(activity)
-                val api = app.potatoApi
+                val api = app.apiProvider.makePotatoApi()
                 val apiKey = app.apiKey
                 val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
                 call.enqueue(object : Callback<SendMessageResult> {

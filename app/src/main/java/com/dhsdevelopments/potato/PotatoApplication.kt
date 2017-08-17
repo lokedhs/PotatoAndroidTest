@@ -32,23 +32,11 @@ class PotatoApplication : Application() {
         return value
     }
 
-    val serverUrlPrefix
-        get() = apiProvider.serverUrlPrefix
-
-    val apiUrlPrefix: String
-        get() = apiProvider.apiUrlPrefix
-
     val apiKey: String
         get() = getPrefByName(R.string.pref_apikey)
 
     val userId: String
         get() = getPrefByName(R.string.pref_user_id)
-
-    val potatoApi: PotatoApi
-        get() = apiProvider.potatoApi
-
-    val potatoApiLongTimeout: PotatoApi
-        get() = apiProvider.potatoApiLongTimeout
 
     val sessionId = run {
         val buf = StringBuilder()

@@ -23,7 +23,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
 
     private fun loadChannels() {
         val app = PotatoApplication.getInstance(parent)
-        val call = app.potatoApi.getAllChannelsInDomain(app.apiKey, domainId, "1", "1")
+        val call = app.apiProvider.makePotatoApi().getAllChannelsInDomain(app.apiKey, domainId, "1", "1")
         callServiceBackground(call, ::plainErrorHandler) { result ->
             val chList = DbTools.loadAllChannelIdsInDomain(parent, domainId)
             channels.clear()

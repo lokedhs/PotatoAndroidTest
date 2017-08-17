@@ -93,7 +93,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     fun loadUsers() {
         val app = PotatoApplication.getInstance(context)
-        val call = app.potatoApi.loadUsers(app.apiKey, cid)
+        val call = app.apiProvider.makePotatoApi().loadUsers(app.apiKey, cid)
         call.enqueue(object : Callback<LoadUsersResult> {
             override fun onResponse(response: Response<LoadUsersResult>, retrofit: Retrofit) {
                 if (response.isSuccess) {
