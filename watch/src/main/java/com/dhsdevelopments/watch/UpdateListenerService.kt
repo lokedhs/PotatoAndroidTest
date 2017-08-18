@@ -16,27 +16,8 @@ import java.util.concurrent.TimeUnit
 
 class UpdateListenerService : WearableListenerService() {
 
-    private lateinit var apiClient: GoogleApiClient
-
-    override fun onCreate() {
-        super.onCreate()
-        apiClient = GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .build()
-
-        val connectionResult = apiClient.blockingConnect(30, TimeUnit.SECONDS)
-        if(!connectionResult.isSuccess) {
-            Log.e("Unable to connect to api client")
-        }
-    }
-
-    override fun onDestroy() {
-        apiClient.disconnect()
-        super.onDestroy()
-    }
-
     override fun onDataChanged(events: DataEventBuffer) {
-        Log.i("Got data changed: $events")
+        Log.d("Got data changed: $events")
 
         for(e in events) {
             val item = e.dataItem
@@ -47,7 +28,7 @@ class UpdateListenerService : WearableListenerService() {
     }
 
     private fun updateCreds(item: DataItem) {
-        Log.i("Creds have been updated: $item")
+        Log.d("Creds have been updated: $item")
     }
 
 }

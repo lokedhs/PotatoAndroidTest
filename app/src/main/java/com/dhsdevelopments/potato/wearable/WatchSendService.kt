@@ -29,38 +29,20 @@ class WatchSendService : IntentService("WatchSendService") {
         }
     }
 
-    private lateinit var apiClient: GoogleApiClient
-
     private val connectionCallback = object : GoogleApiClient.ConnectionCallbacks {
         override fun onConnected(p0: Bundle?) {
-            Log.i("API client connected: $p0")
+            Log.d("API client connected: $p0")
         }
 
         override fun onConnectionSuspended(p0: Int) {
-            Log.i("API client suspended: $p0")
+            Log.d("API client suspended: $p0")
         }
     }
 
     private val connectionFailedCallback = object : GoogleApiClient.OnConnectionFailedListener {
         override fun onConnectionFailed(result: ConnectionResult) {
-            Log.i("API client connection failed: $result")
+            Log.d("API client connection failed: $result")
         }
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-
-        apiClient = GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(connectionCallback)
-                .addOnConnectionFailedListener(connectionFailedCallback)
-                .build()
-        apiClient.connect()
-    }
-
-    override fun onDestroy() {
-        apiClient.disconnect()
-        super.onDestroy()
     }
 
     override fun onHandleIntent(intent: Intent) {
@@ -80,6 +62,13 @@ class WatchSendService : IntentService("WatchSendService") {
             return
         }
 
+        val apiClient = GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(connectionCallback)
+                .addOnConnectionFailedListener(connectionFailedCallback)
+                .build()
+        apiClient.blockingConnect()
+
         val putDataMapRequest = PutDataMapRequest.create(APIKEY_DATA_MAP_PATH).apply {
             dataMap.putString(APIKEY_DATA_MAP_TOKEN, token)
             dataMap.putString(APIKEY_DATA_MAP_UID, uid)
@@ -87,10 +76,10 @@ class WatchSendService : IntentService("WatchSendService") {
         val putDataRequest = putDataMapRequest.asPutDataRequest().apply {
             setUrgent()
         }
-        Log.i("Sending api key information to watch: $putDataRequest")
-        Wearable.DataApi.putDataItem(apiClient, putDataRequest).apply {
-            setResultCallback { result -> Log.i("After sending data api request: $result") }
-        }
+        Log.d("Sending api key information to watch: $putDataRequest, connected: ${apiClient.isConnected}, connecting: ${apiClient.isConnecting}")
+        Wearable.DataApi.putDataItem(apiClient, putDataRequest).await()
+        Log.d("  message sent, will disconnect")
+        apiClient.disconnect()
     }
 
 }

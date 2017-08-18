@@ -34,7 +34,7 @@ class UserCacheService : IntentService("UserCache") {
 
     fun requestUserInfo(intent: Intent) {
         val uid = intent.getStringExtra(EXTRA_USER_ID)!!
-        Log.i("Got request for user info, user=${uid}")
+        Log.d("Got request for user info, user=${uid}")
 
         val userInfo = cache.get(uid)
         if(userInfo != null) {

@@ -45,10 +45,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     private fun checkGooglePlayApis() {
-        Log.i("Checking for google play apis")
+        Log.d("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()
         val result = availability.isGooglePlayServicesAvailable(this)
-        Log.i("check result=$result")
+        Log.d("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
                 val dialog = availability.getErrorDialog(this, result, 0)
