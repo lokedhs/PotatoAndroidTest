@@ -29,9 +29,9 @@ class TesterActivity : Activity() {
         openDialogButton.setOnClickListener { openDialog() }
 
         dialogStylePicker.minValue = 0
-        dialogStylePicker.maxValue = 7
+        dialogStylePicker.maxValue = styles.size - 1
         themePicker.minValue = 0
-        themePicker.maxValue = 4
+        themePicker.maxValue = themes.size - 1
     }
 
     private fun testNotification() {
@@ -69,38 +69,35 @@ class TesterActivity : Activity() {
         ft.addToBackStack(null)
 
         val dialogFragment = TestDialogFragment()
-        val args = Bundle()
-        args.putInt("style", makeStyleFromInt(dialogStylePicker.value))
-        args.putInt("theme", makeThemeFromInt(themePicker.value))
+        val args = Bundle().apply {
+            putInt("style", makeStyleFromInt(dialogStylePicker.value))
+            putInt("theme", makeThemeFromInt(themePicker.value))
+        }
         Log.d("Setting arguments to: $args")
         dialogFragment.arguments = args
         dialogFragment.show(ft, "dialog")
     }
 
-    private fun makeStyleFromInt(style: Int): Int {
-        return when (style) {
-            0 -> DialogFragment.STYLE_NO_TITLE
-            1 -> DialogFragment.STYLE_NO_FRAME
-            2 -> DialogFragment.STYLE_NO_INPUT
-            3 -> DialogFragment.STYLE_NORMAL
-            4 -> DialogFragment.STYLE_NORMAL
-            5 -> DialogFragment.STYLE_NO_TITLE
-            6 -> DialogFragment.STYLE_NO_FRAME
-            7 -> DialogFragment.STYLE_NORMAL
-            else -> throw IllegalArgumentException("Illegal style id: $style")
-        }
-    }
+    private val styles = listOf(
+            DialogFragment.STYLE_NO_TITLE,
+            DialogFragment.STYLE_NO_FRAME,
+            DialogFragment.STYLE_NO_INPUT,
+            DialogFragment.STYLE_NORMAL,
+            DialogFragment.STYLE_NORMAL,
+            DialogFragment.STYLE_NO_TITLE,
+            DialogFragment.STYLE_NO_FRAME,
+            DialogFragment.STYLE_NORMAL)
 
-    private fun makeThemeFromInt(theme: Int): Int {
-        return when (theme) {
-            0 -> android.R.style.Theme_Material
-            1 -> android.R.style.Theme_Material_Dialog
-            2 -> android.R.style.Theme_Material_Dialog_Presentation
-            3 -> android.R.style.Theme_Material_Panel
-            4 -> android.R.style.Theme_Material_Light_Panel
-            else -> throw IllegalArgumentException("Illegal theme id: $theme")
-        }
-    }
+    private fun makeStyleFromInt(style: Int) = styles[style]
+
+    private val themes = listOf(
+            android.R.style.Theme_Material,
+            android.R.style.Theme_Material_Dialog,
+            android.R.style.Theme_Material_Dialog_Presentation,
+            android.R.style.Theme_Material_Panel,
+            android.R.style.Theme_Material_Light_Panel)
+
+    private fun makeThemeFromInt(theme: Int) = themes[theme]
 }
 
 class TestDialogFragment : DialogFragment() {
