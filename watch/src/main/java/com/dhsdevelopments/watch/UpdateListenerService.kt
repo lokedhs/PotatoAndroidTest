@@ -19,12 +19,10 @@ class UpdateListenerService : WearableListenerService() {
     override fun onDataChanged(events: DataEventBuffer) {
         Log.d("Got data changed: $events")
 
-        for(e in events) {
-            val item = e.dataItem
-            if(item.uri.path == APIKEY_DATA_MAP_PATH) {
-                updateCreds(item)
-            }
-        }
+        events
+                .map { it.dataItem }
+                .filter { it.uri.path == APIKEY_DATA_MAP_PATH }
+                .forEach { updateCreds(it) }
     }
 
     private fun updateCreds(item: DataItem) {

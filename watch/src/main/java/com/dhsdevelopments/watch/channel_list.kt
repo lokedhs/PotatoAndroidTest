@@ -10,10 +10,13 @@ import android.widget.TextView
 import android.content.Context
 import android.net.Uri
 import android.support.wearable.preference.PreferenceIconHelper
+import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_PATH
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.NodeApi
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
+import java.util.*
 
 class WearChannelListActivity : WearableActivity() {
 
@@ -76,15 +79,24 @@ fun testGetDefaults(context: Context) {
                 }
 
                 override fun onConnected(p0: Bundle?) {
-                    Wearable.DataApi.getDataItem(apiClient, Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/potato/domain").build()).setResultCallback { result ->
+                    val url = Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path(APIKEY_DATA_MAP_PATH).build()
+                    Wearable.DataApi.getDataItem(apiClient, url).setResultCallback { result ->
                         Log.i("Got result from generic data call: ${result.dataItem}")
                     }
 
-                    Wearable.NodeApi.getLocalNode(apiClient).setResultCallback { nodeResult ->
-                        val url = Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(nodeResult.node.id).path("/potato/domain").build()
-                        val item = Wearable.DataApi.getDataItem(apiClient, url)
-                        item.setResultCallback { result ->
-                            Log.i("Got result from data api with node ${nodeResult.node.id}: ${result.dataItem}")
+                    Wearable.NodeApi.getConnectedNodes(apiClient).setResultCallback { allNodes ->
+                        Log.i("Got ${allNodes.nodes.size} nodes")
+                        allNodes.nodes.forEach { node ->
+                            Log.i("  checking node ${node.displayName}/${node.id} ")
+                            val url = Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(node.id).path(APIKEY_DATA_MAP_PATH).build()
+                            Wearable.DataApi.getDataItem(apiClient, url).setResultCallback { item ->
+                                Log.i("  got result from data api with node ${node.displayName}/${node.id}: ${item.dataItem}")
+                                val data = item.dataItem?.data
+                                if(data != null) {
+                                    val m = DataMap.fromByteArray(data)
+                                    Log.i("  payload = $m")
+                                }
+                            }
                         }
                     }
                 }

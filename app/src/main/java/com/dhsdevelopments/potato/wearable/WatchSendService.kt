@@ -3,6 +3,7 @@ package com.dhsdevelopments.potato.wearable
 import android.app.IntentService
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import com.dhsdevelopments.potato.Log
@@ -13,6 +14,7 @@ import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_UID
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.PutDataMapRequest
+import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 
 
@@ -57,7 +59,7 @@ class WatchSendService : IntentService("WatchSendService") {
         val token = prefs.getString(getString(R.string.pref_apikey), "")
         val uid = prefs.getString(getString(R.string.pref_user_id), "")
 
-        if(token == "" || uid == "") {
+        if (token == "" || uid == "") {
             Log.w("No api key found. Will not update watch.")
             return
         }
@@ -67,7 +69,18 @@ class WatchSendService : IntentService("WatchSendService") {
                 .addConnectionCallbacks(connectionCallback)
                 .addOnConnectionFailedListener(connectionFailedCallback)
                 .build()
-        apiClient.blockingConnect()
+        val connectResult = apiClient.blockingConnect()
+        Log.d("Connect result: $connectResult")
+
+        val printData = fun(title: String, callback: () -> Unit) {
+            Log.d("$title. Printing data")
+            Wearable.DataApi.getDataItem(apiClient, Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path(APIKEY_DATA_MAP_PATH).build())
+                    .setResultCallback { data ->
+                        Log.d("  data retrieval result: ${data.status.isSuccess}")
+                        Log.d("  data values: ${data.dataItem?.data}")
+                        callback()
+                    }
+        }
 
         val putDataMapRequest = PutDataMapRequest.create(APIKEY_DATA_MAP_PATH).apply {
             dataMap.putString(APIKEY_DATA_MAP_TOKEN, token)
@@ -76,10 +89,17 @@ class WatchSendService : IntentService("WatchSendService") {
         val putDataRequest = putDataMapRequest.asPutDataRequest().apply {
             setUrgent()
         }
-        Log.d("Sending api key information to watch: $putDataRequest, connected: ${apiClient.isConnected}, connecting: ${apiClient.isConnecting}")
-        Wearable.DataApi.putDataItem(apiClient, putDataRequest).await()
-        Log.d("  message sent, will disconnect")
-        apiClient.disconnect()
+        printData("Before putDataItem") {
+            Log.d("Sending api key information to watch: $putDataRequest, connected: ${apiClient.isConnected}, connecting: ${apiClient.isConnecting}")
+            Wearable.DataApi.putDataItem(apiClient, putDataRequest)
+                    .setResultCallback {
+                        Log.d("  data item request sent. result=${it}, disconnecting apiClient")
+                        printData("After putDataItem") {
+                            apiClient.disconnect()
+                        }
+                    }
+            Log.d("  message request submitted")
+        }
     }
 
 }
