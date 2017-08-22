@@ -103,7 +103,7 @@
             android:enabled="true"
             android:exported="false"/>
         <service
-            android:name=".service.RemoteRequestService"
+            android:name=".common.RemoteRequestService"
             android:enabled="true"
             android:exported="false"/>
         <service

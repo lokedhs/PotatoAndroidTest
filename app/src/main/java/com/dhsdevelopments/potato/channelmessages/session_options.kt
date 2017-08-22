@@ -13,8 +13,8 @@ import android.widget.TextView
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.notifications.Option
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import com.dhsdevelopments.potato.imagecache.ImageCache
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.koushikdutta.ion.Ion
 import com.koushikdutta.ion.builder.AnimateGifMode
 

@@ -1,4 +1,4 @@
-package com.dhsdevelopments.potato
+package com.dhsdevelopments.potato.common
 
 import android.content.ContentValues
 import android.content.Context
@@ -19,36 +19,36 @@ class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", 
     }
 
     private fun createImageCacheTables(db: SQLiteDatabase) {
-        db.execSQL("create table $IMAGE_CACHE_TABLE (" +
-                "$IMAGE_CACHE_NAME text primary key, " +
-                "$IMAGE_CACHE_FILENAME text, " +
-                "$IMAGE_CACHE_CREATED_DATE int not null, " +
-                "$IMAGE_CACHE_IMAGE_AVAILABLE boolean, " +
-                "$IMAGE_CACHE_CAN_DELETE boolean)")
+        db.execSQL("create table ${IMAGE_CACHE_TABLE} (" +
+                "${IMAGE_CACHE_NAME} text primary key, " +
+                "${IMAGE_CACHE_FILENAME} text, " +
+                "${IMAGE_CACHE_CREATED_DATE} int not null, " +
+                "${IMAGE_CACHE_IMAGE_AVAILABLE} boolean, " +
+                "${IMAGE_CACHE_CAN_DELETE} boolean)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }
 
     private fun createChannelTables(db: SQLiteDatabase) {
-        db.execSQL("create table $DOMAINS_TABLE (" +
-                "$DOMAINS_ID text primary key, " +
-                "$DOMAINS_NAME text not null)")
-        db.execSQL("create table $CHANNELS_TABLE (" +
-                "$CHANNELS_ID text primary key, " +
-                "$CHANNELS_DOMAIN text not null, " +
-                "$CHANNELS_NAME text not null, " +
-                "$CHANNELS_UNREAD text not null, " +
-                "$CHANNELS_PRIVATE text null, " +
-                "$CHANNELS_HIDDEN int not null, " +
-                "foreign key (domain) references $DOMAINS_TABLE($DOMAINS_ID))")
+        db.execSQL("create table ${DOMAINS_TABLE} (" +
+                "${DOMAINS_ID} text primary key, " +
+                "${DOMAINS_NAME} text not null)")
+        db.execSQL("create table ${CHANNELS_TABLE} (" +
+                "${CHANNELS_ID} text primary key, " +
+                "${CHANNELS_DOMAIN} text not null, " +
+                "${CHANNELS_NAME} text not null, " +
+                "${CHANNELS_UNREAD} text not null, " +
+                "${CHANNELS_PRIVATE} text null, " +
+                "${CHANNELS_HIDDEN} int not null, " +
+                "foreign key (domain) references ${DOMAINS_TABLE}(${DOMAINS_ID}))")
     }
 
     private fun createChannelConfigTable(db: SQLiteDatabase) {
-        db.execSQL("create table $CHANNEL_CONFIG_TABLE (" +
-                "$CHANNEL_CONFIG_ID text primary key, " +
-                "$CHANNEL_CONFIG_SHOW_NOTIFICATIONS boolean not null, " +
-                "$CHANNEL_CONFIG_NOTIFY_UNREAD boolean not null)")
+        db.execSQL("create table ${CHANNEL_CONFIG_TABLE} (" +
+                "${CHANNEL_CONFIG_ID} text primary key, " +
+                "${CHANNEL_CONFIG_SHOW_NOTIFICATIONS} boolean not null, " +
+                "${CHANNEL_CONFIG_NOTIFY_UNREAD} boolean not null)")
     }
 
     companion object {
@@ -86,7 +86,7 @@ class DomainDescriptor(val id: String, val name: String)
 object DbTools {
 
     fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
-        return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+        return CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
                 arrayOf(StorageHelper.CHANNELS_ID,
                         StorageHelper.CHANNELS_NAME,
                         StorageHelper.CHANNELS_PRIVATE,
@@ -110,7 +110,7 @@ object DbTools {
 
     fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
         val domains = ArrayList<DomainDescriptor>()
-        PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.DOMAINS_TABLE,
+        CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.DOMAINS_TABLE,
                 arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
                 null, null, null, null, null, null).use { result ->
             while (result.moveToNext()) {
@@ -124,7 +124,7 @@ object DbTools {
 
     fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
         val channels = HashSet<String>()
-        PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+        CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
                 arrayOf(StorageHelper.CHANNELS_ID),
                 "${StorageHelper.CHANNELS_DOMAIN} = ?", arrayOf(domainId),
                 null, null, null).use { result ->
@@ -136,7 +136,7 @@ object DbTools {
     }
 
     fun isChannelJoined(context: Context, cid: String): Boolean {
-        return PotatoApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
+        return CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
                 arrayOf(StorageHelper.CHANNELS_ID),
                 "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
                 null, null, null).use { result ->
@@ -156,7 +156,7 @@ object DbTools {
     }
 
     fun ensureChannelInfo(context: Context, cid: String, fn: () -> Unit) {
-        val db = PotatoApplication.getInstance(context)
+        val db = CommonApplication.getInstance(context)
         val exists = db.cacheDatabase.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID),
                 "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
                 null, null, null).use {
@@ -174,8 +174,8 @@ object DbTools {
     }
 
     fun refreshChannelEntryInDb(context: Context, cid: String, errorFn: (String) -> Unit, successFn: (LoadChannelInfoResult) -> Unit) {
-        val app = PotatoApplication.getInstance(context)
-        val call = app.apiProvider.makePotatoApi().loadChannelInfo(app.apiKey, cid)
+        val app = CommonApplication.getInstance(context)
+        val call = app.findApiProvider().makePotatoApi().loadChannelInfo(app.findApiKey(), cid)
         callServiceBackground(call, {
             errorFn(it)
         }, {
@@ -184,7 +184,7 @@ object DbTools {
     }
 
     private fun updateChannelInDatabase(context: Context, c: LoadChannelInfoResult) {
-        val db = PotatoApplication.getInstance(context).cacheDatabase
+        val db = CommonApplication.getInstance(context).cacheDatabase
         db.beginTransaction()
         try {
             db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
@@ -202,7 +202,7 @@ object DbTools {
      * the device).
      */
     fun clearUnreadNotificationSettings(context: Context) {
-        val db = PotatoApplication.getInstance(context).cacheDatabase
+        val db = CommonApplication.getInstance(context).cacheDatabase
         val values = ContentValues()
         values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, 0)
         db.update(StorageHelper.CHANNEL_CONFIG_TABLE, values, null, null)

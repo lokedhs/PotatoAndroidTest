@@ -1,19 +1,15 @@
 package com.dhsdevelopments.potato
 
-import android.app.Application
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.preference.PreferenceManager
 import com.dhsdevelopments.potato.clientapi.ApiProvider
-import com.dhsdevelopments.potato.clientapi.PotatoApi
+import com.dhsdevelopments.potato.common.CommonApplication
 import com.dhsdevelopments.potato.common.DateHelper
-import com.dhsdevelopments.potato.common.makeRandomCharacterSequence
 import com.dhsdevelopments.potato.imagecache.ImageCache
 
-class PotatoApplication : Application() {
+class PotatoApplication : CommonApplication() {
 
-    val cacheDatabase: SQLiteDatabase by lazy { StorageHelper(this).writableDatabase }
-    val apiProvider = ApiProvider(this)
+    private val apiProvider = ApiProvider(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -32,17 +28,10 @@ class PotatoApplication : Application() {
         return value
     }
 
-    val apiKey: String
-        get() = getPrefByName(R.string.pref_apikey)
+    override fun findApiProvider() = apiProvider
 
-    val userId: String
-        get() = getPrefByName(R.string.pref_user_id)
-
-    val sessionId = run {
-        val buf = StringBuilder()
-        makeRandomCharacterSequence(buf, 40)
-        buf.toString()
-    }
+    override fun findApiKey(): String = getPrefByName(R.string.pref_apikey)
+    override fun findUserId(): String = getPrefByName(R.string.pref_user_id)
 
     companion object {
         private val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS

@@ -11,14 +11,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import com.dhsdevelopments.potato.common.DateHelper
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
+import com.dhsdevelopments.potato.common.DateHelper
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 class MessageDetailActivity : AppCompatActivity() {
@@ -60,7 +59,7 @@ class MessageDetailActivity : AppCompatActivity() {
                     }
 
                     override fun bitmapNotFound() {
-                        Log.w("Unable to load bitmap")
+                        com.dhsdevelopments.potato.common.Log.w("Unable to load bitmap")
                     }
                 })
         senderNameTextView.text = userName
@@ -99,7 +98,7 @@ class MessageDetailActivity : AppCompatActivity() {
     }
 
     fun editMessage() {
-        Log.e("Need to implement message editing")
+        com.dhsdevelopments.potato.common.Log.e("Need to implement message editing")
     }
 
     companion object {

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.StorageHelper
+import com.dhsdevelopments.potato.common.StorageHelper
 import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {

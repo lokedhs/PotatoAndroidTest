@@ -1,12 +1,10 @@
 package com.dhsdevelopments.potato.usercache
 
 import android.app.IntentService
-import android.content.Context
 import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import android.support.v4.content.LocalBroadcastManager
-import com.dhsdevelopments.potato.Log
 import paperparcel.PaperParcel
 import java.lang.UnsupportedOperationException
 
@@ -34,7 +32,7 @@ class UserCacheService : IntentService("UserCache") {
 
     fun requestUserInfo(intent: Intent) {
         val uid = intent.getStringExtra(EXTRA_USER_ID)!!
-        Log.d("Got request for user info, user=${uid}")
+        com.dhsdevelopments.potato.common.Log.d("Got request for user info, user=${uid}")
 
         val userInfo = cache.get(uid)
         if(userInfo != null) {

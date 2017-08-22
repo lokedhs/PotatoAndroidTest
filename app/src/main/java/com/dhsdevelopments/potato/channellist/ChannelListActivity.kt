@@ -16,13 +16,15 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.*
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.RemoteRequestService
+import com.dhsdevelopments.potato.common.StorageHelper
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import com.dhsdevelopments.potato.userlist.UserListFragment
@@ -105,9 +107,10 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
                 handleBroadcastMessage(intent)
             }
         }
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED)
-        intentFilter.addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATE_FAIL)
+        val intentFilter = IntentFilter().apply {
+            addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED)
+            addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATE_FAIL)
+        }
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter)
 
         updateDomainList()

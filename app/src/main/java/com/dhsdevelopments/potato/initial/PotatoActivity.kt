@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.login.WebLoginActivity
@@ -45,10 +44,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     private fun checkGooglePlayApis() {
-        Log.d("Checking for google play apis")
+        com.dhsdevelopments.potato.common.Log.d("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()
         val result = availability.isGooglePlayServicesAvailable(this)
-        Log.d("check result=$result")
+        com.dhsdevelopments.potato.common.Log.d("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
                 val dialog = availability.getErrorDialog(this, result, 0)
@@ -66,7 +65,7 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.e("Did not find the google apis")
+        com.dhsdevelopments.potato.common.Log.e("Did not find the google apis")
         throw RuntimeException("google apis not available")
     }
 }

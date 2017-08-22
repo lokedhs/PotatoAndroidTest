@@ -17,15 +17,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.common.DateHelper
+import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
@@ -91,14 +93,14 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
 
     fun loadMessageHistory(startMessageId: String?, callback: (List<Message>) -> Unit, errorCallback: (String) -> Unit) {
         if (isLoading) {
-            Log.w("Attempt to load messages while loading is in progress")
+            com.dhsdevelopments.potato.common.Log.w("Attempt to load messages while loading is in progress")
             return
         }
 
         val handler = Handler()
 
         val app = PotatoApplication.getInstance(context)
-        val call = app.apiProvider.makePotatoApi().loadHistoryAsJson(app.apiKey, cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
+        val call = app.findApiProvider().makePotatoApi().loadHistoryAsJson(app.findApiKey(), cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
         isLoading = true
         call.enqueue(object : Callback<MessageHistoryResult> {
             override fun onResponse(response: Response<MessageHistoryResult>, retrofit: Retrofit) {
@@ -108,14 +110,14 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                         callback(response.body().messages)
                     }
                     else {
-                        Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
+                        com.dhsdevelopments.potato.common.Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
                         errorCallback("HTTP error: " + response.code())
                     }
                 }
             }
 
             override fun onFailure(t: Throwable) {
-                Log.e("Error loading message history", t)
+                com.dhsdevelopments.potato.common.Log.e("Error loading message history", t)
                 handler.post {
                     isLoading = false
                     errorCallback(t.message ?: "Unknown error")
@@ -295,7 +297,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             parent.activity.menuInflater.inflate(R.menu.message_popup, menu)
             val item = menu.findItem(R.id.message_popup_delete_message)
             item.setOnMenuItemClickListener { deleteMessage(msg.id); true }
-            if (msg.sender != app.userId) {
+            if (msg.sender != app.findUserId()) {
                 item.isEnabled = false
             }
         }

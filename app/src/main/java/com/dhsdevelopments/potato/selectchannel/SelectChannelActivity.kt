@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.common.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.Log
 
 class SelectChannelActivity : Activity() {
 

@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.NumberPicker
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 
 class TesterActivity : Activity() {
@@ -51,7 +50,7 @@ class TesterActivity : Activity() {
 
         val ringtone = prefs.getString(getString(R.string.pref_notifications_private_message_ringtone), null)
         val v = prefs.getBoolean(getString(R.string.pref_notifications_private_message_vibrate), true)
-        Log.d("r=$ringtone, v=$v")
+        com.dhsdevelopments.potato.common.Log.d("r=$ringtone, v=$v")
         if (ringtone != null) {
             builder.setSound(Uri.parse(ringtone))
         }
@@ -73,7 +72,7 @@ class TesterActivity : Activity() {
             putInt("style", makeStyleFromInt(dialogStylePicker.value))
             putInt("theme", makeThemeFromInt(themePicker.value))
         }
-        Log.d("Setting arguments to: $args")
+        com.dhsdevelopments.potato.common.Log.d("Setting arguments to: $args")
         dialogFragment.arguments = args
         dialogFragment.show(ft, "dialog")
     }

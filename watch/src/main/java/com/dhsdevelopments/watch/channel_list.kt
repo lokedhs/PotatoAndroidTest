@@ -1,26 +1,26 @@
 package com.dhsdevelopments.watch
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.widget.RecyclerView
 import android.support.wearable.activity.WearableActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.content.Context
-import android.net.Uri
-import android.support.wearable.preference.PreferenceIconHelper
-import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_PATH
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.wearable.DataMap
-import com.google.android.gms.wearable.NodeApi
-import com.google.android.gms.wearable.PutDataRequest
-import com.google.android.gms.wearable.Wearable
-import java.util.*
+import com.dhsdevelopments.potato.common.RemoteRequestService
+import com.dhsdevelopments.potato.common.StorageHelper
 
 class WearChannelListActivity : WearableActivity() {
 
     private val channelList by lazy { findViewById<RecyclerView>(R.id.channel_list_recycler_view)!! }
+    private var receiver: BroadcastReceiver? = null
+
+    private lateinit var channelListAdapter: WearChannelListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +29,45 @@ class WearChannelListActivity : WearableActivity() {
         setAmbientEnabled()
 
         Log.d("Setting channelListAdapter")
-        channelList.adapter = WearChannelListAdapter(this)
+        channelListAdapter = WearChannelListAdapter(this)
+        channelList.adapter = channelListAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                handleBroadcastMessage(intent)
+            }
+        }
+        val intentFilter = IntentFilter().apply {
+            addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED)
+        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter)
+
+        if(PotatoWatchApplication.getInstance(this).hasUserData) {
+            RemoteRequestService.loadChannelList(this)
+        }
+    }
+
+    override fun onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
+        super.onStop()
+    }
+
+    private fun handleBroadcastMessage(intent: Intent) {
+        when (intent.action) {
+            RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED -> channelListAdapter.loadChannels()
+        }
     }
 }
 
+data class ChannelEntry(val channelId: String, val name: String)
+
 class WearChannelListAdapter(val context: Context) : RecyclerView.Adapter<WearChannelListAdapter.ViewHolder>() {
 
-    private val channels: List<String> = emptyList()
+    private val channels: MutableList<ChannelEntry> = ArrayList()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -55,51 +87,27 @@ class WearChannelListAdapter(val context: Context) : RecyclerView.Adapter<WearCh
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.wear_channel_list_entry, parent, false))
     }
 
-    private fun loadChannels() {
-        testGetDefaults(context)
-        var api = PotatoWatchApplication.getInstance(context).apiProvider.makePotatoApi()
+    fun loadChannels() {
+        channels.clear()
+        val db = PotatoWatchApplication.getInstance(context).cacheDatabase
+        db.query(StorageHelper.CHANNELS_TABLE,
+                arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_NAME),
+                null, null,
+                null, null, StorageHelper.CHANNELS_NAME, null).use { result ->
+            while (result.moveToNext()) {
+                val cid = result.getString(0)
+                val name = result.getString(1)
+                channels.add(ChannelEntry(cid, name))
+            }
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val channelNameView = itemView.findViewById<TextView>(R.id.channel_name)
 
-        fun fillInView(s: String) {
-            channelNameView.text = s
+        fun fillInView(e: ChannelEntry) {
+            channelNameView.text = e.name
         }
     }
 
-}
-
-fun testGetDefaults(context: Context) {
-    var apiClient: GoogleApiClient? = null
-    apiClient = GoogleApiClient.Builder(context)
-            .addApi(Wearable.API)
-            .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
-                override fun onConnectionSuspended(p0: Int) {
-                }
-
-                override fun onConnected(p0: Bundle?) {
-                    val url = Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path(APIKEY_DATA_MAP_PATH).build()
-                    Wearable.DataApi.getDataItem(apiClient, url).setResultCallback { result ->
-                        Log.i("Got result from generic data call: ${result.dataItem}")
-                    }
-
-                    Wearable.NodeApi.getConnectedNodes(apiClient).setResultCallback { allNodes ->
-                        Log.i("Got ${allNodes.nodes.size} nodes")
-                        allNodes.nodes.forEach { node ->
-                            Log.i("  checking node ${node.displayName}/${node.id} ")
-                            val url = Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).authority(node.id).path(APIKEY_DATA_MAP_PATH).build()
-                            Wearable.DataApi.getDataItem(apiClient, url).setResultCallback { item ->
-                                Log.i("  got result from data api with node ${node.displayName}/${node.id}: ${item.dataItem}")
-                                val data = item.dataItem?.data
-                                if(data != null) {
-                                    val m = DataMap.fromByteArray(data)
-                                    Log.i("  payload = $m")
-                                }
-                            }
-                        }
-                    }
-                }
-            }).build()
-    apiClient.connect()
 }

@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
+import com.dhsdevelopments.potato.common.DbTools
 import java.text.Collator
 import java.util.*
 
@@ -115,7 +115,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
 
                 val uid = user!!.id
                 val app = PotatoApplication.getInstance(context)
-                callServiceBackground(app.apiProvider.makePotatoApi().findPrivateChannelId(app.apiKey, channelInfo.domainId, uid), ::plainErrorHandler) { result ->
+                callServiceBackground(app.findApiProvider().makePotatoApi().findPrivateChannelId(app.findApiKey(), channelInfo.domainId, uid), ::plainErrorHandler) { result ->
                     val privChannelId = result.channel
                     DbTools.ensureChannelInfo(context, privChannelId) {
                         parentActivity.openChannel(privChannelId)

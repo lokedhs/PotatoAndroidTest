@@ -38,14 +38,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <service
             android:name=".UpdateListenerService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED"/>
-                <action android:name="com.google.android.gms.wearable.CHANNEL_EVENT"/>
+                <data
+                    android:host="*"
+                    android:pathPrefix="/potato"
+                    android:scheme="wear"/>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED"/>
                 <data
                     android:host="*"
@@ -53,6 +57,10 @@
                     android:scheme="wear"/>
             </intent-filter>
         </service>
+        <service
+            android:name="com.dhsdevelopments.potato.common.RemoteRequestService"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>

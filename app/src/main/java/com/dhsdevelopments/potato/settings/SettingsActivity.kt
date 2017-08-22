@@ -11,8 +11,8 @@ import android.os.Bundle
 import android.preference.*
 import android.text.TextUtils
 import android.view.MenuItem
-import com.dhsdevelopments.potato.DbTools
 import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.common.DbTools
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
