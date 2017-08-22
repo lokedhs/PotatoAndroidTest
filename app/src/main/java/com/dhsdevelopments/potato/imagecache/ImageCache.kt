@@ -40,14 +40,14 @@ class ImageCache(private val context: Context) {
         val root = context.cacheDir
 
         if (root == null) {
-            com.dhsdevelopments.potato.common.Log.e("No cache directory found")
+            Log.e("No cache directory found")
             null
         }
         else {
             val dir = File(root, IMAGE_CACHE_DIR_NAME)
             if (!dir.exists()) {
                 if (!dir.mkdir()) {
-                    com.dhsdevelopments.potato.common.Log.e("Unable to create cache directory")
+                    Log.e("Unable to create cache directory")
                     null
                 }
                 else {
@@ -125,7 +125,7 @@ class ImageCache(private val context: Context) {
                     loadTaskIsActive = true
                     shouldStartTask = true
                 }
-                com.dhsdevelopments.potato.common.Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
+                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
                 Unit
             }
             else {
@@ -231,7 +231,7 @@ class ImageCache(private val context: Context) {
                     if (fileName != null) {
                         val file = File(cacheDir, fileName)
                         if (!file.delete()) {
-                            com.dhsdevelopments.potato.common.Log.w("could not delete file: " + file)
+                            Log.w("could not delete file: " + file)
                         }
                     }
                 }
@@ -278,7 +278,7 @@ class ImageCache(private val context: Context) {
                 }
 
                 val result = findCachedFileInDatabase(db, queueEntry.url)
-                com.dhsdevelopments.potato.common.Log.d("cached image file=$result, for url=${queueEntry.url}")
+                Log.d("cached image file=$result, for url=${queueEntry.url}")
                 val cachedFile =
                         if (result == null) {
                             try {
@@ -287,7 +287,7 @@ class ImageCache(private val context: Context) {
                                 file
                             }
                             catch (e: IOException) {
-                                com.dhsdevelopments.potato.common.Log.w("failed to load image: '" + queueEntry.url + "'", e)
+                                Log.w("failed to load image: '" + queueEntry.url + "'", e)
                                 null
                             }
                             catch (e: FileDownloadFailedException) {
@@ -338,7 +338,7 @@ class ImageCache(private val context: Context) {
 
         private fun removeOldFile(url: String, file: File) {
             if (!file.delete()) {
-                com.dhsdevelopments.potato.common.Log.w("failed to delete file: " + file)
+                Log.w("failed to delete file: " + file)
             }
             deleteCacheEntryFromDatabase(url)
         }
@@ -383,19 +383,19 @@ class ImageCache(private val context: Context) {
             }
             val req = builder.build()
             val call = client.newCall(req)
-            com.dhsdevelopments.potato.common.Log.d("Downloading url: $url with apiKey=$apiKey")
+            Log.d("Downloading url: $url with apiKey=$apiKey")
             val response = call.execute()
-            com.dhsdevelopments.potato.common.Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
+            Log.d("After download attempt, isSuccessful=${response.isSuccessful}, code=${response.code()}")
             if (!response.isSuccessful) {
                 if (response.code() == 404) {
                     // Simply return null here since we want to cache the 404's
                     if (!found.delete()) {
-                        com.dhsdevelopments.potato.common.Log.w("Failed to delete unused temp file: " + found)
+                        Log.w("Failed to delete unused temp file: " + found)
                     }
                     return null
                 }
                 else {
-                    com.dhsdevelopments.potato.common.Log.w("Unable to load url: " + response.message())
+                    Log.w("Unable to load url: " + response.message())
                     throw FileDownloadFailedException("Got error response from server. code=" + response.code() + ", message=" + response.message())
                 }
             }
@@ -416,7 +416,7 @@ class ImageCache(private val context: Context) {
             }
             catch (e: IOException) {
                 if (!found.delete()) {
-                    com.dhsdevelopments.potato.common.Log.w("error when trying to delete broken download file: " + found)
+                    Log.w("error when trying to delete broken download file: " + found)
                 }
                 throw e
             }

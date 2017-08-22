@@ -7,6 +7,7 @@ import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
 import com.dhsdevelopments.potato.common.DbTools
+import com.dhsdevelopments.potato.common.Log
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
 import java.io.IOException
@@ -28,17 +29,17 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             val instanceId = InstanceID.getInstance(this)
             val token = instanceId.getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
 
-            com.dhsdevelopments.potato.common.Log.d("Got token: $token")
+            Log.d("Got token: $token")
 
             val app = PotatoApplication.getInstance(this)
             val call = app.findApiProvider().makePotatoApi().registerGcm(app.findApiKey(), GcmRegistrationRequest(token, "gcm"))
             val result = call.execute()
             if (!result.isSuccess) {
                 if (result.code() == 503) {
-                    com.dhsdevelopments.potato.common.Log.w("GCM is disabled on the server")
+                    Log.w("GCM is disabled on the server")
                 }
                 else {
-                    com.dhsdevelopments.potato.common.Log.e("Error when updating GCM key: " + result.code() + ", " + result.message())
+                    Log.e("Error when updating GCM key: " + result.code() + ", " + result.message())
                 }
             }
             else if ("ok" == result.body().result) {
@@ -52,11 +53,11 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
                 }
             }
             else {
-                com.dhsdevelopments.potato.common.Log.e("Unexpected reply from gcm registration: ${result.body().result}")
+                Log.e("Unexpected reply from gcm registration: ${result.body().result}")
             }
         }
         catch (e: IOException) {
-            com.dhsdevelopments.potato.common.Log.e("Error when requesting token", e)
+            Log.e("Error when requesting token", e)
         }
 
     }

@@ -121,10 +121,10 @@ class ChannelContentFragment : Fragment() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 // Only scroll if the message was inserted at the bottom, and we're already looking at
                 // the bottom element.
-                com.dhsdevelopments.potato.common.Log.d("rangeInserted. posStart=$positionStart, count=$itemCount, lastVis=$lastVisibleItem, itemCount=$adapter.itemCount")
+                Log.d("rangeInserted. posStart=$positionStart, count=$itemCount, lastVis=$lastVisibleItem, itemCount=$adapter.itemCount")
                 val numItems = adapter.itemCount - 1
                 if (lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount) {
-                    com.dhsdevelopments.potato.common.Log.d("scrolling view to " + (numItems + 1))
+                    Log.d("scrolling view to " + (numItems + 1))
                     messageListView.scrollToPosition(numItems)
                 }
             }
@@ -266,9 +266,9 @@ class ChannelContentFragment : Fragment() {
         val intent = Intent(activity, ChannelSubscriptionService::class.java)
         intent.action = ChannelSubscriptionService.ACTION_UNBIND_FROM_CHANNEL
         intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, cid)
-        com.dhsdevelopments.potato.common.Log.d("Requesting unbind for $cid")
+        Log.d("Requesting unbind for $cid")
         activity.startService(intent)
-        com.dhsdevelopments.potato.common.Log.d("After request for unbind for $cid")
+        Log.d("After request for unbind for $cid")
         super.onStop()
     }
 
@@ -335,10 +335,10 @@ class ChannelContentFragment : Fragment() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        com.dhsdevelopments.potato.common.Log.d("Context menu selected: $item")
+        Log.d("Context menu selected: $item")
         when (item.itemId) {
             R.id.message_popup_delete_message -> {
-                com.dhsdevelopments.potato.common.Log.i("was delete")
+                Log.i("was delete")
             }
         }
         return super.onContextItemSelected(item)
@@ -362,7 +362,7 @@ class ChannelContentFragment : Fragment() {
     }
 
     private fun handleBroadcastMessage(intent: Intent) {
-        com.dhsdevelopments.potato.common.Log.d("received broadcast message of type " + intent.action)
+        Log.d("received broadcast message of type " + intent.action)
         when (intent.action) {
             ChannelSubscriptionService.ACTION_MESSAGE_RECEIVED -> processMessagePostedNotification(intent)
             ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE -> processChannelUsersNotification(intent)
@@ -398,7 +398,7 @@ class ChannelContentFragment : Fragment() {
             ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, findUserTracker().getNameForUid(uid))
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)
             else -> {
-                com.dhsdevelopments.potato.common.Log.w("Unexpected typing mode in broadcast message: " + mode)
+                Log.w("Unexpected typing mode in broadcast message: " + mode)
             }
         }
 
@@ -485,10 +485,10 @@ class ChannelContentFragment : Fragment() {
                         }
                         else {
                             try {
-                                com.dhsdevelopments.potato.common.Log.e("Send message error from server: " + response.errorBody().string())
+                                Log.e("Send message error from server: " + response.errorBody().string())
                             }
                             catch (e: IOException) {
-                                com.dhsdevelopments.potato.common.Log.e("Exception when getting error body after sending message", e)
+                                Log.e("Exception when getting error body after sending message", e)
                             }
 
                             displaySnackbarMessage(messageInput, "The server responded with an error")
@@ -496,7 +496,7 @@ class ChannelContentFragment : Fragment() {
                     }
 
                     override fun onFailure(t: Throwable) {
-                        com.dhsdevelopments.potato.common.Log.e("Error sending message to channel", t)
+                        Log.e("Error sending message to channel", t)
                         displaySnackbarMessage(messageInput, "Error sending message: " + t.message)
                     }
                 })

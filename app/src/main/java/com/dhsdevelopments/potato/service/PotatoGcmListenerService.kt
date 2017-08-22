@@ -14,6 +14,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.StorageHelper
 import com.google.android.gms.gcm.GcmListenerService
 
@@ -27,20 +28,20 @@ class PotatoGcmListenerService : GcmListenerService() {
 
     override fun onCreate() {
         super.onCreate()
-        com.dhsdevelopments.potato.common.Log.d("PotatoGcmListenerService created")
+        Log.d("PotatoGcmListenerService created")
     }
 
     override fun onDestroy() {
-        com.dhsdevelopments.potato.common.Log.d("PotatoGcmListenerService destroyed")
+        Log.d("PotatoGcmListenerService destroyed")
         super.onDestroy()
     }
 
     override fun onMessageReceived(from: String?, data: Bundle?) {
-        com.dhsdevelopments.potato.common.Log.d("GCM message. from=$from, data=$data")
+        Log.d("GCM message. from=$from, data=$data")
 
         val messageType = data!!.getString("potato_message_type")
         if (messageType == null) {
-            com.dhsdevelopments.potato.common.Log.e("Missing message_type in notification")
+            Log.e("Missing message_type in notification")
         }
         else {
             when (messageType) {
@@ -83,7 +84,7 @@ class PotatoGcmListenerService : GcmListenerService() {
     private fun processUnread(data: Bundle) {
         val cid = data.getString("channel")
         val unreadCount = Integer.parseInt(data.getString("unread"))
-        com.dhsdevelopments.potato.common.Log.d("Got unread notification: cid=$cid, unreadCount=$unreadCount")
+        Log.d("Got unread notification: cid=$cid, unreadCount=$unreadCount")
 
         val db = PotatoApplication.getInstance(this).cacheDatabase
         val values = ContentValues()
@@ -100,7 +101,7 @@ class PotatoGcmListenerService : GcmListenerService() {
                 "${StorageHelper.CHANNELS_UNREAD} > ?", arrayOf("0"),
                 null, null, null, null).use { result ->
             if (!result.moveToNext()) {
-                com.dhsdevelopments.potato.common.Log.e("No result when loading number of unread channels")
+                Log.e("No result when loading number of unread channels")
                 return
             }
             val unread = result.getInt(0)

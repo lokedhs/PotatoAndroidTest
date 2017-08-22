@@ -12,6 +12,7 @@ import com.dhsdevelopments.potato.clientapi.PotatoApi
 import com.dhsdevelopments.potato.clientapi.notifications.*
 import com.dhsdevelopments.potato.common.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.RemoteRequestService
 import retrofit.Call
 import retrofit.Callback
@@ -41,12 +42,12 @@ class ChannelSubscriptionService : Service() {
         if (receiverThread != null) {
             receiverThread!!.requestShutdown()
         }
-        com.dhsdevelopments.potato.common.Log.d("Receiver service destroyed")
+        Log.d("Receiver service destroyed")
         super.onDestroy()
     }
 
     private fun unbindFromChannel(cid: String) {
-        com.dhsdevelopments.potato.common.Log.d("unbinding from $cid, hasThread=${receiverThread != null}")
+        Log.d("unbinding from $cid, hasThread=${receiverThread != null}")
         if (receiverThread == null) {
             IllegalStateException("Attempt to unbind with no thread running")
         }
@@ -59,7 +60,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun bindToChannel(cid: String) {
-        com.dhsdevelopments.potato.common.Log.d("Binding to channel: $cid")
+        Log.d("Binding to channel: $cid")
         if (receiverThread == null) {
             receiverThread = Receiver(cid)
             receiverThread!!.start()
@@ -71,7 +72,7 @@ class ChannelSubscriptionService : Service() {
 
     private fun processNewNotifications(notifications: List<PotatoNotification>) {
         for (n in notifications) {
-            com.dhsdevelopments.potato.common.Log.d("Processing notification: $n")
+            Log.d("Processing notification: $n")
             when (n) {
                 is MessageNotification -> processMessageNotification(n)
                 is StateUpdateNotification -> processStateUpdateNotification(n)
@@ -109,7 +110,7 @@ class ChannelSubscriptionService : Service() {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
             }
             else -> {
-                com.dhsdevelopments.potato.common.Log.w("Unexpected addType: " + update.addType)
+                Log.w("Unexpected addType: " + update.addType)
             }
         }
     }
@@ -135,14 +136,14 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun processOptionNotification(notification: OptionNotification) {
-        com.dhsdevelopments.potato.common.Log.d("Got option notification")
+        Log.d("Got option notification")
         val intent = Intent(ACTION_OPTIONS)
         intent.putExtra(EXTRA_OPTION_NOTIFICATION, notification)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun processUnknownSlashcommandNotification(n: UnknownSlashcommandNotification) {
-        com.dhsdevelopments.potato.common.Log.d("Unknown slashcommand: ${n.cmd}, channel: ${n.channel}")
+        Log.d("Unknown slashcommand: ${n.cmd}, channel: ${n.channel}")
         val intent = Intent(ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE)
         intent.putExtra(IntentUtil.EXTRA_CHANNEL_ID, n.channel)
         intent.putExtra(EXTRA_COMMAND_NAME, n.cmd)
@@ -207,18 +208,18 @@ class ChannelSubscriptionService : Service() {
                             }
                         }
                         else {
-                            com.dhsdevelopments.potato.common.Log.e("Error reading notifications: " + response.message())
+                            Log.e("Error reading notifications: " + response.message())
                             Thread.sleep(10000)
                         }
                     }
                     catch (e: InterruptedIOException) {
-                        com.dhsdevelopments.potato.common.Log.d("Subscriber interrupted")
+                        Log.d("Subscriber interrupted")
                         throw ReceiverStoppedException(e)
                     }
                     catch (e: IOException) {
                         // If an error occurs, wait for a while before trying again
                         if (!isShutdown) {
-                            com.dhsdevelopments.potato.common.Log.e("Got exception when waiting for updates", e)
+                            Log.e("Got exception when waiting for updates", e)
                             Thread.sleep(10000)
                         }
                     }
@@ -227,18 +228,18 @@ class ChannelSubscriptionService : Service() {
             }
             catch (e: InterruptedException) {
                 if (!isShutdown) {
-                    com.dhsdevelopments.potato.common.Log.e("Got interruption while not being shutdown", e)
+                    Log.e("Got interruption while not being shutdown", e)
                     throw RuntimeException("Got interruption while not being shutdown", e)
                 }
             }
             catch (e: ReceiverStoppedException) {
                 if (!isShutdown) {
-                    com.dhsdevelopments.potato.common.Log.e("Receiver stop requested while not in shutdown state", e)
+                    Log.e("Receiver stop requested while not in shutdown state", e)
                     throw RuntimeException("Receiver stop requested while not in shutdown state", e)
                 }
             }
 
-            com.dhsdevelopments.potato.common.Log.d("Updates thread shut down")
+            Log.d("Updates thread shut down")
 
             if (lastStartId != null) {
                 stopSelf(lastStartId!!)
@@ -273,7 +274,7 @@ class ChannelSubscriptionService : Service() {
             var willAdd = false
             synchronized(this) {
                 if (isShutdown) {
-                    com.dhsdevelopments.potato.common.Log.w("Not binding since the connection is being shut down")
+                    Log.w("Not binding since the connection is being shut down")
                     return
                 }
                 if (!subscribedChannels.contains(cid)) {
@@ -295,14 +296,14 @@ class ChannelSubscriptionService : Service() {
         }
 
         private fun submitBindRequest(cid: String) {
-            com.dhsdevelopments.potato.common.Log.d("Submit bind request: $cid")
+            Log.d("Submit bind request: $cid")
             val e = eventId ?: throw IllegalStateException("eventId is null")
             val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {
                 override fun onResponse(response: Response<ChannelUpdatesUpdateResult>, retrofit: Retrofit) {
                     if (response.isSuccess) {
                         if ("ok" != response.body().result) {
-                            com.dhsdevelopments.potato.common.Log.e("Unexpected result form bind call")
+                            Log.e("Unexpected result form bind call")
                             throw RuntimeException("Unexpected result form bind call")
                         }
                         else {
@@ -311,13 +312,13 @@ class ChannelSubscriptionService : Service() {
                     }
                     else {
                         val message = "Got failure from server: " + response.message()
-                        com.dhsdevelopments.potato.common.Log.e(message)
+                        Log.e(message)
                         throw RuntimeException(message)
                     }
                 }
 
                 override fun onFailure(t: Throwable) {
-                    com.dhsdevelopments.potato.common.Log.e("Failed to bind", t)
+                    Log.e("Failed to bind", t)
                     throw RuntimeException("Failed to bind", t)
                 }
             })

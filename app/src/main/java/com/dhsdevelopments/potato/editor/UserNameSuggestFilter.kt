@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato.editor
 
 import android.widget.Filter
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 import java.text.Collator
@@ -27,7 +28,7 @@ internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTrack
         }
 
         if (text[0] != '@') {
-            com.dhsdevelopments.potato.common.Log.w("Attempt to filter a string which does not start with @: \"" + text + "\"")
+            Log.w("Attempt to filter a string which does not start with @: \"" + text + "\"")
             return null
         }
 

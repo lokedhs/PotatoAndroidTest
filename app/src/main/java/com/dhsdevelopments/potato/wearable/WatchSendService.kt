@@ -10,6 +10,7 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_PATH
 import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_TOKEN
 import com.dhsdevelopments.potato.common.APIKEY_DATA_MAP_UID
+import com.dhsdevelopments.potato.common.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.PutDataMapRequest
@@ -32,17 +33,17 @@ class WatchSendService : IntentService("WatchSendService") {
 
     private val connectionCallback = object : GoogleApiClient.ConnectionCallbacks {
         override fun onConnected(p0: Bundle?) {
-            com.dhsdevelopments.potato.common.Log.d("API client connected: $p0")
+            Log.d("API client connected: $p0")
         }
 
         override fun onConnectionSuspended(p0: Int) {
-            com.dhsdevelopments.potato.common.Log.d("API client suspended: $p0")
+            Log.d("API client suspended: $p0")
         }
     }
 
     private val connectionFailedCallback = object : GoogleApiClient.OnConnectionFailedListener {
         override fun onConnectionFailed(result: ConnectionResult) {
-            com.dhsdevelopments.potato.common.Log.d("API client connection failed: $result")
+            Log.d("API client connection failed: $result")
         }
     }
 
@@ -50,7 +51,7 @@ class WatchSendService : IntentService("WatchSendService") {
         when (intent.action) {
             ACTION_SEND_API_KEY -> updateWearableDataMap()
             else -> {
-                com.dhsdevelopments.potato.common.Log.e("Unexpected action: ${intent.action}")
+                Log.e("Unexpected action: ${intent.action}")
             }
         }
     }
@@ -61,7 +62,7 @@ class WatchSendService : IntentService("WatchSendService") {
         val uid = prefs.getString(getString(R.string.pref_user_id), "")
 
         if (token == "" || uid == "") {
-            com.dhsdevelopments.potato.common.Log.w("No api key found. Will not update watch.")
+            Log.w("No api key found. Will not update watch.")
             return
         }
 
@@ -71,14 +72,14 @@ class WatchSendService : IntentService("WatchSendService") {
                 .addOnConnectionFailedListener(connectionFailedCallback)
                 .build()
         val connectResult = apiClient.blockingConnect()
-        com.dhsdevelopments.potato.common.Log.d("Connect result: $connectResult")
+        Log.d("Connect result: $connectResult")
 
         val printData = fun(title: String, callback: () -> Unit) {
-            com.dhsdevelopments.potato.common.Log.d("$title. Printing data")
+            Log.d("$title. Printing data")
             Wearable.DataApi.getDataItem(apiClient, Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path(APIKEY_DATA_MAP_PATH).build())
                     .setResultCallback { data ->
-                        com.dhsdevelopments.potato.common.Log.d("  data retrieval result: ${data.status.isSuccess}")
-                        com.dhsdevelopments.potato.common.Log.d("  data values: ${data.dataItem?.data}")
+                        Log.d("  data retrieval result: ${data.status.isSuccess}")
+                        Log.d("  data values: ${data.dataItem?.data}")
                         callback()
                     }
         }
@@ -91,16 +92,16 @@ class WatchSendService : IntentService("WatchSendService") {
             setUrgent()
         }
         printData("Before putDataItem") {
-            com.dhsdevelopments.potato.common.Log.d("Sending api key information to watch: $putDataRequest, connected: ${apiClient.isConnected}, connecting: ${apiClient.isConnecting}")
+            Log.d("Sending api key information to watch: $putDataRequest, connected: ${apiClient.isConnected}, connecting: ${apiClient.isConnecting}")
             Wearable.DataApi.putDataItem(apiClient, putDataRequest)
                     .setResultCallback {
-                        com.dhsdevelopments.potato.common.Log.d("Data item request sent. result=${it.status}")
+                        Log.d("Data item request sent. result=${it.status}")
                         printData("After putDataItem") {
-                            com.dhsdevelopments.potato.common.Log.d("  disconnecting apiClient")
+                            Log.d("  disconnecting apiClient")
                             apiClient.disconnect()
                         }
                     }
-            com.dhsdevelopments.potato.common.Log.d("  message request submitted")
+            Log.d("  message request submitted")
         }
     }
 

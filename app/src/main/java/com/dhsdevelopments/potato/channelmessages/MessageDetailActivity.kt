@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.common.DateHelper
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.RemoteRequestService
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
@@ -59,7 +60,7 @@ class MessageDetailActivity : AppCompatActivity() {
                     }
 
                     override fun bitmapNotFound() {
-                        com.dhsdevelopments.potato.common.Log.w("Unable to load bitmap")
+                        Log.w("Unable to load bitmap")
                     }
                 })
         senderNameTextView.text = userName
@@ -98,7 +99,7 @@ class MessageDetailActivity : AppCompatActivity() {
     }
 
     fun editMessage() {
-        com.dhsdevelopments.potato.common.Log.e("Need to implement message editing")
+        Log.e("Need to implement message editing")
     }
 
     companion object {

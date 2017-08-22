@@ -93,7 +93,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
 
     fun loadMessageHistory(startMessageId: String?, callback: (List<Message>) -> Unit, errorCallback: (String) -> Unit) {
         if (isLoading) {
-            com.dhsdevelopments.potato.common.Log.w("Attempt to load messages while loading is in progress")
+            Log.w("Attempt to load messages while loading is in progress")
             return
         }
 
@@ -110,14 +110,14 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                         callback(response.body().messages)
                     }
                     else {
-                        com.dhsdevelopments.potato.common.Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
+                        Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
                         errorCallback("HTTP error: " + response.code())
                     }
                 }
             }
 
             override fun onFailure(t: Throwable) {
-                com.dhsdevelopments.potato.common.Log.e("Error loading message history", t)
+                Log.e("Error loading message history", t)
                 handler.post {
                     isLoading = false
                     errorCallback(t.message ?: "Unknown error")

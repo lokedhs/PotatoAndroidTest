@@ -22,13 +22,13 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        com.dhsdevelopments.potato.common.Log.d("Search activity started. intent=$intent")
+        Log.d("Search activity started. intent=$intent")
         if (intent.action != Intent.ACTION_SEARCH) {
             throw IllegalArgumentException("Search activity not started with ACTION_SEARCH")
         }
 
         val query = intent.getStringExtra(SearchManager.QUERY)
-        com.dhsdevelopments.potato.common.Log.d("Search query: '$query'")
+        Log.d("Search query: '$query'")
         val channelId = intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID)
 
         searchResultAdapter = SearchResultAdapter(this)
@@ -42,7 +42,7 @@ class SearchActivity : AppCompatActivity() {
                     processResults(result.body()!!)
                 }
                 else {
-                    com.dhsdevelopments.potato.common.Log.e("Error when loading search result. code=${result.code()}, message=${result.message()}")
+                    Log.e("Error when loading search result. code=${result.code()}, message=${result.message()}")
                 }
             }
 
