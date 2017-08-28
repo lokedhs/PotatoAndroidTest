@@ -15,7 +15,10 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.*
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
@@ -51,11 +54,11 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     private var userListFragment: UserListFragment? = null
     private var channelContentFragment: ChannelContentFragment? = null
 
-    private val navigationView: NavigationView         by lazy { findViewById<NavigationView>(R.id.channel_list_nav_view) }
-    private val domainsMenu: SubMenu                   by lazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
-    private val swipeRefreshLayout: SwipeRefreshLayout by lazy { findViewById<SwipeRefreshLayout>(R.id.channel_list_refresh) }
-    private val channelListRecyclerView: RecyclerView  by lazy { findViewById<RecyclerView>(R.id.channel_list) }
-    private val drawer: DrawerLayout                   by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
+    private val navigationView          by lazy { findViewById<NavigationView>(R.id.channel_list_nav_view) }
+    private val domainsMenu             by lazy { navigationView.menu.findItem(R.id.nav_domain_menu).subMenu }
+    private val swipeRefreshLayout      by lazy { findViewById<SwipeRefreshLayout>(R.id.channel_list_refresh) }
+    private val channelListRecyclerView by lazy { findViewById<RecyclerView>(R.id.channel_list) }
+    private val drawer                  by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
