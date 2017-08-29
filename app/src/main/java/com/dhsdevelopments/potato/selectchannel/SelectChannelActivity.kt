@@ -8,7 +8,7 @@ import android.widget.Button
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.common.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.createchannel.CreateChannelActivity
 
 class SelectChannelActivity : Activity() {
 
@@ -31,7 +31,7 @@ class SelectChannelActivity : Activity() {
     }
 
     private fun createChannelClicked() {
-        Log.d("Create channel clicked")
+        startActivity(Intent(this, CreateChannelActivity::class.java))
     }
 
     fun channelSelected(channel: AvailableChannel) {

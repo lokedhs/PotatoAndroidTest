@@ -39,7 +39,11 @@ class ApiProvider(val context: Context) {
         if (timeout > 0) {
             httpClient.setReadTimeout(timeout.toLong(), TimeUnit.SECONDS)
         }
-        val retrofit = Retrofit.Builder().baseUrl(apiUrlPrefix).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient).build()
+        val retrofit = Retrofit.Builder()
+                .baseUrl(apiUrlPrefix)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(httpClient)
+                .build()
         return retrofit.create(PotatoApi::class.java)
     }
 

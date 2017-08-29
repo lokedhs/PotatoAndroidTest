@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_option_create_channel"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="@string/create_channel_ok"
+        app:showAsAction="ifRoom"/>
+</menu>
