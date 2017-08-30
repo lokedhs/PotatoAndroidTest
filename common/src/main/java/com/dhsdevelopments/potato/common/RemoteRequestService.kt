@@ -11,6 +11,7 @@ import android.webkit.MimeTypeMap
 import com.dhsdevelopments.potato.clientapi.ImageUriRequestBody
 import com.dhsdevelopments.potato.clientapi.UpdateUnreadNotificationRequest
 import com.dhsdevelopments.potato.clientapi.callService
+import com.dhsdevelopments.potato.clientapi.channelinfo.CreateChannelRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
 import com.dhsdevelopments.potato.clientapi.plainErrorHandler
@@ -32,6 +33,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                 ACTION_SEND_COMMAND -> sendCommandImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getStringExtra(EXTRA_CMD), intent.getStringExtra(EXTRA_ARGS), intent.getBooleanExtra(EXTRA_REPLY, false))
                 ACTION_LEAVE_CHANNEL -> leaveChannelImpl(intent.getStringExtra(EXTRA_CHANNEL_ID))
                 ACTION_UPDATE_CHANNEL_VISIBILITY -> updateChannelVisibilityImpl(intent.getStringExtra(EXTRA_CHANNEL_ID), intent.getBooleanExtra(EXTRA_VISIBILITY, false))
+                ACTION_CREATE_PUBLIC_CHANNEL -> createPublicChannelImpl(intent.getStringExtra(EXTRA_DOMAIN_ID), intent.getStringExtra(EXTRA_CHANNEL_NAME), intent.getStringExtra(EXTRA_CHANNEL_TOPIC))
             }
         }
     }
@@ -176,10 +178,20 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     private fun updateChannelVisibilityImpl(cid: String, visibility: Boolean) {
         val app = CommonApplication.getInstance(this)
         callService(app.findApiProvider().makePotatoApi().updateChannelVisibility(app.findApiKey(), cid, UpdateChannelVisibilityRequest(false)), ::plainErrorHandler) {
-            val db = CommonApplication.getInstance(this).cacheDatabase
+            val db = app.cacheDatabase
             val values = ContentValues()
             values.put(StorageHelper.CHANNELS_HIDDEN, !visibility)
             db.update(StorageHelper.CHANNELS_TABLE, values, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
+        }
+    }
+
+    private fun createPublicChannelImpl(domainId: String, name: String, topic: String) {
+        val app = CommonApplication.getInstance(this)
+        val request = CreateChannelRequest.makePublicChannelRequest(domainId, name, if(topic == "") null else topic)
+        callService(app.findApiProvider().makePotatoApi().createChannel(app.findApiKey(), request), ::plainErrorHandler) { channel ->
+            val db = app.cacheDatabase
+            DbTools.insertChannelIntoChannelsTable(db, channel.id, channel.domainId, channel.name, channel.unreadCount, channel.privateUserId, false)
             LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
         }
     }
@@ -193,6 +205,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val ACTION_SEND_COMMAND = "com.dhsdevelopments.potato.SEND_COMMAND"
         private val ACTION_LEAVE_CHANNEL = "com.dhsdevelopments.potato.LEAVE_CHANNEL"
         private val ACTION_UPDATE_CHANNEL_VISIBILITY = "com.dhsdevelopments.potato.UPDATE_CHANNEL_VISIBILITY"
+        private val ACTION_CREATE_PUBLIC_CHANNEL = "com.dhsdevelopments.potato.CREATE_PUBLIC_CHANNEL"
 
         private val EXTRA_CHANNEL_ID = "com.dhsdevelopments.potato.channel_id"
         private val EXTRA_UPDATE_STATE = "com.dhsdevelopments.potato.subscribe"
@@ -202,6 +215,10 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         private val EXTRA_ARGS = "com.dhsdevelopments.potato.args"
         private val EXTRA_REPLY = "com.dhsdevelopments.potato.reply"
         private val EXTRA_VISIBILITY = "com.dhsdevelopments.potato.visibility"
+        private val EXTRA_GROUP_ID = "com.dhsdevelopments.potato.group_id"
+        private val EXTRA_CHANNEL_NAME = "com.dhsdevelopments.potato.channel_name"
+        private val EXTRA_CHANNEL_TOPIC = "com.dhsdevelopments.potato.channel_topic"
+        private val EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id"
 
         val ACTION_CHANNEL_LIST_UPDATED = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATED"
         val ACTION_CHANNEL_LIST_UPDATE_FAIL = "com.dhsdevelopments.potato.ACTION_CHANNEL_LIST_UPDATE_FAIL"
@@ -251,6 +268,13 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     EXTRA_ARGS to args,
                     EXTRA_REPLY to reply
             )
+        }
+
+        fun createPublicChannel(context: Context, domainId: String, name: String, topic: String) {
+            makeAndStartIntent(context, ACTION_CREATE_PUBLIC_CHANNEL,
+                    EXTRA_DOMAIN_ID to domainId,
+                    EXTRA_CHANNEL_NAME to name,
+                    EXTRA_CHANNEL_TOPIC to topic)
         }
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {

@@ -6,16 +6,21 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import kotlinx.android.synthetic.main.activity_create_channel.*
 
 class CreateChannelActivity : AppCompatActivity() {
 
     val nameField by lazy { findViewById<EditText>(R.id.create_channel_name_field) }
-    val nicknameField by lazy { findViewById<EditText>(R.id.create_channel_name_field) }
+    val topicField by lazy { findViewById<EditText>(R.id.create_channel_topic_field) }
+
+    lateinit var domainId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        domainId = intent.getStringExtra(EXTRA_DOMAIN_ID)
+
         setContentView(R.layout.activity_create_channel)
         setSupportActionBar(toolbar)
 
@@ -30,11 +35,14 @@ class CreateChannelActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_option_create_channel -> {
-                Log.i("Channel should be created here")
+                RemoteRequestService.createPublicChannel(this, domainId, nameField.text.toString().trim(), topicField.text.toString().trim())
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    companion object {
+        val EXTRA_DOMAIN_ID = "domainId"
+    }
 }
