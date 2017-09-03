@@ -6,13 +6,14 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
-import com.dhsdevelopments.potato.DbTools
-import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.clientapi.ChannelUpdatesUpdateResult
 import com.dhsdevelopments.potato.clientapi.PotatoApi
 import com.dhsdevelopments.potato.clientapi.notifications.*
+import com.dhsdevelopments.potato.common.DbTools
+import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import retrofit.Call
 import retrofit.Callback
 import retrofit.Response
@@ -59,7 +60,7 @@ class ChannelSubscriptionService : Service() {
     }
 
     private fun bindToChannel(cid: String) {
-        Log.d("Binding to channel: " + cid)
+        Log.d("Binding to channel: $cid")
         if (receiverThread == null) {
             receiverThread = Receiver(cid)
             receiverThread!!.start()
@@ -71,7 +72,7 @@ class ChannelSubscriptionService : Service() {
 
     private fun processNewNotifications(notifications: List<PotatoNotification>) {
         for (n in notifications) {
-            Log.d("Processing notification: " + n)
+            Log.d("Processing notification: $n")
             when (n) {
                 is MessageNotification -> processMessageNotification(n)
                 is StateUpdateNotification -> processStateUpdateNotification(n)
@@ -108,7 +109,9 @@ class ChannelSubscriptionService : Service() {
                 intent.putExtra(EXTRA_CHANNEL_USERS_USER_ID, update.userStateUser)
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
             }
-            else -> Log.w("Unexpected addType: " + update.addType)
+            else -> {
+                Log.w("Unexpected addType: " + update.addType)
+            }
         }
     }
 
@@ -171,8 +174,8 @@ class ChannelSubscriptionService : Service() {
         init {
             val app = PotatoApplication.getInstance(this@ChannelSubscriptionService)
 
-            api = app.potatoApiLongTimeout
-            apiKey = app.apiKey
+            api = app.findApiProvider().makePotatoApi(120)
+            apiKey = app.findApiKey()
             sid = app.sessionId
 
             subscribedChannels.add(cid)
@@ -225,12 +228,14 @@ class ChannelSubscriptionService : Service() {
             }
             catch (e: InterruptedException) {
                 if (!isShutdown) {
-                    Log.wtf("Got interruption while not being shutdown", e)
+                    Log.e("Got interruption while not being shutdown", e)
+                    throw RuntimeException("Got interruption while not being shutdown", e)
                 }
             }
             catch (e: ReceiverStoppedException) {
                 if (!isShutdown) {
-                    Log.wtf("Receiver stop requested while not in shutdown state", e)
+                    Log.e("Receiver stop requested while not in shutdown state", e)
+                    throw RuntimeException("Receiver stop requested while not in shutdown state", e)
                 }
             }
 
@@ -291,26 +296,30 @@ class ChannelSubscriptionService : Service() {
         }
 
         private fun submitBindRequest(cid: String) {
-            Log.d("Submit bind request: " + cid)
+            Log.d("Submit bind request: $cid")
             val e = eventId ?: throw IllegalStateException("eventId is null")
             val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {
                 override fun onResponse(response: Response<ChannelUpdatesUpdateResult>, retrofit: Retrofit) {
                     if (response.isSuccess) {
                         if ("ok" != response.body().result) {
-                            Log.wtf("Unexpected result form bind call")
+                            Log.e("Unexpected result form bind call")
+                            throw RuntimeException("Unexpected result form bind call")
                         }
                         else {
                             updateChannelDatabaseIfNeeded(cid)
                         }
                     }
                     else {
-                        Log.wtf("Got failure from server: " + response.message())
+                        val message = "Got failure from server: " + response.message()
+                        Log.e(message)
+                        throw RuntimeException(message)
                     }
                 }
 
                 override fun onFailure(t: Throwable) {
-                    Log.wtf("Failed to bind", t)
+                    Log.e("Failed to bind", t)
+                    throw RuntimeException("Failed to bind", t)
                 }
             })
         }

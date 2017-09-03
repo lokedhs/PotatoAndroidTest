@@ -5,22 +5,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.Log
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
 
 class SearchActivity : AppCompatActivity() {
-    val recyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
+    val recyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
     lateinit var searchResultAdapter: SearchResultAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        Log.d("Search activity started. intent=" + intent)
+        Log.d("Search activity started. intent=$intent")
         if (intent.action != Intent.ACTION_SEARCH) {
             throw IllegalArgumentException("Search activity not started with ACTION_SEARCH")
         }
@@ -33,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.adapter = searchResultAdapter
 
         val app = PotatoApplication.getInstance(this)
-        val call = app.potatoApi.searchMessages(app.apiKey, channelId, query, "0")
+        val call = app.findApiProvider().makePotatoApi().searchMessages(app.findApiKey(), channelId, query, "0")
         call.enqueue(object : Callback<SearchResult?> {
             override fun onResponse(result: Response<SearchResult?>, retrofit: Retrofit) {
                 if (result.isSuccess) {

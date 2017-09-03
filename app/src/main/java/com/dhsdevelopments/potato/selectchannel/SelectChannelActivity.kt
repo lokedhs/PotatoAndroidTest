@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.R
+import com.dhsdevelopments.potato.common.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.createchannel.CreateChannelActivity
 
 class SelectChannelActivity : Activity() {
 
@@ -17,19 +19,21 @@ class SelectChannelActivity : Activity() {
     val recyclerView by lazy { findViewById<RecyclerView>(R.id.channel_select_list) }
     val createChannelButton by lazy { findViewById<Button>(R.id.channel_select_new_channel) }
 
+    lateinit var domainId: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_channel)
         title = "Available channels"
 
-        val domainId = intent.getStringExtra(IntentUtil.EXTRA_DOMAIN_ID)
+        domainId = intent.getStringExtra(IntentUtil.EXTRA_DOMAIN_ID)
 
         recyclerView.adapter = AvailableChannelListAdapter(this, domainId)
         createChannelButton.setOnClickListener { createChannelClicked() }
     }
 
     private fun createChannelClicked() {
-        Log.d("Create channel clicked")
+        startActivity(Intent(this, CreateChannelActivity::class.java).apply {putExtra(CreateChannelActivity.EXTRA_DOMAIN_ID, domainId)})
     }
 
     fun channelSelected(channel: AvailableChannel) {

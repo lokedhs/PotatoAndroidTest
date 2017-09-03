@@ -16,20 +16,23 @@ import android.support.v7.widget.SearchView
 import android.text.Spanned
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
-import com.dhsdevelopments.potato.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.MultiAutoCompleteTextView
+import android.widget.TextView
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.notifications.OptionNotification
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageResult
-import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.*
 import com.dhsdevelopments.potato.editor.UidSpan
 import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
 import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import retrofit.Callback
 import retrofit.Response
 import retrofit.Retrofit
@@ -118,7 +121,7 @@ class ChannelContentFragment : Fragment() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 // Only scroll if the message was inserted at the bottom, and we're already looking at
                 // the bottom element.
-                Log.d("rangeInserted. posStart=" + positionStart + ", count=" + itemCount + ", lastVis=" + lastVisibleItem + ", itemCount=" + adapter.itemCount)
+                Log.d("rangeInserted. posStart=$positionStart, count=$itemCount, lastVis=$lastVisibleItem, itemCount=$adapter.itemCount")
                 val numItems = adapter.itemCount - 1
                 if (lastVisibleItem >= numItems - itemCount - 1 && numItems == positionStart + itemCount) {
                     Log.d("scrolling view to " + (numItems + 1))
@@ -332,9 +335,11 @@ class ChannelContentFragment : Fragment() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        Log.i("Context menu selected: $item")
+        Log.d("Context menu selected: $item")
         when (item.itemId) {
-            R.id.message_popup_delete_message -> Log.i("was delete")
+            R.id.message_popup_delete_message -> {
+                Log.i("was delete")
+            }
         }
         return super.onContextItemSelected(item)
     }
@@ -392,7 +397,9 @@ class ChannelContentFragment : Fragment() {
         when (mode) {
             ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, findUserTracker().getNameForUid(uid))
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)
-            else -> Log.w("Unexpected typing mode in broadcast message: " + mode)
+            else -> {
+                Log.w("Unexpected typing mode in broadcast message: " + mode)
+            }
         }
 
         refreshTypingNotifier()
@@ -468,13 +475,13 @@ class ChannelContentFragment : Fragment() {
             }
             else {
                 val app = PotatoApplication.getInstance(activity)
-                val api = app.potatoApi
-                val apiKey = app.apiKey
+                val api = app.findApiProvider().makePotatoApi()
+                val apiKey = app.findApiKey()
                 val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
                 call.enqueue(object : Callback<SendMessageResult> {
                     override fun onResponse(response: Response<SendMessageResult>, retrofit: Retrofit) {
                         if (response.isSuccess) {
-                            Log.i("Created message with id: " + response.body().id)
+                            Log.i("Created message with id: ${response.body().id}")
                         }
                         else {
                             try {

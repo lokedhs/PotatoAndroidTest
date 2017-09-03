@@ -1,7 +1,7 @@
 package com.dhsdevelopments.potato.editor
 
 import android.widget.Filter
-import com.dhsdevelopments.potato.Log
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 
 import java.text.Collator

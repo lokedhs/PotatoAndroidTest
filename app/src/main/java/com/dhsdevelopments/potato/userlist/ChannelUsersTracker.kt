@@ -1,12 +1,14 @@
 package com.dhsdevelopments.potato.userlist
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.dhsdevelopments.potato.common.IntentUtil
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
 import com.dhsdevelopments.potato.clientapi.users.User
+import com.dhsdevelopments.potato.common.IntentUtil
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import retrofit.Callback
 import retrofit.Response
@@ -27,7 +29,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     }
 
     fun processIncoming(intent: Intent) {
-        Log.d("processing channel user intent: " + intent)
+        Log.d("processing channel user intent: $intent")
         if (intent.action != ChannelSubscriptionService.ACTION_CHANNEL_USERS_UPDATE) {
             // We only want to process channel users notifications
             return
@@ -61,7 +63,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     private fun processSync(intent: Intent) {
         val uids = intent.getStringArrayExtra(ChannelSubscriptionService.EXTRA_CHANNEL_USERS_SYNC_USERS)
-        Log.d("Got sync message. userList = " + Arrays.toString(uids))
+        Log.d("Got sync message. userList = ${Arrays.toString(uids)}")
         // Clear the active state of all current users
         users.values.forEach { it.isActive = false }
         uids.forEach { uid -> processAddRemove(uid, true, false) }
@@ -91,19 +93,21 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
 
     fun loadUsers() {
         val app = PotatoApplication.getInstance(context)
-        val call = app.potatoApi.loadUsers(app.apiKey, cid)
+        val call = app.findApiProvider().makePotatoApi().loadUsers(app.findApiKey(), cid)
         call.enqueue(object : Callback<LoadUsersResult> {
             override fun onResponse(response: Response<LoadUsersResult>, retrofit: Retrofit) {
                 if (response.isSuccess) {
                     updateUsers(response.body().members)
                 }
                 else {
-                    Log.wtf("Error code from server")
+                    Log.e("Error code from server")
+                    throw RuntimeException("Error code from server")
                 }
             }
 
             override fun onFailure(t: Throwable) {
-                Log.wtf("Error loading users", t)
+                Log.e("Error loading users", t)
+                throw RuntimeException("Error loading users", t)
             }
         })
     }
@@ -133,5 +137,10 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         fun findForChannel(context: Context, cid: String): ChannelUsersTracker {
             return ChannelUsersTracker(context, cid)
         }
+
+        fun findForActivity(activity: Activity): ChannelUsersTracker {
+            return (activity as HasChannelContentActivity).findUserTracker()
+        }
     }
+
 }

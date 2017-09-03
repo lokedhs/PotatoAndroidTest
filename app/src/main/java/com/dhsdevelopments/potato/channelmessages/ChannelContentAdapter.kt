@@ -17,15 +17,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageHistoryResult
 import com.dhsdevelopments.potato.common.DateHelper
+import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.RemoteRequestService
 import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
-import com.dhsdevelopments.potato.service.RemoteRequestService
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit.Callback
 import retrofit.Response
@@ -98,7 +100,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         val handler = Handler()
 
         val app = PotatoApplication.getInstance(context)
-        val call = app.potatoApi.loadHistoryAsJson(app.apiKey, cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
+        val call = app.findApiProvider().makePotatoApi().loadHistoryAsJson(app.findApiKey(), cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
         isLoading = true
         call.enqueue(object : Callback<MessageHistoryResult> {
             override fun onResponse(response: Response<MessageHistoryResult>, retrofit: Retrofit) {
@@ -267,13 +269,15 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     open inner class MessageViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val senderView: TextView = itemView.findViewById<TextView>(R.id.sender)
-        private val dateView: TextView = itemView.findViewById<TextView>(R.id.date)
-        private val dateDetailView: TextView = itemView.findViewById<TextView>(R.id.date_detail)
-        private val contentView: TextView = itemView.findViewById<TextView>(R.id.content)
-        private val senderNicknameView: TextView = itemView.findViewById<TextView>(R.id.sender_nickname)
-        private val dateWrapperLayout: View = itemView.findViewById(R.id.date_wrapper_layout)
-        private val imageView: ImageView = itemView.findViewById<ImageView>(R.id.image_content)
+        // @formatter:off
+        private val senderView         = itemView.findViewById<TextView>(R.id.sender)
+        private val dateView           = itemView.findViewById<TextView>(R.id.date)
+        private val dateDetailView     = itemView.findViewById<TextView>(R.id.date_detail)
+        private val contentView        = itemView.findViewById<TextView>(R.id.content)
+        private val senderNicknameView = itemView.findViewById<TextView>(R.id.sender_nickname)
+        private val dateWrapperLayout  = itemView.findViewById<View>(R.id.date_wrapper_layout)
+        private val imageView          = itemView.findViewById<ImageView>(R.id.image_content)
+        // @formatter:on
         private var updateIndex: Long = 0
         private var currentMessage: MessageWrapper? = null
 
@@ -293,7 +297,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             parent.activity.menuInflater.inflate(R.menu.message_popup, menu)
             val item = menu.findItem(R.id.message_popup_delete_message)
             item.setOnMenuItemClickListener { deleteMessage(msg.id); true }
-            if (msg.sender != app.userId) {
+            if (msg.sender != app.findUserId()) {
                 item.isEnabled = false
             }
         }
@@ -303,8 +307,10 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             dateView.text = DateHelper.makeDateDiffString(context, message.createdDate.time)
             dateDetailView.text = message.createdDateFormatted
             contentView.text = message.content.makeSpan(MessageElement.SpanGenerationContext(context))
-            senderNicknameView.text = ""
             currentMessage = message
+
+            val userTracker = ChannelUsersTracker.findForActivity(parent.activity)
+            senderNicknameView.text = userTracker.getNicknameForUid(message.sender)
 
             val dh = if (message.shouldDisplayHeader) View.VISIBLE else View.GONE
             senderView.visibility = dh
@@ -343,7 +349,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             super.fillInView(message)
 
             if (message.extraHtml != null) {
-                htmlContentView.text = Html.fromHtml(message.extraHtml)
+                htmlContentView.text = Html.fromHtml(message.extraHtml, 0)
                 htmlContentView.visibility = View.VISIBLE
             }
             else {

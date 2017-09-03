@@ -3,11 +3,11 @@ package com.dhsdevelopments.potato.service
 import android.app.IntentService
 import android.content.Intent
 import android.preference.PreferenceManager
-import com.dhsdevelopments.potato.DbTools
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.gcm.GcmRegistrationRequest
+import com.dhsdevelopments.potato.common.DbTools
+import com.dhsdevelopments.potato.common.Log
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
 import java.io.IOException
@@ -29,10 +29,10 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             val instanceId = InstanceID.getInstance(this)
             val token = instanceId.getToken(getString(R.string.gcm_sender_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
 
-            Log.d("Got token: " + token)
+            Log.d("Got token: $token")
 
             val app = PotatoApplication.getInstance(this)
-            val call = app.potatoApi.registerGcm(app.apiKey, GcmRegistrationRequest(token, "gcm"))
+            val call = app.findApiProvider().makePotatoApi().registerGcm(app.findApiKey(), GcmRegistrationRequest(token, "gcm"))
             val result = call.execute()
             if (!result.isSuccess) {
                 if (result.code() == 503) {

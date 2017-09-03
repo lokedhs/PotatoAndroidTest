@@ -7,13 +7,18 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
     <style name="Drawer" parent="android:Theme.Material.Light.Panel"/>
+
     <style name="message_style">
         <!--
         <item name="android:background">#f0f0f0</item>
@@ -23,6 +28,7 @@
         -->
 
     </style>
+
     <style name="transition_theme">
 
         <item name="android:windowActivityTransitions">true</item>

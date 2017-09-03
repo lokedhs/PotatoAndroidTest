@@ -43,7 +43,25 @@ class LoadChannelInfoResult : RemoteResult {
     @SerializedName("private_user")
     var privateUserId: String? = null
 
-    override fun errorMsg(): String? {
-        return null
+    override fun errorMsg(): String? = null
+}
+
+class CreateChannelRequest(
+        @SerializedName("domain")
+        val domain: String?,
+
+        @SerializedName("group")
+        val group: String?,
+
+        @SerializedName("name")
+        val name: String,
+
+        @SerializedName("topic")
+        val topic: String?
+
+) {
+    companion object {
+        fun makePublicChannelRequest(domainId: String, name: String, topic: String? = null) = CreateChannelRequest(domainId, null, name, topic)
+        fun makeChannelRequest(groupId: String, name: String, topic: String? = null) = CreateChannelRequest(null, groupId, name, topic)
     }
 }

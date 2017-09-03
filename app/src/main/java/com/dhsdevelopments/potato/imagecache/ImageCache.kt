@@ -5,7 +5,10 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.os.AsyncTask
-import com.dhsdevelopments.potato.*
+import com.dhsdevelopments.potato.ImageHelpers
+import com.dhsdevelopments.potato.PotatoApplication
+import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.StorageHelper
 import com.dhsdevelopments.potato.common.makeRandomFile
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
@@ -80,8 +83,8 @@ class ImageCache(private val context: Context) {
 
     fun loadImageFromApi(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {
         val app = PotatoApplication.getInstance(context)
-        val apiKey = app.apiKey
-        return loadImageInternal(app.apiUrlPrefix + (if (url.startsWith("/")) url.substring(1) else url), imageWidth, imageHeight, storageType, callback, apiKey)
+        val apiKey = app.findApiKey()
+        return loadImageInternal(app.findApiProvider().apiUrlPrefix + (if (url.startsWith("/")) url.substring(1) else url), imageWidth, imageHeight, storageType, callback, apiKey)
     }
 
     fun loadImage(url: String, imageWidth: Int, imageHeight: Int, storageType: StorageType, callback: LoadImageCallback): Boolean {
@@ -122,7 +125,8 @@ class ImageCache(private val context: Context) {
                     loadTaskIsActive = true
                     shouldStartTask = true
                 }
-                Log.d("created new cache entry. current load queue size=" + loadQueue.size + ", willStartNewTask=" + shouldStartTask)
+                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
+                Unit
             }
             else {
                 if (cacheEntry.loading) {
@@ -274,7 +278,7 @@ class ImageCache(private val context: Context) {
                 }
 
                 val result = findCachedFileInDatabase(db, queueEntry.url)
-                Log.d("cached image file=" + result + ", for url=" + queueEntry.url)
+                Log.d("cached image file=$result, for url=${queueEntry.url}")
                 val cachedFile =
                         if (result == null) {
                             try {

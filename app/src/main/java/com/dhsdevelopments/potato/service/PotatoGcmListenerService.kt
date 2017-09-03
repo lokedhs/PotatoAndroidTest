@@ -9,13 +9,13 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.StorageHelper
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
+import com.dhsdevelopments.potato.common.Log
+import com.dhsdevelopments.potato.common.StorageHelper
 import com.google.android.gms.gcm.GcmListenerService
 
 class PotatoGcmListenerService : GcmListenerService() {

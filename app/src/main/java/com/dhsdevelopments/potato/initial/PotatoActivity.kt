@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
-import com.dhsdevelopments.potato.Log
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
+import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.login.WebLoginActivity
 import com.dhsdevelopments.potato.service.RegistrationIntentService
 import com.google.android.gms.common.ConnectionResult
@@ -14,6 +14,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 
 class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,10 +45,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     private fun checkGooglePlayApis() {
-        Log.i("Checking for google play apis")
+        Log.d("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()
         val result = availability.isGooglePlayServicesAvailable(this)
-        Log.i("check result=$result")
+        Log.d("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
                 val dialog = availability.getErrorDialog(this, result, 0)

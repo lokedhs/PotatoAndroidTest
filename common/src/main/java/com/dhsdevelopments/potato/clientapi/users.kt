@@ -13,6 +13,11 @@ class LoadUsersResult {
     }
 }
 
+class LoadUserResult {
+    @SerializedName("user")
+    lateinit var user: User
+}
+
 class User {
     @SerializedName("id")
     lateinit var id: String

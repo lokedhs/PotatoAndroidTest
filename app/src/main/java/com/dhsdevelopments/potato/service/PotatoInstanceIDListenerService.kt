@@ -1,7 +1,7 @@
 package com.dhsdevelopments.potato.service
 
 import android.content.Intent
-import com.dhsdevelopments.potato.Log
+import com.dhsdevelopments.potato.common.Log
 import com.google.android.gms.iid.InstanceIDListenerService
 
 class PotatoInstanceIDListenerService : InstanceIDListenerService() {

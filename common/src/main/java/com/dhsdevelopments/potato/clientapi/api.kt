@@ -3,9 +3,9 @@ package com.dhsdevelopments.potato.clientapi
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
-import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.clientapi.channel2.ChannelsResult
 import com.dhsdevelopments.potato.clientapi.channel2.FindPrivateChannelIdResult
+import com.dhsdevelopments.potato.clientapi.channelinfo.CreateChannelRequest
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandResult
@@ -21,7 +21,9 @@ import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotificationResu
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageResult
+import com.dhsdevelopments.potato.clientapi.users.LoadUserResult
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
+import com.dhsdevelopments.potato.common.Log
 import com.google.gson.annotations.SerializedName
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
@@ -90,6 +92,14 @@ interface PotatoApi {
     @GET("channel/{cid}/users")
     fun loadUsers(@Header("API-token") apiKey: String,
                   @Path("cid") channelId: String): Call<LoadUsersResult>
+
+    @PUT("channel/create")
+    fun createChannel(@Header("API-token") apiKey: String,
+                      @Body request: CreateChannelRequest): Call<LoadChannelInfoResult>
+
+    @GET("users/{uid}")
+    fun loadUser(@Header("API-token") apiKey: String,
+                 @Path("uid") userId: String): Call<LoadUserResult>
 
     @POST("register-gcm")
     fun registerGcm(@Header("API-token") apiKey: String,
