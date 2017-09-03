@@ -22,18 +22,18 @@ android {
     }
     flavorDimensions "serverAddress"
     productFlavors {
-        serverLocal {
-            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
-            dimension "serverAddress"
-        }
         serverTesting {
             resValue "string", "override_server_prefix", "https://potato.dhsdevelopments.com/"
             dimension "serverAddress"
         }
+        serverLocal {
+            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
+            dimension "serverAddress"
+        }
     }
-    defaultConfig {
-        flavorSelection "serverAddress", "serverTesting"
-    }
+//    defaultConfig {
+//        flavorSelection "serverAddress", "serverTesting"
+//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -61,11 +61,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.google.android.gms:play-services-auth:11.2.0'
     compile 'com.google.android.gms:play-services-gcm:11.2.0'
-    implementation 'com.android.support:appcompat-v7:26.0.1'
-    compile 'com.android.support:support-v4:26.0.1'
+    implementation 'com.android.support:appcompat-v7:26.0.2'
+    compile 'com.android.support:support-v4:26.0.2'
     compile 'com.google.android.gms:play-services-wearable:11.2.0'
-    compile 'com.android.support:recyclerview-v7:26.0.1'
-    compile 'com.android.support:design:26.0.1'
+    compile 'com.android.support:recyclerview-v7:26.0.2'
+    compile 'com.android.support:design:26.0.2'
     compile 'com.koushikdutta.ion:ion:2.1.8'
     compile 'nz.bradcampbell:paperparcel:2.0.2'
     compile 'nz.bradcampbell:paperparcel-kotlin:2.0.2' // Optional
