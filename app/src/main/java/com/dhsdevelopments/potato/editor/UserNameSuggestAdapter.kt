@@ -20,17 +20,9 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
         filter.shutdown()
     }
 
-    override fun getCount(): Int {
-        return users.size
-    }
-
-    override fun getItem(position: Int): Any {
-        return users[position].id
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getCount(): Int = users.size
+    override fun getItem(position: Int): Any = users[position].id
+    override fun getItemId(position: Int): Long = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val v =
@@ -47,9 +39,7 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
         return v
     }
 
-    override fun getFilter(): Filter {
-        return filter
-    }
+    override fun getFilter(): Filter = filter
 
     internal fun setSuggestionList(users: List<UserSuggestion>) {
         this.users = users
