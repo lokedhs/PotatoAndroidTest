@@ -1,3 +1,3 @@
 package com.dhsdevelopments.potato.editor
 
-internal class UserSuggestion(val id: String, val name: String)
+internal data class UserSuggestion(val id: String, val name: String, val nickname: String)

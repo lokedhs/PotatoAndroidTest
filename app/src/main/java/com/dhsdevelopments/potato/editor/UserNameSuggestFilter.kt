@@ -65,7 +65,7 @@ internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTrack
     @Synchronized private fun getUsers(): List<UserSuggestion> {
         if (users == null) {
             val userlist = usersTracker.getUsers()
-            users = userlist.entries.map { (key, value) -> UserSuggestion(key, value.name) }.sortedWith(userSuggestionComparator)
+            users = userlist.entries.map { (key, value) -> UserSuggestion(key, value.name, value.nickname) }.sortedWith(userSuggestionComparator)
         }
         return users!!
     }

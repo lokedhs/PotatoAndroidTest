@@ -34,8 +34,13 @@ class UserNameSuggestAdapter(context: Context, usersTracker: ChannelUsersTracker
                 }
 
         val userSuggestion = users[position]
-        val textView = v.findViewById<TextView>(R.id.user_name_suggest_name)
-        textView.text = userSuggestion.name
+
+        val nameTextView = v.findViewById<TextView>(R.id.user_name_suggest_name)
+        nameTextView.text = userSuggestion.name
+
+        val nicknameTextView = v.findViewById<TextView>(R.id.user_name_suggest_nickname)
+        nicknameTextView.text = userSuggestion.nickname
+
         return v
     }
 
