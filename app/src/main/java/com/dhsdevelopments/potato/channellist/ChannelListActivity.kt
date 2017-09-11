@@ -86,7 +86,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
 
         createToggle(toolbar)
 
-        swipeRefreshLayout.setOnRefreshListener({ RemoteRequestService.loadChannelList(this) })
+        swipeRefreshLayout.setOnRefreshListener { RemoteRequestService.loadChannelList(this) }
     }
 
     private fun createToggle(toolbar: Toolbar) {
