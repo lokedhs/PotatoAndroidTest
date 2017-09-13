@@ -18,11 +18,62 @@ import java.io.IOException
 import java.lang.ref.SoftReference
 import java.util.*
 
+/**
+ * The key in the image cache map
+ */
 internal data class CacheKey(
         private val url: String,
         private val width: Int,
         private val height: Int,
         private val fromApi: Boolean)
+
+/**
+ * An entry in the image cache map
+ */
+internal class BitmapCacheEntry(var loading: Boolean) {
+    var bitmap: SoftReference<Bitmap>? = null
+    var callbacks: MutableList<LoadImageCallback> = ArrayList()
+
+    fun addCallback(callback: LoadImageCallback) {
+        callbacks.add(callback)
+    }
+}
+
+/**
+ * Exception thrown when the download has failed.
+ */
+class FileDownloadFailedException(s: String) : Throwable(s)
+
+/**
+ * Definition of callbacks that are called when the image loading has completed.
+ */
+interface LoadImageCallback {
+    /**
+     * Called when the bitmap is available
+     */
+    fun bitmapLoaded(bitmap: Bitmap)
+
+    /**
+     * Called if the image was not found
+     */
+    fun bitmapNotFound()
+}
+
+data class CachedFileResult(val file: File?)
+
+internal class LoadQueueEntry(
+        var url: String,
+        var imageWidth: Int,
+        var imageHeight: Int,
+        var storageType: StorageType,
+        var bitmapCacheEntry: BitmapCacheEntry,
+        var apiKey: String?)
+
+enum class StorageType {
+    LONG,
+    SHORT,
+    DONT_STORE
+}
 
 class ImageCache(private val context: Context) {
 
@@ -60,7 +111,8 @@ class ImageCache(private val context: Context) {
         }
     }
 
-    @Synchronized fun close() {
+    @Synchronized
+    fun close() {
         synchronized(bitmapCache) {
             if (loadTaskIsActive) {
                 shuttingDown = true
