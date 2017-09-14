@@ -15,8 +15,8 @@ import retrofit.Response
 import retrofit.Retrofit
 
 class SearchActivity : AppCompatActivity() {
-    val recyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
-    lateinit var searchResultAdapter: SearchResultAdapter
+    private val recyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
+    private lateinit var searchResultAdapter: SearchResultAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

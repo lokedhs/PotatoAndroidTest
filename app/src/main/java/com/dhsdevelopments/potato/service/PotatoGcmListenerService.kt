@@ -129,7 +129,7 @@ class PotatoGcmListenerService : GcmListenerService() {
         }
     }
 
-    private fun sendNotification(tag: String?, id: Int, config: NotificationConfigProvider, callback: (Notification.Builder) -> Unit): Unit {
+    private fun sendNotification(tag: String?, id: Int, config: NotificationConfigProvider, callback: (Notification.Builder) -> Unit) {
         val prefs = getSharedPreferences("com.dhsdevelopments.potato_preferences", MODE_PRIVATE)
         if (prefs.getBoolean(config.enabledKey, true)) {
             val builder = Notification.Builder(this)
