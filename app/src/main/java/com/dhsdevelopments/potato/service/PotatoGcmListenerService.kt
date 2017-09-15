@@ -15,7 +15,7 @@ import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.common.Log
-import com.dhsdevelopments.potato.common.StorageHelper
+import com.dhsdevelopments.potato.common.PotatoDatabase
 import com.google.android.gms.gcm.GcmListenerService
 
 class PotatoGcmListenerService : GcmListenerService() {
@@ -87,24 +87,17 @@ class PotatoGcmListenerService : GcmListenerService() {
         Log.d("Got unread notification: cid=$cid, unreadCount=$unreadCount")
 
         val db = PotatoApplication.getInstance(this).cacheDatabase
-        val values = ContentValues()
-        values.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
-        val res = db.update(StorageHelper.CHANNELS_TABLE, values, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
-        if (res > 0) {
+        val channel = db.channelDao().findById(cid)
+        if(channel != null) {
+            channel.unreadCount = unreadCount
+            db.channelDao().updateChannel(channel)
             sendUnreadNotification(db)
         }
     }
 
-    private fun sendUnreadNotification(db: SQLiteDatabase) {
-        db.query(StorageHelper.CHANNELS_TABLE,
-                arrayOf("count(*)"),
-                "${StorageHelper.CHANNELS_UNREAD} > ?", arrayOf("0"),
-                null, null, null, null).use { result ->
-            if (!result.moveToNext()) {
-                Log.e("No result when loading number of unread channels")
-                return
-            }
-            val unread = result.getInt(0)
+    private fun sendUnreadNotification(db: PotatoDatabase) {
+        db.channelDao().findUnread().forEach { channel ->
+            val unread = channel.unreadCount
             val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (unread == 0) {
                 mgr.cancel(UNREAD_NOTIFICATIONS_TAG, UNREAD_NOTIFICATION_ID)

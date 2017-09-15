@@ -26,7 +26,6 @@ import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.channelmessages.HasChannelContentActivity
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.common.RemoteRequestService
-import com.dhsdevelopments.potato.common.StorageHelper
 import com.dhsdevelopments.potato.selectchannel.SelectChannelActivity
 import com.dhsdevelopments.potato.settings.SettingsActivity
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
@@ -301,24 +300,19 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     fun updateDomainList() {
-        val db = PotatoApplication.getInstance(this).cacheDatabase
-
         domainsMenu.clear()
 
-        db.query(StorageHelper.DOMAINS_TABLE,
-                arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
-                null, null, null, null, StorageHelper.DOMAINS_NAME).use { result ->
-            while (result.moveToNext()) {
-                val domainId = result.getString(0)
-                val domainName = result.getString(1)
+        val db = PotatoApplication.getInstance(this).cacheDatabase
+        db.domainDao().findAll().forEach { d ->
+            val domainId = d.id
+            val domainName = d.name
 
-                val item = domainsMenu.add(domainName)
-                val intent = Intent().apply {
-                    putExtra(EXTRA_DOMAIN_ID, domainId)
-                    putExtra(EXTRA_DOMAIN_NAME, domainName)
-                }
-                item.intent = intent
+            val item = domainsMenu.add(domainName)
+            val intent = Intent().apply {
+                putExtra(EXTRA_DOMAIN_ID, domainId)
+                putExtra(EXTRA_DOMAIN_NAME, domainName)
             }
+            item.intent = intent
         }
 
         activateSelectedDomain()

@@ -62,7 +62,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     }
 
     private fun loadChannelListImpl() {
-        var errorMessage: String? = "error"
+        var errorMessage: String? = null
         try {
             val app = CommonApplication.getInstance(this)
             val call = app.findApiProvider().makePotatoApi().getChannels2(app.findApiKey())
@@ -70,35 +70,20 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
             if (result.isSuccess) {
                 val db = app.cacheDatabase
-                db.beginTransaction()
-                try {
+                db.runInTransaction {
                     // We need to delete everything from the table since this call returns the full state
-                    db.delete(StorageHelper.CHANNELS_TABLE, null, null)
-                    db.delete(StorageHelper.DOMAINS_TABLE, null, null)
-
-                    for (d in result.body().domains) {
-                        if (d.type != "PRIVATE") {
-                            val values = ContentValues()
-                            values.put(StorageHelper.DOMAINS_ID, d.id)
-                            values.put(StorageHelper.DOMAINS_NAME, d.name)
-                            db.insert(StorageHelper.DOMAINS_TABLE, null, values)
-
-                            for (c in d.channels) {
-                                DbTools.insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)
-                            }
+                    db.deleteChannelsAndDomains()
+                    result.body().domains.filter { it.type != "PRIVATE" }.forEach { d ->
+                        db.domainDao().insertDomain(DomainDescriptor(d.id, d.name))
+                        for (c in d.channels) {
+                            DbTools.insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)
                         }
                     }
-
-                    db.setTransactionSuccessful()
-                    errorMessage = null
-                }
-                finally {
-                    db.endTransaction()
                 }
             }
         }
         catch (e: IOException) {
-            com.dhsdevelopments.potato.common.Log.e("Exception when loading channels", e)
+            Log.e("Exception when loading channels", e)
             errorMessage = e.message
         }
 
@@ -134,43 +119,20 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
     private fun updateRegistrationInDb(cid: String, add: Boolean) {
         val db = CommonApplication.getInstance(this).cacheDatabase
-        db.beginTransaction()
-        try {
-            val hasElement = DbTools.loadChannelConfigFromDb(db, cid).use { it.moveToNext() }
-
-            if (hasElement) {
-                val values = ContentValues()
-                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0)
-                db.update(StorageHelper.CHANNEL_CONFIG_TABLE,
-                        values,
-                        StorageHelper.CHANNEL_CONFIG_ID + " = ?", arrayOf(cid))
-            }
-            else {
-                val values = ContentValues()
-                values.put(StorageHelper.CHANNEL_CONFIG_ID, cid)
-                values.put(StorageHelper.CHANNEL_CONFIG_SHOW_NOTIFICATIONS, 0)
-                values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, if (add) 1 else 0)
-                db.insert(StorageHelper.CHANNEL_CONFIG_TABLE, null, values)
-            }
-            db.setTransactionSuccessful()
-        }
-        finally {
-            db.endTransaction()
-        }
+        db.updateShowUnread(cid, add)
     }
 
     private fun sendCommandImpl(cid: String, cmd: String, args: String, reply: Boolean) {
         val app = CommonApplication.getInstance(this)
         Log.i("Command sent successfully, cid=$cid, cmd=$cmd")
-        callService(app.findApiProvider().makePotatoApi().sendCommand(app.findApiKey(), SendCommandRequest(cid, app.sessionId, cmd, args, reply)), ::plainErrorHandler) {
-        }
+        callService(app.findApiProvider().makePotatoApi().sendCommand(app.findApiKey(), SendCommandRequest(cid, app.sessionId, cmd, args, reply)), ::plainErrorHandler) { }
     }
 
     private fun leaveChannelImpl(cid: String) {
         val app = CommonApplication.getInstance(this)
         callService(app.findApiProvider().makePotatoApi().leaveChannel(app.findApiKey(), cid), ::plainErrorHandler) {
             val db = CommonApplication.getInstance(this).cacheDatabase
-            db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+            db.deleteChannel(cid)
             LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
         }
     }
@@ -179,16 +141,14 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val app = CommonApplication.getInstance(this)
         callService(app.findApiProvider().makePotatoApi().updateChannelVisibility(app.findApiKey(), cid, UpdateChannelVisibilityRequest(false)), ::plainErrorHandler) {
             val db = app.cacheDatabase
-            val values = ContentValues()
-            values.put(StorageHelper.CHANNELS_HIDDEN, !visibility)
-            db.update(StorageHelper.CHANNELS_TABLE, values, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid))
+            db.updateVisibility(cid, !visibility)
             LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_CHANNEL_LIST_UPDATED))
         }
     }
 
     private fun createPublicChannelImpl(domainId: String, name: String, topic: String) {
         val app = CommonApplication.getInstance(this)
-        val request = CreateChannelRequest.makePublicChannelRequest(domainId, name, if(topic == "") null else topic)
+        val request = CreateChannelRequest.makePublicChannelRequest(domainId, name, if (topic == "") null else topic)
         callService(app.findApiProvider().makePotatoApi().createChannel(app.findApiKey(), request), ::plainErrorHandler) { channel ->
             val db = app.cacheDatabase
             DbTools.insertChannelIntoChannelsTable(db, channel.id, channel.domainId, channel.name, channel.unreadCount, channel.privateUserId, false)

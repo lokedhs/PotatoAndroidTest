@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
-import com.dhsdevelopments.potato.common.StorageHelper
 import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
@@ -90,22 +89,13 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
 
         if (domainId != null) {
             val db = PotatoApplication.getInstance(parent).cacheDatabase
-            db.query(StorageHelper.CHANNELS_TABLE,
-                    arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_NAME, StorageHelper.CHANNELS_PRIVATE, StorageHelper.CHANNELS_UNREAD),
-                    StorageHelper.CHANNELS_DOMAIN + " = ?", arrayOf(domainId),
-                    null, null, StorageHelper.CHANNELS_NAME, null).use { result ->
-                while (result.moveToNext()) {
-                    val cid = result.getString(0)
-                    val name = result.getString(1)
-                    val privateUser = result.getString(2)
-                    val unread = result.getInt(3)
-                    val e = ChannelEntry(cid, name, privateUser != null, unread)
-                    if (e.isPrivateChannel) {
-                        privateChannels.add(e)
-                    }
-                    else {
-                        publicChannels.add(e)
-                    }
+            db.channelDao().findByDomain(domainId).forEach { channel ->
+                val e = ChannelEntry(channel.id, channel.name, channel.privateUser != null, channel.unreadCount)
+                if (e.isPrivateChannel) {
+                    privateChannels.add(e)
+                }
+                else {
+                    publicChannels.add(e)
                 }
             }
         }

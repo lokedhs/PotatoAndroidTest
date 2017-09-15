@@ -278,7 +278,7 @@ class ChannelContentFragment : Fragment() {
         val notifyUnreadOption = menu.findItem(R.id.menu_option_notify_unread)
         val db = PotatoApplication.getInstance(activity).cacheDatabase
 
-        notifyUnreadOption.isChecked = DbTools.loadChannelConfigFromDb(db, cid).use { cursor -> if (cursor.moveToNext()) cursor.getInt(0) != 0 else false }
+        notifyUnreadOption.isChecked = db.channelConfigDao().findByChannelId(cid)?.showUnread ?: false
 
         // Set up search
         val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager

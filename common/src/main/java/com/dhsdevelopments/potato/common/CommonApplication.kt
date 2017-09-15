@@ -1,13 +1,14 @@
 package com.dhsdevelopments.potato.common
 
 import android.app.Application
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import com.dhsdevelopments.potato.clientapi.ApiProvider
 
 abstract class CommonApplication : Application() {
 
-    val cacheDatabase: SQLiteDatabase by lazy { StorageHelper(this).writableDatabase }
+    val cacheDatabase by lazy { DbTools.makePotatoDb(this) }
 
     val sessionId = run {
         val buf = StringBuilder()

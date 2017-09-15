@@ -6,10 +6,13 @@ import com.dhsdevelopments.potato.clientapi.ApiProvider
 import com.dhsdevelopments.potato.common.CommonApplication
 import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.imagecache.ImageCache
+import com.dhsdevelopments.potato.imagecache.makeImagesCacheDb
 
 class PotatoApplication : CommonApplication() {
 
     private val apiProvider = ApiProvider(this)
+
+    val imageCacheDb by lazy { makeImagesCacheDb(this) }
 
     override fun onCreate() {
         super.onCreate()

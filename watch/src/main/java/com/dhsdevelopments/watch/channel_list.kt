@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.dhsdevelopments.potato.common.RemoteRequestService
-import com.dhsdevelopments.potato.common.StorageHelper
 
 class WearChannelListActivity : WearableActivity() {
 
@@ -46,7 +45,7 @@ class WearChannelListActivity : WearableActivity() {
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter)
 
-        if(PotatoWatchApplication.getInstance(this).hasUserData) {
+        if (PotatoWatchApplication.getInstance(this).hasUserData) {
             RemoteRequestService.loadChannelList(this)
         }
     }
@@ -90,16 +89,7 @@ class WearChannelListAdapter(val context: Context) : RecyclerView.Adapter<WearCh
     fun loadChannels() {
         channels.clear()
         val db = PotatoWatchApplication.getInstance(context).cacheDatabase
-        db.query(StorageHelper.CHANNELS_TABLE,
-                arrayOf(StorageHelper.CHANNELS_ID, StorageHelper.CHANNELS_NAME),
-                null, null,
-                null, null, StorageHelper.CHANNELS_NAME, null).use { result ->
-            while (result.moveToNext()) {
-                val cid = result.getString(0)
-                val name = result.getString(1)
-                channels.add(ChannelEntry(cid, name))
-            }
-        }
+        channels.addAll(db.channelDao().findAll().map { ChannelEntry(it.id, it.name) })
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

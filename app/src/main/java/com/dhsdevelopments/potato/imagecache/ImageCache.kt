@@ -8,7 +8,6 @@ import android.os.AsyncTask
 import com.dhsdevelopments.potato.ImageHelpers
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.common.Log
-import com.dhsdevelopments.potato.common.StorageHelper
 import com.dhsdevelopments.potato.common.makeRandomFile
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
@@ -82,7 +81,7 @@ class ImageCache(private val context: Context) {
     private var shuttingDown = false
     private var shutDown = false
 
-    private val db: SQLiteDatabase by lazy { PotatoApplication.getInstance(context).cacheDatabase }
+    private val db: ImageCacheDatabase by lazy { PotatoApplication.getInstance(context).imageCacheDb }
 
     private var loadTaskIsActive = false
     private val loadQueue = LinkedList<LoadQueueEntry>()
@@ -205,55 +204,33 @@ class ImageCache(private val context: Context) {
     }
 
     private fun addCacheEntryToDatabase(url: String, newFile: File?, storageType: StorageType, markFileAsAvailable: Boolean) {
-        val content = ContentValues()
-        content.put(StorageHelper.IMAGE_CACHE_NAME, url)
-        content.put(StorageHelper.IMAGE_CACHE_FILENAME, newFile?.name)
-        content.put(StorageHelper.IMAGE_CACHE_CREATED_DATE, System.currentTimeMillis())
-        content.put(StorageHelper.IMAGE_CACHE_CAN_DELETE, storageType != StorageType.LONG)
-        content.put(StorageHelper.IMAGE_CACHE_IMAGE_AVAILABLE, markFileAsAvailable)
-        db.insert(StorageHelper.IMAGE_CACHE_TABLE, "filename", content)
+        db.imageCacheDao().insertCacheEntry(ImageCacheEntry(url, newFile?.name, System.currentTimeMillis(), markFileAsAvailable, storageType != StorageType.LONG))
     }
 
     private fun deleteCacheEntryFromDatabase(url: String) {
-        db.delete(StorageHelper.IMAGE_CACHE_TABLE,
-                "${StorageHelper.IMAGE_CACHE_NAME} = ?",
-                arrayOf(url))
+        db.deleteCacheEntry(url)
     }
 
-    private fun findCachedFileInDatabase(db: SQLiteDatabase, url: String): CachedFileResult? {
-        db.beginTransaction()
-        try {
-            db.query(StorageHelper.IMAGE_CACHE_TABLE,
-                    arrayOf("filename"),
-                    "${StorageHelper.IMAGE_CACHE_NAME} = ?",
-                    arrayOf(url),
-                    null,
-                    null,
-                    null).use { result ->
-                if (!result.moveToNext()) {
-                    db.setTransactionSuccessful()
-                    return null
-                }
-
-                val filename = result.getString(0)
-
+    private fun findCachedFileInDatabase(db: ImageCacheDatabase, url: String): CachedFileResult? {
+        var cachedFile: CachedFileResult? = null
+        db.runInTransaction {
+            val res = db.imageCacheDao().findByName(url)
+            if(res == null) {
+                cachedFile = null
+            }
+            else {
                 var file: File? = null
-                if (filename != null) {
-                    file = File(cacheDir, filename)
-                    if (!file.exists()) {
-                        deleteCacheEntryFromDatabase(url)
+                if(res.filename != null) {
+                    file = File(cacheDir, res.filename)
+                    if(!file.exists()) {
+                        db.imageCacheDao().deleteCacheEntry(res)
                         file = null
                     }
                 }
-
-                db.setTransactionSuccessful()
-
-                return CachedFileResult(file)
+                cachedFile = CachedFileResult(file)
             }
         }
-        finally {
-            db.endTransaction()
-        }
+        return cachedFile
     }
 
     fun purge(cutoffOffsetLong: Long, cutoffOffsetShort: Long) {
@@ -265,44 +242,36 @@ class ImageCache(private val context: Context) {
         val cutoffLong = now - cutoffOffsetLong
         val cutoffShort = now - cutoffOffsetShort
 
-        val toDelete = ArrayList<String>()
+        val toDelete = ArrayList<ImageCacheEntry>()
 
-        db.query(StorageHelper.IMAGE_CACHE_TABLE,
-                arrayOf(StorageHelper.IMAGE_CACHE_NAME, StorageHelper.IMAGE_CACHE_FILENAME, StorageHelper.IMAGE_CACHE_CREATED_DATE, StorageHelper.IMAGE_CACHE_CAN_DELETE),
-                null, null,
-                null, null,
-                null).use { result ->
-            while (result.moveToNext()) {
-                val name = result.getString(0)
-                val fileName = result.getString(1)
-                val createdDate = result.getLong(2)
-                val canDelete = result.getInt(3) != 0
+        db.imageCacheDao().findAll().forEach { entry ->
+            val name = entry.name
+            val fileName = entry.filename
+            val createdDate = entry.createdDate
+            val canDelete = entry.canDelete
 
-                if (canDelete && createdDate < cutoffShort || !canDelete && createdDate < cutoffLong) {
-                    toDelete.add(name)
-                    if (fileName != null) {
-                        val file = File(cacheDir, fileName)
-                        if (!file.delete()) {
-                            Log.w("could not delete file: " + file)
-                        }
+            if (canDelete && createdDate < cutoffShort || !canDelete && createdDate < cutoffLong) {
+                toDelete.add(entry)
+                if (fileName != null) {
+                    val file = File(cacheDir, fileName)
+                    if (!file.delete()) {
+                        Log.w("could not delete file: " + file)
                     }
                 }
-                else {
-                    // If the file has been deleted from the cache, then we can remove if from the database immediately.
-                    if (fileName != null) {
-                        val file = File(cacheDir, fileName)
-                        if (!file.exists()) {
-                            toDelete.add(name)
-                        }
+            }
+            else {
+                // If the file has been deleted from the cache, then we can remove if from the database immediately.
+                if (fileName != null) {
+                    val file = File(cacheDir, fileName)
+                    if (!file.exists()) {
+                        toDelete.add(entry)
                     }
                 }
             }
         }
 
-        for (name in toDelete) {
-            db.delete(StorageHelper.IMAGE_CACHE_TABLE,
-                    "${StorageHelper.IMAGE_CACHE_NAME} = ?",
-                    arrayOf(name))
+        if(toDelete.isNotEmpty()) {
+            db.imageCacheDao().deleteCacheEntries(toDelete)
         }
     }
 

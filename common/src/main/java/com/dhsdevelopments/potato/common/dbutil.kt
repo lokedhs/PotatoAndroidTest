@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.common
 
+import android.arch.persistence.room.*
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -9,161 +10,176 @@ import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 import java.util.*
 
-@Suppress("ConvertToStringTemplate")
-class StorageHelper(context: Context) : SQLiteOpenHelper(context, "potatoData", null, DATABASE_VERSION) {
+@Entity(tableName = "channels",
+        foreignKeys = arrayOf(ForeignKey(
+                entity = DomainDescriptor::class,
+                parentColumns = arrayOf("id"),
+                childColumns = arrayOf("domain_id"))),
+        indices = arrayOf(Index("domain_id")))
+class ChannelDescriptor(
+        @PrimaryKey
+        @ColumnInfo(name = "id")
+        var id: String = "",
+        @ColumnInfo(name = "name")
+        var name: String = "",
+        @ColumnInfo(name = "private_user")
+        var privateUser: String? = null,
+        @ColumnInfo(name = "hidden")
+        var hidden: Boolean = false,
+        @ColumnInfo(name = "domain_id")
+        var domainId: String = "",
+        @ColumnInfo(name = "unread")
+        var unreadCount: Int = 0)
 
-    override fun onCreate(db: SQLiteDatabase) {
-        createImageCacheTables(db)
-        createChannelTables(db)
-        createChannelConfigTable(db)
+@Dao
+interface ChannelDao {
+    @Query("select * from channels")
+    fun findAll(): List<ChannelDescriptor>
+
+    @Query("select * from channels where id = :arg0")
+    fun findById(id: String): ChannelDescriptor?
+
+    @Query("select id from channels where id = :arg0")
+    fun findCollectionById(id: String): List<String>
+
+    @Query("select * from channels where domain_id = :arg0")
+    fun findByDomain(domainId: String): List<ChannelDescriptor>
+
+    @Query("select * from channels where unread > 0")
+    fun findUnread(): List<ChannelDescriptor>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertChannel(channel: ChannelDescriptor)
+
+    @Delete
+    fun deleteChannel(channel: ChannelDescriptor)
+
+    @Update
+    fun updateChannel(channel: ChannelDescriptor)
+}
+
+
+@Entity(tableName = "domains")
+class DomainDescriptor(
+        @PrimaryKey
+        @ColumnInfo(name = "id")
+        var id: String = "",
+        @ColumnInfo(name = "name")
+        var name: String = "")
+
+@Dao
+interface DomainDao {
+    @Query("select * from domains")
+    fun findAll(): List<DomainDescriptor>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertDomain(domain: DomainDescriptor)
+}
+
+@Entity(tableName = "channel_config")
+class ChannelConfigDescriptor(
+        @PrimaryKey
+        @ColumnInfo(name = "id")
+        var channelId: String = "",
+        @ColumnInfo(name = "show_notification")
+        var showNotification: Boolean = false,
+        @ColumnInfo(name = "show_unread")
+        var showUnread: Boolean = false
+)
+
+@Dao
+interface ChannelConfigDao {
+    @Query("select * from channel_config where id = :arg0")
+    fun findByChannelId(id: String): ChannelConfigDescriptor?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertChannelConfig(channelConfig: ChannelConfigDescriptor)
+
+    @Update
+    fun updateChannelConfig(channelConfig: ChannelConfigDescriptor)
+}
+
+@Database(entities = arrayOf(ChannelDescriptor::class, DomainDescriptor::class, ChannelConfigDescriptor::class), version = 1, exportSchema = false)
+abstract class PotatoDatabase : RoomDatabase() {
+    abstract fun channelDao(): ChannelDao
+    abstract fun domainDao(): DomainDao
+    abstract fun channelConfigDao(): ChannelConfigDao
+
+    fun deleteChannelsAndDomains() {
+        query("delete from channels", null).close()
+        query("delete from domains", null).close()
     }
 
-    private fun createImageCacheTables(db: SQLiteDatabase) {
-        db.execSQL("create table ${IMAGE_CACHE_TABLE} (" +
-                "${IMAGE_CACHE_NAME} text primary key, " +
-                "${IMAGE_CACHE_FILENAME} text, " +
-                "${IMAGE_CACHE_CREATED_DATE} int not null, " +
-                "${IMAGE_CACHE_IMAGE_AVAILABLE} boolean, " +
-                "${IMAGE_CACHE_CAN_DELETE} boolean)")
+    fun updateShowUnread(cid: String, showUnread: Boolean) {
+        val channelConfig = channelConfigDao().findByChannelId(cid)
+        if (channelConfig == null) {
+            channelConfigDao().insertChannelConfig(ChannelConfigDescriptor(cid, false, showUnread))
+        }
+        else if (channelConfig.showUnread != showUnread) {
+            channelConfig.showUnread = showUnread
+            channelConfigDao().updateChannelConfig(channelConfig)
+        }
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+    fun updateVisibility(cid: String, hidden: Boolean) {
+        query("update channels set hidden = ? where id = ?", arrayOf(hidden, cid))
     }
 
-    private fun createChannelTables(db: SQLiteDatabase) {
-        db.execSQL("create table ${DOMAINS_TABLE} (" +
-                "${DOMAINS_ID} text primary key, " +
-                "${DOMAINS_NAME} text not null)")
-        db.execSQL("create table ${CHANNELS_TABLE} (" +
-                "${CHANNELS_ID} text primary key, " +
-                "${CHANNELS_DOMAIN} text not null, " +
-                "${CHANNELS_NAME} text not null, " +
-                "${CHANNELS_UNREAD} text not null, " +
-                "${CHANNELS_PRIVATE} text null, " +
-                "${CHANNELS_HIDDEN} int not null, " +
-                "foreign key (domain) references ${DOMAINS_TABLE}(${DOMAINS_ID}))")
-    }
-
-    private fun createChannelConfigTable(db: SQLiteDatabase) {
-        db.execSQL("create table ${CHANNEL_CONFIG_TABLE} (" +
-                "${CHANNEL_CONFIG_ID} text primary key, " +
-                "${CHANNEL_CONFIG_SHOW_NOTIFICATIONS} boolean not null, " +
-                "${CHANNEL_CONFIG_NOTIFY_UNREAD} boolean not null)")
-    }
-
-    companion object {
-        private val DATABASE_VERSION = 3
-
-        val IMAGE_CACHE_TABLE = "imagecache"
-        val IMAGE_CACHE_NAME = "name"
-        val IMAGE_CACHE_FILENAME = "filename"
-        val IMAGE_CACHE_CREATED_DATE = "createdDate"
-        val IMAGE_CACHE_IMAGE_AVAILABLE = "imageAvailable"
-        val IMAGE_CACHE_CAN_DELETE = "canDelete"
-
-        val DOMAINS_TABLE = "domains"
-        val DOMAINS_ID = "id"
-        val DOMAINS_NAME = "name"
-
-        val CHANNELS_TABLE = "channels"
-        val CHANNELS_ID = "id"
-        val CHANNELS_DOMAIN = "domain"
-        val CHANNELS_NAME = "name"
-        val CHANNELS_UNREAD = "unread"
-        val CHANNELS_PRIVATE = "private_user"
-        val CHANNELS_HIDDEN = "hidden"
-
-        val CHANNEL_CONFIG_TABLE = "channel_config"
-        val CHANNEL_CONFIG_ID = "id"
-        val CHANNEL_CONFIG_SHOW_NOTIFICATIONS = "show_notification"
-        val CHANNEL_CONFIG_NOTIFY_UNREAD = "show_unread"
+    fun deleteChannel(cid: String) {
+        query("delete from channel where id = ?", arrayOf(cid))
     }
 }
 
-class ChannelDescriptor(val id: String, val name: String, val privateUser: String?, val hidden: Boolean, val domainId: String)
-class DomainDescriptor(val id: String, val name: String)
-
 object DbTools {
 
-    fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
-        return CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-                arrayOf(StorageHelper.CHANNELS_ID,
-                        StorageHelper.CHANNELS_NAME,
-                        StorageHelper.CHANNELS_PRIVATE,
-                        StorageHelper.CHANNELS_HIDDEN,
-                        StorageHelper.CHANNELS_DOMAIN),
-                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-                null, null, null).use { result ->
-            if (!result.moveToNext()) {
-                throw IllegalStateException("Channel not found in database: $cid")
-            }
-            ChannelDescriptor(result.getString(0), result.getString(1), result.getString(2), result.getInt(3) != 0, result.getString(4))
+    fun makePotatoDb(context: Context): PotatoDatabase {
+        val db = Room.databaseBuilder(context, PotatoDatabase::class.java, "potatoConfig")
+                .allowMainThreadQueries()
+                .build()
+        if (db == null) {
+            throw IllegalStateException("Error instantiating the database")
         }
+        return db
     }
 
-    fun loadChannelConfigFromDb(db: SQLiteDatabase, channelId: String): Cursor {
-        return db.query(StorageHelper.CHANNEL_CONFIG_TABLE,
-                arrayOf(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD),
-                "${StorageHelper.CHANNEL_CONFIG_ID} = ?", arrayOf(channelId),
-                null, null, null, null)
+    fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        val channel = db.channelDao().findById(cid)
+        if (channel == null) {
+            throw IllegalArgumentException("Attempt to load nonexistent channel")
+        }
+        return channel
+    }
+
+    fun loadChannelConfigFromDb(context: Context, channelId: String): ChannelConfigDescriptor {
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        return db.channelConfigDao().findByChannelId(channelId)!! // TODO: can this happen?
     }
 
     fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
-        val domains = ArrayList<DomainDescriptor>()
-        CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.DOMAINS_TABLE,
-                arrayOf(StorageHelper.DOMAINS_ID, StorageHelper.DOMAINS_NAME),
-                null, null, null, null, null, null).use { result ->
-            while (result.moveToNext()) {
-                val id = result.getString(0)
-                val name = result.getString(1)
-                domains.add(DomainDescriptor(id, name))
-            }
-        }
-        return domains
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        return db.domainDao().findAll()
     }
 
     fun loadAllChannelIdsInDomain(context: Context, domainId: String): Set<String> {
-        val channels = HashSet<String>()
-        CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-                arrayOf(StorageHelper.CHANNELS_ID),
-                "${StorageHelper.CHANNELS_DOMAIN} = ?", arrayOf(domainId),
-                null, null, null).use { result ->
-            while (result.moveToNext()) {
-                channels.add(result.getString(0))
-            }
-        }
-        return channels
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        return db.channelDao().findByDomain(domainId).map { it.id }.toSet()
     }
 
     fun isChannelJoined(context: Context, cid: String): Boolean {
-        return CommonApplication.getInstance(context).cacheDatabase.query(StorageHelper.CHANNELS_TABLE,
-                arrayOf(StorageHelper.CHANNELS_ID),
-                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-                null, null, null).use { result ->
-            result.moveToNext()
-        }
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        val res = db.channelDao().findCollectionById(cid)
+        return res.isNotEmpty()
     }
 
-    fun insertChannelIntoChannelsTable(db: SQLiteDatabase, channelId: String, domainId: String, name: String, unreadCount: Int, privateUser: String?, hide: Boolean) {
-        val channelValues = ContentValues()
-        channelValues.put(StorageHelper.CHANNELS_ID, channelId)
-        channelValues.put(StorageHelper.CHANNELS_DOMAIN, domainId)
-        channelValues.put(StorageHelper.CHANNELS_NAME, name)
-        channelValues.put(StorageHelper.CHANNELS_UNREAD, unreadCount)
-        channelValues.put(StorageHelper.CHANNELS_PRIVATE, privateUser)
-        channelValues.put(StorageHelper.CHANNELS_HIDDEN, hide)
-        db.insert(StorageHelper.CHANNELS_TABLE, null, channelValues)
+    fun insertChannelIntoChannelsTable(db: PotatoDatabase, channelId: String, domainId: String, name: String, unreadCount: Int, privateUser: String?, hide: Boolean) {
+        val channel = ChannelDescriptor(channelId, name, privateUser, hide, domainId, unreadCount)
+        db.channelDao().insertChannel(channel)
     }
 
     fun ensureChannelInfo(context: Context, cid: String, fn: () -> Unit) {
-        val db = CommonApplication.getInstance(context)
-        val exists = db.cacheDatabase.query(StorageHelper.CHANNELS_TABLE, arrayOf(StorageHelper.CHANNELS_ID),
-                "${StorageHelper.CHANNELS_ID} = ?", arrayOf(cid),
-                null, null, null).use {
-            it.moveToNext()
-        }
-
-        if (exists) {
+        val db = CommonApplication.getInstance(context).cacheDatabase
+        if (db.channelDao().findCollectionById(cid).isEmpty()) {
             fn()
         }
         else {
@@ -185,14 +201,9 @@ object DbTools {
 
     private fun updateChannelInDatabase(context: Context, c: LoadChannelInfoResult) {
         val db = CommonApplication.getInstance(context).cacheDatabase
-        db.beginTransaction()
-        try {
-            db.delete(StorageHelper.CHANNELS_TABLE, "${StorageHelper.CHANNELS_ID} = ?", arrayOf(c.id))
+        db.runInTransaction {
+            db.query("delete from channels where id = ?", arrayOf(c.id)).close()
             insertChannelIntoChannelsTable(db, c.id, c.domainId, c.name, c.unreadCount, c.privateUserId, false)
-            db.setTransactionSuccessful()
-        }
-        finally {
-            db.endTransaction()
         }
     }
 
@@ -203,9 +214,7 @@ object DbTools {
      */
     fun clearUnreadNotificationSettings(context: Context) {
         val db = CommonApplication.getInstance(context).cacheDatabase
-        val values = ContentValues()
-        values.put(StorageHelper.CHANNEL_CONFIG_NOTIFY_UNREAD, 0)
-        db.update(StorageHelper.CHANNEL_CONFIG_TABLE, values, null, null)
+        db.query("update channels set unread = 0", null)
     }
 
 //    fun syncChannelDbToDataApi(context: Context) {
