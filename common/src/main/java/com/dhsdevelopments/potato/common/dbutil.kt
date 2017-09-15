@@ -151,11 +151,6 @@ object DbTools {
         return channel
     }
 
-    fun loadChannelConfigFromDb(context: Context, channelId: String): ChannelConfigDescriptor {
-        val db = CommonApplication.getInstance(context).cacheDatabase
-        return db.channelConfigDao().findByChannelId(channelId)!! // TODO: can this happen?
-    }
-
     fun loadDomainsFromDb(context: Context): List<DomainDescriptor> {
         val db = CommonApplication.getInstance(context).cacheDatabase
         return db.domainDao().findAll()
