@@ -61,18 +61,18 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.google.android.gms:play-services-auth:11.2.2'
     compile 'com.google.android.gms:play-services-gcm:11.2.2'
-    implementation 'com.android.support:appcompat-v7:26.0.2'
-    compile 'com.android.support:support-v4:26.0.2'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
     compile 'com.google.android.gms:play-services-wearable:11.2.2'
-    compile 'com.android.support:recyclerview-v7:26.0.2'
-    compile 'com.android.support:design:26.0.2'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
     compile 'com.koushikdutta.ion:ion:2.2.1'
     compile 'nz.bradcampbell:paperparcel:2.0.2'
     compile 'nz.bradcampbell:paperparcel-kotlin:2.0.2'
     kapt 'nz.bradcampbell:paperparcel-compiler:2.0.2'
-    compile "android.arch.persistence.room:runtime:1.0.0-alpha9"
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha9"
-    kapt "android.arch.persistence.room:compiler:1.0.0-alpha9"
+    compile "android.arch.persistence.room:runtime:1.0.0-alpha9-1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
+    kapt "android.arch.persistence.room:compiler:1.0.0-alpha9-1"
 }
 
 apply plugin: 'com.google.gms.google-services'
