@@ -16,8 +16,13 @@ import com.dhsdevelopments.potato.common.RemoteRequestService
 
 class WearChannelListActivity : WearableActivity() {
 
-    private val channelList by lazy { findViewById<RecyclerView>(R.id.channel_list_recycler_view)!! }
-    private var receiver: BroadcastReceiver? = null
+    private val channelList by lazy { findViewById<RecyclerView>(R.id.channel_list_recycler_view) }
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            handleBroadcastMessage(intent)
+        }
+    }
 
     private lateinit var channelListAdapter: WearChannelListAdapter
 
@@ -35,11 +40,6 @@ class WearChannelListActivity : WearableActivity() {
     override fun onStart() {
         super.onStart()
 
-        receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                handleBroadcastMessage(intent)
-            }
-        }
         val intentFilter = IntentFilter().apply {
             addAction(RemoteRequestService.ACTION_CHANNEL_LIST_UPDATED)
         }
@@ -64,7 +64,7 @@ class WearChannelListActivity : WearableActivity() {
 
 data class ChannelEntry(val channelId: String, val name: String)
 
-class WearChannelListAdapter(val context: Context) : RecyclerView.Adapter<WearChannelListAdapter.ViewHolder>() {
+class WearChannelListAdapter(private val context: Context) : RecyclerView.Adapter<WearChannelListAdapter.ViewHolder>() {
 
     private val channels: MutableList<ChannelEntry> = ArrayList()
 

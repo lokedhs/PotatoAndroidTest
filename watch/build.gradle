@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.1'
 
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
         minSdkVersion 25
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -28,11 +28,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    provided 'com.google.android.wearable:wearable:2.0.5'
-    implementation 'com.google.android.support:wearable:2.0.5'
-    implementation 'com.google.android.gms:play-services-wearable:11.4.0'
-    implementation 'com.android.support:percent:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    provided 'com.google.android.wearable:wearable:2.1.0'
+    implementation 'com.google.android.support:wearable:2.1.0'
+    implementation 'com.google.android.gms:play-services-wearable:11.6.0'
+    implementation 'com.android.support:percent:27.0.1'
+    implementation 'com.android.support:recyclerview-v7:27.0.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation project(':common')
 }

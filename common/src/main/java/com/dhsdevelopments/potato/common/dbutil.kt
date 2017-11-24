@@ -1,14 +1,9 @@
 package com.dhsdevelopments.potato.common
 
 import android.arch.persistence.room.*
-import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
-import java.util.*
 
 @Entity(tableName = "channels",
         foreignKeys = arrayOf(ForeignKey(
@@ -133,13 +128,9 @@ abstract class PotatoDatabase : RoomDatabase() {
 object DbTools {
 
     fun makePotatoDb(context: Context): PotatoDatabase {
-        val db = Room.databaseBuilder(context, PotatoDatabase::class.java, "potatoConfig")
+        return Room.databaseBuilder(context, PotatoDatabase::class.java, "potatoConfig")
                 .allowMainThreadQueries()
                 .build()
-        if (db == null) {
-            throw IllegalStateException("Error instantiating the database")
-        }
-        return db
     }
 
     fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
