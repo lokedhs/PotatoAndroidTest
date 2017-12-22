@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
         minSdkVersion 25
@@ -59,13 +59,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     implementation project(':common')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.google.android.gms:play-services-auth:11.6.0'
-    compile 'com.google.android.gms:play-services-gcm:11.6.0'
-    implementation 'com.android.support:appcompat-v7:27.0.1'
-    compile 'com.android.support:support-v4:27.0.1'
-    compile 'com.google.android.gms:play-services-wearable:11.6.0'
-    compile 'com.android.support:recyclerview-v7:27.0.1'
-    compile 'com.android.support:design:27.0.1'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
+    compile 'com.google.android.gms:play-services-gcm:11.8.0'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:support-v4:27.0.2'
+    compile 'com.google.android.gms:play-services-wearable:11.8.0'
+    compile 'com.android.support:recyclerview-v7:27.0.2'
+    compile 'com.android.support:design:27.0.2'
     compile 'com.koushikdutta.ion:ion:2.2.1'
     compile 'nz.bradcampbell:paperparcel:2.0.2'
     compile 'nz.bradcampbell:paperparcel-kotlin:2.0.2'

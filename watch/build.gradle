@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.2'
 
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
@@ -30,9 +30,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     provided 'com.google.android.wearable:wearable:2.1.0'
     implementation 'com.google.android.support:wearable:2.1.0'
-    implementation 'com.google.android.gms:play-services-wearable:11.6.0'
-    implementation 'com.android.support:percent:27.0.1'
-    implementation 'com.android.support:recyclerview-v7:27.0.1'
+    implementation 'com.google.android.gms:play-services-wearable:11.8.0'
+    implementation 'com.android.support:percent:27.0.2'
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation project(':common')
 }
