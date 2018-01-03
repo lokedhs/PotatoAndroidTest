@@ -48,7 +48,7 @@ class Domain {
     @SerializedName("name")
     lateinit var name: String
 
-    @SerializedName("domain-type")
+    @SerializedName("type")
     lateinit var type: String
 
     @SerializedName("channels")
