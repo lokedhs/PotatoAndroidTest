@@ -16,7 +16,7 @@ internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTrack
 
     init {
         val collator = Collator.getInstance()
-        userSuggestionComparator = Comparator<UserSuggestion> { o1, o2 -> collator.compare(o1.name, o2.name) }
+        userSuggestionComparator = Comparator { o1, o2 -> collator.compare(o1.name, o2.name) }
 
         listener = UserTrackerListener()
         usersTracker.addUserActivityListener(listener)

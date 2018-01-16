@@ -32,36 +32,26 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (publicChannels.isEmpty()) {
-            return if (position == 0) VIEW_TYPE_HEADER else VIEW_TYPE_CHANNEL
-        }
-        else {
-            if (position == 0 || (!privateChannels.isEmpty() && position == publicChannels.size + 1)) {
-                return VIEW_TYPE_HEADER
-            }
-            else {
-                return VIEW_TYPE_CHANNEL
-            }
+        return when {
+            publicChannels.isEmpty() -> if (position == 0) VIEW_TYPE_HEADER else VIEW_TYPE_CHANNEL
+            position == 0 || !privateChannels.isEmpty() && position == publicChannels.size + 1 -> VIEW_TYPE_HEADER
+            else -> VIEW_TYPE_CHANNEL
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (publicChannels.isEmpty()) {
-            if (position == 0) {
-                (holder as HeaderViewHolder).setTitle("Conversations")
+        when {
+            publicChannels.isEmpty() -> {
+                if (position == 0) {
+                    (holder as HeaderViewHolder).setTitle("Conversations")
+                }
+                else {
+                    (holder as ChannelViewHolder).fillInChannelEntry(privateChannels[position - 1])
+                }
             }
-            else {
-                (holder as ChannelViewHolder).fillInChannelEntry(privateChannels[position - 1])
-            }
-        }
-        else {
-            if (position == 0) {
-                (holder as HeaderViewHolder).setTitle("Channels")
-            }
-            else if (position < publicChannels.size + 1) {
-                (holder as ChannelViewHolder).fillInChannelEntry(publicChannels[position - 1])
-            }
-            else if (!privateChannels.isEmpty()) {
+            position == 0 -> (holder as HeaderViewHolder).setTitle("Channels")
+            position < publicChannels.size + 1 -> (holder as ChannelViewHolder).fillInChannelEntry(publicChannels[position - 1])
+            !privateChannels.isEmpty() -> {
                 if (position == publicChannels.size + 1) {
                     (holder as HeaderViewHolder).setTitle("Conversations")
                 }
@@ -70,6 +60,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
                 }
             }
         }
+
     }
 
     override fun getItemCount(): Int {
@@ -106,7 +97,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     inner class HeaderViewHolder(view: View) : ViewHolder(view) {
-        private val titleView: TextView = view.findViewById<TextView>(R.id.header_title_text)
+        private val titleView = view.findViewById<TextView>(R.id.header_title_text)
 
         fun setTitle(title: String) {
             titleView.text = title

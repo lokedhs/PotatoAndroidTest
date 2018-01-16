@@ -19,8 +19,8 @@ import com.koushikdutta.ion.Ion
 import com.koushikdutta.ion.builder.AnimateGifMode
 
 class OptionsDialogFragment : DialogFragment() {
-    lateinit var recyclerView: RecyclerView
-    lateinit var optionsNotification: OptionNotification
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var optionsNotification: OptionNotification
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,13 +35,13 @@ class OptionsDialogFragment : DialogFragment() {
         val title = view.findViewById<TextView>(R.id.title_text_view)
         title.text = optionsNotification.title
 
-        recyclerView = view.findViewById<RecyclerView>(R.id.options_recycler_view)
+        recyclerView = view.findViewById(R.id.options_recycler_view)
         //recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         //recyclerView.addItemDecoration(MarginDecoration)
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         recyclerView.adapter = OptionsAdapter(this, optionsNotification)
 
-        return view;
+        return view
     }
 
     internal fun optionSelected(code: String) {
@@ -78,16 +78,14 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
         holder.fillInView(options[pos])
     }
 
-    override fun getItemCount(): Int {
-        return options.size
-    }
+    override fun getItemCount(): Int = options.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleView = itemView.findViewById<TextView>(R.id.option_title)
-        val imageView = itemView.findViewById<ImageView>(R.id.option_image)
-        val selectButton = itemView.findViewById<Button>(R.id.option_select_button)
-        var updateIndex = 0
-        var currentWrapper: OptionWrapper? = null
+        private val titleView = itemView.findViewById<TextView>(R.id.option_title)
+        private val imageView = itemView.findViewById<ImageView>(R.id.option_image)
+        private val selectButton = itemView.findViewById<Button>(R.id.option_select_button)
+        private var updateIndex = 0
+        private var currentWrapper: OptionWrapper? = null
 
         init {
             selectButton.setOnClickListener { selectClicked() }

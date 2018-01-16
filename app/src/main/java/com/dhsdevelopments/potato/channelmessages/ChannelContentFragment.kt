@@ -70,7 +70,7 @@ class ChannelContentFragment : Fragment() {
 
     init {
         val collator = Collator.getInstance()
-        caseInsensitiveStringComparator = Comparator<kotlin.String> { o1, o2 -> collator.compare(o1, o2) }
+        caseInsensitiveStringComparator = Comparator { o1, o2 -> collator.compare(o1, o2) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +108,7 @@ class ChannelContentFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_channel_content, container, false)
-        messageListView = rootView.findViewById<RecyclerView>(R.id.message_list)
+        messageListView = rootView.findViewById(R.id.message_list)
 
         setHasOptionsMenu(true)
 
@@ -203,9 +203,9 @@ class ChannelContentFragment : Fragment() {
             imm.hideSoftInputFromWindow(messageInput.windowToken, 0)
         }
 
-        typingTextView = rootView.findViewById<TextView>(R.id.typing_text_view)
+        typingTextView = rootView.findViewById(R.id.typing_text_view)
 
-        swipeRefreshLayout = rootView.findViewById<SwipeRefreshLayout>(R.id.channel_content_refresh)
+        swipeRefreshLayout = rootView.findViewById(R.id.channel_content_refresh)
         swipeRefreshLayout.setOnRefreshListener {
             adapter.loadMoreMessages(object : ChannelContentAdapter.LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
@@ -223,7 +223,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         scrollDownPanel = rootView.findViewById(R.id.scroll_down_panel)
-        scrollDownButton = scrollDownPanel.findViewById<Button>(R.id.scroll_to_bottom)
+        scrollDownButton = scrollDownPanel.findViewById(R.id.scroll_to_bottom)
         scrollDownButton.setOnClickListener({ scrollToBottom() })
 
         return rootView

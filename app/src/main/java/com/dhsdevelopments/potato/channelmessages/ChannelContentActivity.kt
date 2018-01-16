@@ -92,9 +92,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
         super.startActivity(intent)
     }
 
-    override fun findUserTracker(): ChannelUsersTracker {
-        return usersTracker
-    }
+    override fun findUserTracker(): ChannelUsersTracker = usersTracker
 
     override fun closeChannel() {
         finish()
@@ -109,7 +107,7 @@ class ChannelContentActivity : AppCompatActivity(), HasChannelContentActivity {
 
 interface HasChannelContentActivity {
     fun findUserTracker(): ChannelUsersTracker
-    fun closeChannel(): Unit
-    fun closeUserListDrawer(): Unit
+    fun closeChannel()
+    fun closeUserListDrawer()
     fun openChannel(cid: String)
 }

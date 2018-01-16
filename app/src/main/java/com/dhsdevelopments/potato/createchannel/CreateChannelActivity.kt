@@ -11,10 +11,10 @@ import kotlinx.android.synthetic.main.activity_create_channel.*
 
 class CreateChannelActivity : AppCompatActivity() {
 
-    val nameField by lazy { findViewById<EditText>(R.id.create_channel_name_field) }
-    val topicField by lazy { findViewById<EditText>(R.id.create_channel_topic_field) }
+    private val nameField by lazy { findViewById<EditText>(R.id.create_channel_name_field) }
+    private val topicField by lazy { findViewById<EditText>(R.id.create_channel_topic_field) }
 
-    lateinit var domainId: String
+    private lateinit var domainId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -146,7 +146,7 @@ interface RemoteResult {
     fun errorMsg(): String?
 }
 
-fun plainErrorHandler(msg: String): Unit {
+fun plainErrorHandler(msg: String) {
     throw RuntimeException("Error while performing remote call: $msg")
 }
 
@@ -154,9 +154,7 @@ class ChannelUpdatesUpdateResult {
     @SerializedName("result")
     lateinit var result: String
 
-    override fun toString(): String {
-        return "ChannelUpdatesUpdateResult(result='$result')"
-    }
+    override fun toString(): String = "ChannelUpdatesUpdateResult(result='$result')"
 }
 
 class ClearNotificationsResult : RemoteResult {
@@ -165,17 +163,13 @@ class ClearNotificationsResult : RemoteResult {
 
     override fun errorMsg() = if (result == "ok") null else result
 
-    override fun toString(): String {
-        return "ClearNotificationsResult[result='$result']"
-    }
+    override fun toString(): String = "ClearNotificationsResult[result='$result']"
 }
 
 class ImageUriRequestBody(private val context: Context, private val imageUri: Uri) : RequestBody() {
     private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri))
 
-    override fun contentType(): MediaType {
-        return mediaType
-    }
+    override fun contentType(): MediaType = mediaType
 
     @Throws(IOException::class)
     override fun writeTo(sink: BufferedSink) {

@@ -36,14 +36,6 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-    }
-
     private fun checkGooglePlayApis() {
         Log.d("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()

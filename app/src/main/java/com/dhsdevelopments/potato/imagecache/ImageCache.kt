@@ -1,8 +1,6 @@
 package com.dhsdevelopments.potato.imagecache
 
-import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.os.AsyncTask
 import com.dhsdevelopments.potato.ImageHelpers
@@ -176,7 +174,7 @@ class ImageCache(private val context: Context) {
                     loadTaskIsActive = true
                     shouldStartTask = true
                 }
-                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
+                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=$shouldStartTask")
                 Unit
             }
             else {
@@ -347,12 +345,12 @@ class ImageCache(private val context: Context) {
 
         private fun nextEntryAndMaybeUpdateStatus(): LoadQueueEntry? {
             synchronized(bitmapCache) {
-                if (loadQueue.isEmpty()) {
+                return if (loadQueue.isEmpty()) {
                     loadTaskIsActive = false
-                    return null
+                    null
                 }
                 else {
-                    return loadQueue.removeAt(0)
+                    loadQueue.removeAt(0)
                 }
             }
         }

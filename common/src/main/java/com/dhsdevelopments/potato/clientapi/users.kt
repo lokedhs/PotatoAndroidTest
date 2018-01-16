@@ -8,9 +8,7 @@ class LoadUsersResult {
     @SerializedName("members")
     lateinit var members: List<User>
 
-    override fun toString(): String {
-        return "LoadUsersResult[members=$members]"
-    }
+    override fun toString() = "LoadUsersResult[members=$members]"
 }
 
 class LoadUserResult {
@@ -31,7 +29,5 @@ class User {
     @SerializedName("image_name")
     lateinit var imageName: String
 
-    override fun toString(): String {
-        return "User[id='$id', description='$description', nickname='$nickname', imageName='$imageName']"
-    }
+    override fun toString() = "User[id='$id', description='$description', nickname='$nickname', imageName='$imageName']"
 }

@@ -1,13 +1,13 @@
 package com.dhsdevelopments.potato.channelmessages
 
-import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.clientapi.message.Message
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageImage
+import com.dhsdevelopments.potato.common.DateHelper
 import java.io.Serializable
 import java.util.*
 
-class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable, Comparable<MessageWrapper> {
+class MessageWrapper(private val msg: Message, dateHelper: DateHelper) : Serializable, Comparable<MessageWrapper> {
     val createdDate: Date
     val createdDateFormatted: String
     var shouldDisplayHeader: Boolean = false
@@ -46,7 +46,5 @@ class MessageWrapper(val msg: Message, dateHelper: DateHelper) : Serializable, C
         this.createdDateFormatted = dateHelper.formatDateTimeOutputFormat(date)
     }
 
-    override fun compareTo(other: MessageWrapper): Int {
-        return createdDate.compareTo(other.createdDate)
-    }
+    override fun compareTo(other: MessageWrapper): Int = createdDate.compareTo(other.createdDate)
 }

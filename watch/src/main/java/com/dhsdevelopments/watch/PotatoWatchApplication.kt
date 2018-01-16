@@ -20,14 +20,14 @@ class PotatoWatchApplication : CommonApplication() {
 
     data class UserData(val userId: String, val apiKey: String)
 
-    private val PREF_KEY_USER_ID = "userId"
-    private val PREF_KEY_API_KEY = "apiKey"
-
     private val apiProvider = ApiProvider(this)
     var userData: UserData? = null
 
     companion object {
         val ACTION_USER_DATA_UPDATED = PotatoWatchApplication::class.qualifiedName + ".userDataUpdated"
+
+        private const val PREF_KEY_USER_ID = "userId"
+        private const val PREF_KEY_API_KEY = "apiKey"
 
         fun getInstance(context: Context): PotatoWatchApplication {
             return context.applicationContext as PotatoWatchApplication

@@ -5,6 +5,7 @@ package com.dhsdevelopments.potato.clientapi.channel2
 import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
+@Suppress("MemberVisibilityCanPrivate")
 class Channel {
     @SerializedName("id")
     lateinit var id: String
@@ -27,18 +28,14 @@ class Channel {
     @SerializedName("private_user")
     var privateUser: String? = null
 
-    override fun toString(): String {
-        return "Channel[id='$id', name='$name', hide=$hide, groupId='$groupId', groupType='$groupType', unreadCount=$unreadCount, privateUser='$privateUser']"
-    }
+    override fun toString() = "Channel[id='$id', name='$name', hide=$hide, groupId='$groupId', groupType='$groupType', unreadCount=$unreadCount, privateUser='$privateUser']"
 }
 
 class ChannelsResult {
     @SerializedName("domains")
     lateinit var domains: List<Domain>
 
-    override fun toString(): String {
-        return "ChannelsResult[domains=$domains]"
-    }
+    override fun toString() = "ChannelsResult[domains=$domains]"
 }
 
 class Domain {
@@ -54,16 +51,12 @@ class Domain {
     @SerializedName("channels")
     lateinit var channels: List<Channel>
 
-    override fun toString(): String {
-        return "Domain[id='$id', name='$name', type='$type', channels=$channels]"
-    }
+    override fun toString() = "Domain[id='$id', name='$name', type='$type', channels=$channels]"
 }
 
 class FindPrivateChannelIdResult : RemoteResult {
     @SerializedName("channel")
     lateinit var channel: String
 
-    override fun errorMsg(): String? {
-        return null
-    }
+    override fun errorMsg(): String? = null
 }

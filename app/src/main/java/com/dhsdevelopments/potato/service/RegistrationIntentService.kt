@@ -14,7 +14,11 @@ import java.io.IOException
 
 class RegistrationIntentService : IntentService("RegistrationIntentService") {
 
-    val PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk"
+    companion object {
+        const val ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER"
+
+        private const val PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk"
+    }
 
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null && intent.action == ACTION_REGISTER) {
@@ -60,9 +64,5 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             Log.e("Error when requesting token", e)
         }
 
-    }
-
-    companion object {
-        val ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER"
     }
 }

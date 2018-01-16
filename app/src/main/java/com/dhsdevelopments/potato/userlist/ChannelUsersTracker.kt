@@ -24,9 +24,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         loadUsers()
     }
 
-    fun getUsers(): Map<String, UserDescriptor> {
-        return users
-    }
+    fun getUsers(): Map<String, UserDescriptor> = users
 
     fun processIncoming(intent: Intent) {
         Log.d("processing channel user intent: $intent")
@@ -91,7 +89,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     fun addUserActivityListener(listener: UserActivityListener) = listeners.add(listener)
     fun removeUserActivityListener(listener: UserActivityListener) = listeners.remove(listener)
 
-    fun loadUsers() {
+    private fun loadUsers() {
         val app = PotatoApplication.getInstance(context)
         val call = app.findApiProvider().makePotatoApi().loadUsers(app.findApiKey(), cid)
         call.enqueue(object : Callback<LoadUsersResult> {

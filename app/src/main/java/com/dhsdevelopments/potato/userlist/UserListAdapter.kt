@@ -25,7 +25,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
 
     init {
         val collator = Collator.getInstance()
-        comparator = Comparator<UserWrapper> { o1, o2 -> collator.compare(o1.name, o2.name) }
+        comparator = Comparator { o1, o2 -> collator.compare(o1.name, o2.name) }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
@@ -48,27 +48,27 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (position == 0) {
-            (holder as HeaderViewHolder).setHeaderTitle("Active")
-        }
-        else if (position == activeUsers.size + 1) {
-            (holder as HeaderViewHolder).setHeaderTitle("Inactive")
-        }
-        else {
-            val activeLength = activeUsers.size
-            val user = if (position <= activeLength) {
-                activeUsers[position - 1]
+        when (position) {
+            0 -> {
+                (holder as HeaderViewHolder).setHeaderTitle("Active")
             }
-            else {
-                inactiveUsers[position - activeLength - 2]
+            activeUsers.size + 1 -> {
+                (holder as HeaderViewHolder).setHeaderTitle("Inactive")
             }
-            (holder as UserElementViewHolder).fillInUser(user)
+            else -> {
+                val activeLength = activeUsers.size
+                val user = if (position <= activeLength) {
+                    activeUsers[position - 1]
+                }
+                else {
+                    inactiveUsers[position - activeLength - 2]
+                }
+                (holder as UserElementViewHolder).fillInUser(user)
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return activeUsers.size + inactiveUsers.size + 2
-    }
+    override fun getItemCount(): Int = activeUsers.size + inactiveUsers.size + 2
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 0 || position == activeUsers.size + 1) VIEW_TYPE_HEADER else VIEW_TYPE_USER
@@ -95,7 +95,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
     abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
-        private val headerText: TextView = view.findViewById<TextView>(R.id.header_text)
+        private val headerText: TextView = view.findViewById(R.id.header_text)
 
         fun setHeaderTitle(title: String) {
             headerText.text = title
@@ -104,7 +104,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
 
     private inner class UserElementViewHolder(itemView: View) : ViewHolder(itemView) {
         private var user: UserWrapper? = null
-        private val userDescriptionView: TextView = itemView.findViewById<TextView>(R.id.user_description_view)
+        private val userDescriptionView: TextView = itemView.findViewById(R.id.user_description_view)
 
         init {
             itemView.setOnClickListener {

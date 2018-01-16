@@ -5,6 +5,7 @@ package com.dhsdevelopments.potato.clientapi.command
 import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
+@Suppress("MemberVisibilityCanPrivate")
 class SendCommandRequest {
     @SerializedName("channel")
     lateinit var channel: String
@@ -21,6 +22,7 @@ class SendCommandRequest {
     @SerializedName("reply")
     var reply: Boolean = false
 
+    @Suppress("unused", "RemoveEmptySecondaryConstructorBody")
     constructor() {
     }
 

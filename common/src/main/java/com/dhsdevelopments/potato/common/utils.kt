@@ -46,7 +46,5 @@ abstract class BackgroundTask<T>(context: Context, val message: CharSequence) : 
 
     abstract fun taskFinished(result: T)
 
-    override fun doInBackground(vararg params: Unit?): T {
-        return runTask()
-    }
+    override fun doInBackground(vararg params: Unit?): T = runTask()
 }
