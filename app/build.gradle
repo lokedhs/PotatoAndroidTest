@@ -30,6 +30,10 @@ android {
             resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
             dimension "serverAddress"
         }
+        serverMurex {
+            resValue "string", "override_server_prefix", "https://potato.cicakhq.com/"
+            dimension "serverAddress"
+        }
     }
 //    defaultConfig {
 //        flavorSelection "serverAddress", "serverTesting"
@@ -67,9 +71,9 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:27.0.2'
     compile 'com.android.support:design:27.0.2'
     compile 'com.koushikdutta.ion:ion:2.2.1'
-    compile 'nz.bradcampbell:paperparcel:2.0.2'
-    compile 'nz.bradcampbell:paperparcel-kotlin:2.0.2'
-    kapt 'nz.bradcampbell:paperparcel-compiler:2.0.2'
+    compile 'nz.bradcampbell:paperparcel:2.0.4'
+    compile 'nz.bradcampbell:paperparcel-kotlin:2.0.4'
+    kapt 'nz.bradcampbell:paperparcel-compiler:2.0.4'
     compile 'android.arch.persistence.room:runtime:1.0.0'
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
     kapt "android.arch.persistence.room:compiler:1.0.0"
