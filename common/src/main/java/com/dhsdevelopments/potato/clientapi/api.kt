@@ -28,13 +28,12 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.RequestBody
 import okio.BufferedSink
-import retrofit.Call
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
-import retrofit.http.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.http.*
 import java.io.IOException
-
 
 interface PotatoApi {
     //    @GET("domain/{domainId}/channels")
@@ -146,7 +145,7 @@ interface RemoteResult {
     fun errorMsg(): String?
 }
 
-fun plainErrorHandler(msg: String): Unit {
+fun plainErrorHandler(msg: String) {
     throw RuntimeException("Error while performing remote call: $msg")
 }
 
@@ -154,9 +153,7 @@ class ChannelUpdatesUpdateResult {
     @SerializedName("result")
     lateinit var result: String
 
-    override fun toString(): String {
-        return "ChannelUpdatesUpdateResult(result='$result')"
-    }
+    override fun toString(): String = "ChannelUpdatesUpdateResult(result='$result')"
 }
 
 class ClearNotificationsResult : RemoteResult {
@@ -165,17 +162,13 @@ class ClearNotificationsResult : RemoteResult {
 
     override fun errorMsg() = if (result == "ok") null else result
 
-    override fun toString(): String {
-        return "ClearNotificationsResult[result='$result']"
-    }
+    override fun toString(): String = "ClearNotificationsResult[result='$result']"
 }
 
 class ImageUriRequestBody(private val context: Context, private val imageUri: Uri) : RequestBody() {
     private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri))
 
-    override fun contentType(): MediaType {
-        return mediaType
-    }
+    override fun contentType(): MediaType = mediaType
 
     @Throws(IOException::class)
     override fun writeTo(sink: BufferedSink) {
@@ -195,8 +188,8 @@ class ImageUriRequestBody(private val context: Context, private val imageUri: Ur
 
 fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
     val result = call.execute()
-    if (result.isSuccess) {
-        val body = result.body()
+    if (result.isSuccessful) {
+        val body = result.body()!!
         val errMsg = body.errorMsg()
         if (errMsg == null) {
             successCallback(body)
@@ -213,12 +206,12 @@ fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Uni
 fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
     val handler = Handler()
     call.enqueue(object : Callback<T> {
-        override fun onResponse(response: Response<T>, retrofit: Retrofit) {
+        override fun onResponse(call: Call<T>, response: Response<T>) {
             handler.post {
-                if (response.isSuccess) {
-                    val errorMessage = response.body().errorMsg()
+                if (response.isSuccessful) {
+                    val errorMessage = response.body()!!.errorMsg()
                     if (errorMessage == null) {
-                        successCallback(response.body())
+                        successCallback(response.body()!!)
                     }
                     else {
                         errorCallback(errorMessage)
@@ -230,7 +223,7 @@ fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (Stri
             }
         }
 
-        override fun onFailure(exception: Throwable) {
+        override fun onFailure(call: Call<T>, exception: Throwable) {
             Log.e("Exception when calling remote service", exception)
             handler.post {
                 errorCallback("Connection error: ${exception.message}")

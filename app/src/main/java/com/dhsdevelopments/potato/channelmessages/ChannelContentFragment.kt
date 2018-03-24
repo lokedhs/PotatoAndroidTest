@@ -33,9 +33,10 @@ import com.dhsdevelopments.potato.editor.UserNameSuggestAdapter
 import com.dhsdevelopments.potato.editor.UserNameTokeniser
 import com.dhsdevelopments.potato.search.SearchActivity
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.IOException
 import java.text.Collator
 import java.text.MessageFormat
@@ -70,7 +71,7 @@ class ChannelContentFragment : Fragment() {
 
     init {
         val collator = Collator.getInstance()
-        caseInsensitiveStringComparator = Comparator<kotlin.String> { o1, o2 -> collator.compare(o1, o2) }
+        caseInsensitiveStringComparator = Comparator { o1, o2 -> collator.compare(o1, o2) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +109,7 @@ class ChannelContentFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_channel_content, container, false)
-        messageListView = rootView.findViewById<RecyclerView>(R.id.message_list)
+        messageListView = rootView.findViewById(R.id.message_list)
 
         setHasOptionsMenu(true)
 
@@ -203,9 +204,9 @@ class ChannelContentFragment : Fragment() {
             imm.hideSoftInputFromWindow(messageInput.windowToken, 0)
         }
 
-        typingTextView = rootView.findViewById<TextView>(R.id.typing_text_view)
+        typingTextView = rootView.findViewById(R.id.typing_text_view)
 
-        swipeRefreshLayout = rootView.findViewById<SwipeRefreshLayout>(R.id.channel_content_refresh)
+        swipeRefreshLayout = rootView.findViewById(R.id.channel_content_refresh)
         swipeRefreshLayout.setOnRefreshListener {
             adapter.loadMoreMessages(object : ChannelContentAdapter.LoadMessagesCallback {
                 override fun loadSuccessful(messages: List<MessageWrapper>) {
@@ -223,7 +224,7 @@ class ChannelContentFragment : Fragment() {
         }
 
         scrollDownPanel = rootView.findViewById(R.id.scroll_down_panel)
-        scrollDownButton = scrollDownPanel.findViewById<Button>(R.id.scroll_to_bottom)
+        scrollDownButton = scrollDownPanel.findViewById(R.id.scroll_to_bottom)
         scrollDownButton.setOnClickListener({ scrollToBottom() })
 
         return rootView
@@ -479,13 +480,13 @@ class ChannelContentFragment : Fragment() {
                 val apiKey = app.findApiKey()
                 val call = api.sendMessage(apiKey, cid, SendMessageRequest(convertUidRefs(text)))
                 call.enqueue(object : Callback<SendMessageResult> {
-                    override fun onResponse(response: Response<SendMessageResult>, retrofit: Retrofit) {
-                        if (response.isSuccess) {
-                            Log.i("Created message with id: ${response.body().id}")
+                    override fun onResponse(call: Call<SendMessageResult>, response: Response<SendMessageResult>) {
+                        if (response.isSuccessful) {
+                            Log.i("Created message with id: ${response.body()!!.id}")
                         }
                         else {
                             try {
-                                Log.e("Send message error from server: " + response.errorBody().string())
+                                Log.e("Send message error from server: " + response.errorBody()!!.string())
                             }
                             catch (e: IOException) {
                                 Log.e("Exception when getting error body after sending message", e)
@@ -495,7 +496,7 @@ class ChannelContentFragment : Fragment() {
                         }
                     }
 
-                    override fun onFailure(t: Throwable) {
+                    override fun onFailure(call: Call<SendMessageResult>, t: Throwable) {
                         Log.e("Error sending message to channel", t)
                         displaySnackbarMessage(messageInput, "Error sending message: " + t.message)
                     }

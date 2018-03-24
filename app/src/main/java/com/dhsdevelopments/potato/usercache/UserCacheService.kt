@@ -20,10 +20,6 @@ class UserCacheService : IntentService("UserCache") {
 
     private val cache: Map<String,UserInfo> = HashMap()
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     override fun onHandleIntent(intent: Intent) {
         when (intent.action) {
             REQUEST_USER_INFO -> requestUserInfo(intent)
@@ -31,11 +27,11 @@ class UserCacheService : IntentService("UserCache") {
         }
     }
 
-    fun requestUserInfo(intent: Intent) {
+    private fun requestUserInfo(intent: Intent) {
         val uid = intent.getStringExtra(EXTRA_USER_ID)!!
-        Log.d("Got request for user info, user=${uid}")
+        Log.d("Got request for user info, user=$uid")
 
-        val userInfo = cache.get(uid)
+        val userInfo = cache[uid]
         if(userInfo != null) {
             sendUserInfoUpdate(userInfo)
         }
@@ -44,7 +40,7 @@ class UserCacheService : IntentService("UserCache") {
         }
     }
 
-    fun sendUserInfoUpdate(userInfo: UserInfo) {
+    private fun sendUserInfoUpdate(userInfo: UserInfo) {
         val intent = Intent(BROADCAST_USER_INFO_UPDATED).apply {
             putExtra(EXTRA_USER_INFO, userInfo)
         }

@@ -5,6 +5,7 @@ package com.dhsdevelopments.potato.clientapi.editchannel
 import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
+@Suppress("unused")
 class LeaveChannelResult : RemoteResult {
     @SerializedName("result")
     lateinit var result: String

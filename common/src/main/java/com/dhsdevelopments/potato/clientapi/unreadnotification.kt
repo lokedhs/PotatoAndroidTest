@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.clientapi
 
-import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
 @Suppress("unused")

@@ -9,7 +9,7 @@ class SendMessageRequest {
     @SerializedName("text")
     lateinit var text: String
 
-    @Suppress("unused")
+    @Suppress("unused", "RemoveEmptySecondaryConstructorBody")
     constructor() {
     }
 

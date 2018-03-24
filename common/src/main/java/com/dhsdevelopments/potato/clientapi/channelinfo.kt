@@ -18,6 +18,7 @@ import com.google.gson.annotations.SerializedName
                                               :null)))))))
 */
 
+@Suppress("unused")
 class LoadChannelInfoResult : RemoteResult {
     @SerializedName("id")
     lateinit var id: String

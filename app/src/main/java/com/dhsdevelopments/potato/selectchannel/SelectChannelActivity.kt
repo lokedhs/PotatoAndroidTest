@@ -16,10 +16,10 @@ class SelectChannelActivity : Activity() {
         val RESULT_ERROR_LOADING_CHANNEL = RESULT_FIRST_USER
     }
 
-    val recyclerView by lazy { findViewById<RecyclerView>(R.id.channel_select_list) }
-    val createChannelButton by lazy { findViewById<Button>(R.id.channel_select_new_channel) }
+    private val recyclerView by lazy { findViewById<RecyclerView>(R.id.channel_select_list) }
+    private val createChannelButton by lazy { findViewById<Button>(R.id.channel_select_new_channel) }
 
-    lateinit var domainId: String
+    private lateinit var domainId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

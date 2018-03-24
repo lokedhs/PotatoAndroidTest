@@ -2,7 +2,6 @@ package com.dhsdevelopments.potato.imagecache
 
 import android.arch.persistence.room.*
 import android.content.Context
-import java.util.ArrayList
 
 @Entity(tableName = "image_cache")
 class ImageCacheEntry(

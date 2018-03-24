@@ -34,6 +34,7 @@ class TesterActivity : Activity() {
         themePicker.maxValue = themes.size - 1
     }
 
+    @Suppress("ConstantConditionIf")
     private fun testNotification() {
         val unread = 1
         val prefs = getSharedPreferences("com.dhsdevelopments.potato_preferences", MODE_PRIVATE)

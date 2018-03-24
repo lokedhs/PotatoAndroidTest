@@ -29,9 +29,10 @@ import com.dhsdevelopments.potato.imagecache.ImageCache
 import com.dhsdevelopments.potato.imagecache.LoadImageCallback
 import com.dhsdevelopments.potato.imagecache.StorageType
 import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.text.MessageFormat
 import java.util.*
 
@@ -75,7 +76,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     //        itemSelectionListeners.add(listener)
     //    }
 
-    fun parseMessageList(messages: List<Message>): List<MessageWrapper> {
+    private fun parseMessageList(messages: List<Message>): List<MessageWrapper> {
         val result = ArrayList<MessageWrapper>(messages.size)
         var i = 0
         for (m in messages) {
@@ -91,7 +92,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         return result
     }
 
-    fun loadMessageHistory(startMessageId: String?, callback: (List<Message>) -> Unit, errorCallback: (String) -> Unit) {
+    private fun loadMessageHistory(startMessageId: String?, callback: (List<Message>) -> Unit, errorCallback: (String) -> Unit) {
         if (isLoading) {
             Log.w("Attempt to load messages while loading is in progress")
             return
@@ -103,11 +104,11 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         val call = app.findApiProvider().makePotatoApi().loadHistoryAsJson(app.findApiKey(), cid, NUM_MESSAGES_PER_LOAD, startMessageId ?: "now")
         isLoading = true
         call.enqueue(object : Callback<MessageHistoryResult> {
-            override fun onResponse(response: Response<MessageHistoryResult>, retrofit: Retrofit) {
+            override fun onResponse(call: Call<MessageHistoryResult>, response: Response<MessageHistoryResult>) {
                 handler.post {
                     isLoading = false
-                    if (response.isSuccess) {
-                        callback(response.body().messages)
+                    if (response.isSuccessful) {
+                        callback(response.body()!!.messages)
                     }
                     else {
                         Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
@@ -116,7 +117,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                 }
             }
 
-            override fun onFailure(t: Throwable) {
+            override fun onFailure(call: Call<MessageHistoryResult>, t: Throwable) {
                 Log.e("Error loading message history", t)
                 handler.post {
                     isLoading = false
@@ -177,9 +178,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         return i
     }
 
-    override fun getItemCount(): Int {
-        return messages.size + 1
-    }
+    override fun getItemCount(): Int = messages.size + 1
 
     override fun getItemViewType(position: Int): Int {
         return if (position == messages.size) {
@@ -236,7 +235,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     //        context.startActivity(intent)
     //    }
 
-    internal fun shouldHideHeader(reference: MessageWrapper, msg: MessageWrapper): Boolean {
+    private fun shouldHideHeader(reference: MessageWrapper, msg: MessageWrapper): Boolean {
         if (reference.sender != msg.sender) {
             return false
         }
@@ -245,7 +244,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         return msg.createdDate.time - reference.createdDate.time < 60 * 1000
     }
 
-    internal fun updateDisplayStateForPosition(pos: Int): Boolean {
+    private fun updateDisplayStateForPosition(pos: Int): Boolean {
         if (pos < messages.size) {
             val msg = messages[pos]
             val shouldDisplay = pos == 0 || !shouldHideHeader(messages[pos - 1], msg)
@@ -341,8 +340,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     }
 
     inner class MessageViewHolderExtraContent(itemView: View) : MessageViewHolder(itemView) {
-        private val imageView: ImageView = itemView.findViewById<ImageView>(R.id.message_image)
-        private val htmlContentView: TextView = itemView.findViewById<TextView>(R.id.extra_content_html)
+        private val imageView: ImageView = itemView.findViewById(R.id.message_image)
+        private val htmlContentView: TextView = itemView.findViewById(R.id.extra_content_html)
         private var imageLoadIndex: Long = 0
 
         override fun fillInView(message: MessageWrapper) {
@@ -388,8 +387,8 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     private inner class EndOfChannelMarkerViewHolder(view: View) : ViewHolder(view)
 
     inner class MessageElementItemDecoration : RecyclerView.ItemDecoration() {
-        val divider: Drawable
-        val dividerVerticalMargin: Int
+        private val divider: Drawable
+        private val dividerVerticalMargin: Int
 
         init {
             val attrs = context.obtainStyledAttributes(intArrayOf(android.R.attr.listDivider))
@@ -399,7 +398,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             dividerVerticalMargin = context.resources.getDimension(R.dimen.channel_content_message_block_separator).toInt()
         }
 
-        fun messageFromAdapterPos(parent: RecyclerView, view: View): MessageWrapper? {
+        private fun messageFromAdapterPos(parent: RecyclerView, view: View): MessageWrapper? {
             val pos = parent.getChildAdapterPosition(view)
             if (pos > 0 && pos < messages.size) {
                 val msg = messages[pos]

@@ -88,7 +88,7 @@ class MessageDetailActivity : AppCompatActivity() {
         }
     }
 
-    fun deleteMessage() {
+    private fun deleteMessage() {
         AlertDialog.Builder(this).setMessage(R.string.delete_message_confirmation_text)
                 .setPositiveButton(R.string.delete_message_confirm, { dialog, which ->
                     RemoteRequestService.deleteMessage(this, msg.id)
@@ -98,7 +98,7 @@ class MessageDetailActivity : AppCompatActivity() {
                 .show()
     }
 
-    fun editMessage() {
+    private fun editMessage() {
         Log.e("Need to implement message editing")
     }
 

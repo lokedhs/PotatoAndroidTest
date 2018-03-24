@@ -25,9 +25,7 @@ import java.lang.reflect.Type
 import java.util.*
 
 abstract class MessageElement : Serializable {
-    open fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return "[NOT-IMPLEMENTED type=" + javaClass.name + "]"
-    }
+    open fun makeSpan(spanContext: SpanGenerationContext): CharSequence = "[NOT-IMPLEMENTED type=" + javaClass.name + "]"
 
     class SpanGenerationContext(val context: Context)
 }
@@ -35,49 +33,38 @@ abstract class MessageElement : Serializable {
 class MessageElementTypeAdapter : JsonDeserializer<MessageElement> {
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): MessageElement {
-        if (json.isJsonPrimitive) {
-            return MessageElementString(json.asString)
-        }
-        else if (json.isJsonArray) {
-            val a = json.asJsonArray
-            val result = ArrayList<MessageElement>(a.size())
-            for (v in a) {
-                val element = context.deserialize<MessageElement>(v, MessageElement::class.java)
-                result.add(element)
+        return when {
+            json.isJsonPrimitive -> {
+                MessageElementString(json.asString)
             }
-            return MessageElementList(result)
-        }
-        else {
-            val obj = json.asJsonObject
-            fun makeElement(): MessageElement {
-                return context.deserialize<MessageElement>(obj.get("e"), MessageElement::class.java)
+            json.isJsonArray -> {
+                val a = json.asJsonArray
+                val result = ArrayList<MessageElement>(a.size())
+                a.mapTo(result) { context.deserialize<MessageElement>(it, MessageElement::class.java) }
+                MessageElementList(result)
             }
+            else -> {
+                val obj = json.asJsonObject
+                fun makeElement() = context.deserialize<MessageElement>(obj.get("e"), MessageElement::class.java)
 
-            val type = obj.get("type").asString
-            return when (type) {
-                "p" -> MessageElementParagraph(makeElement())
-                "b" -> MessageElementBold(makeElement())
-                "i" -> MessageElementItalics(makeElement())
-                "code" -> MessageElementCode(makeElement())
-                "math" -> MessageElementMath(makeElement())
-                "inline-math" -> MessageElementInlineMath(makeElement())
-                "url" -> {
-                    val addr = obj.get("addr").asString
-                    val description = obj.get("description")
-                    MessageElementUrl(addr, if (description.isJsonNull) addr else description.asString)
+                val type = obj.get("type").asString
+                when (type) {
+                    "p" -> MessageElementParagraph(makeElement())
+                    "b" -> MessageElementBold(makeElement())
+                    "i" -> MessageElementItalics(makeElement())
+                    "code" -> MessageElementCode(makeElement())
+                    "math" -> MessageElementMath(makeElement())
+                    "inline-math" -> MessageElementInlineMath(makeElement())
+                    "code-block" -> MessageElementCodeBlock(obj.get("language").asString, obj.get("code").asString)
+                    "user" -> MessageElementUser(obj.get("user_id").asString, obj.get("user_description").asString)
+                    "newline" -> MessageElementNewline()
+                    "url" -> {
+                        val addr = obj.get("addr").asString
+                        val description = obj.get("description")
+                        MessageElementUrl(addr, if (description.isJsonNull) addr else description.asString)
+                    }
+                    else -> MessageElementUnknownType(type)
                 }
-                "code-block" -> {
-                    val language = obj.get("language").asString
-                    val code = obj.get("code").asString
-                    MessageElementCodeBlock(language, code)
-                }
-                "user" -> {
-                    val userId = obj.get("user_id").asString
-                    val userDescription = obj.get("user_description").asString
-                    MessageElementUser(userId, userDescription)
-                }
-                "newline" -> MessageElementNewline()
-                else -> MessageElementUnknownType(type)
             }
         }
     }
@@ -99,6 +86,7 @@ class MessageElementList(private val list: List<MessageElement>) : MessageElemen
     }
 }
 
+@Suppress("MemberVisibilityCanPrivate")
 class Message : Serializable {
     @SerializedName("id")
     lateinit var id: String
@@ -164,9 +152,7 @@ class MessageElementCodeBlock(private val language: String, private val code: St
         }
     }
 
-    override fun toString(): String {
-        return "MessageElementCodeBlock[language='${language}', code='${code}'] ${super.toString()}"
-    }
+    override fun toString() = "MessageElementCodeBlock[language='$language', code='$code'] ${super.toString()}"
 }
 
 class MessageElementMath(content: MessageElement) : TypedMessageElement(content) {
@@ -182,9 +168,7 @@ class MessageElementInlineMath(content: MessageElement) : TypedMessageElement(co
 }
 
 class MessageElementNewline : MessageElement() {
-    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return "\n"
-    }
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence = "\n"
 }
 
 class MessageElementItalics(content: MessageElement) : TypedMessageElement(content) {
@@ -207,19 +191,13 @@ class MessageImage : Serializable {
 }
 
 class MessageElementString(private val value: String) : MessageElement() {
-    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return value
-    }
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence = value
 
-    override fun toString(): String {
-        return "MessageElementString[value='${value}'] ${super.toString()}"
-    }
+    override fun toString() = "MessageElementString[value='$value'] ${super.toString()}"
 }
 
 open class TypedMessageElement(protected val content: MessageElement) : MessageElement() {
-    override fun toString(): String {
-        return "TypedMessageElement[type=${javaClass.name}, content=${content}] ${super.toString()}"
-    }
+    override fun toString() = "TypedMessageElement[type=${javaClass.name}, content=$content] ${super.toString()}"
 }
 
 class MessageElementBold(content: MessageElement) : TypedMessageElement(content) {
@@ -240,22 +218,16 @@ class MessageElementUser(private val userId: String, private val userDescription
 }
 
 class MessageElementUnknownType(private val type: String) : MessageElement() {
-    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return "[TYPE=$type]"
-    }
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence = "[TYPE=$type]"
 
-    override fun toString(): String {
-        return "MessageElementUnknownType[type='$type']"
-    }
+    override fun toString() = "MessageElementUnknownType[type='$type']"
 }
 
 class MessageHistoryResult {
     @SerializedName("messages")
     lateinit var messages: List<Message>
 
-    override fun toString(): String {
-        return "MessageHistoryResult[messages=$messages]"
-    }
+    override fun toString() = "MessageHistoryResult[messages=$messages]"
 }
 
 class MessageElementUrl(private val addr: String, private val description: String) : MessageElement() {
@@ -265,13 +237,9 @@ class MessageElementUrl(private val addr: String, private val description: Strin
         }
     }
 
-    override fun toString(): String {
-        return "MessageElementUrl[addr='$addr', description='$description']"
-    }
+    override fun toString() = "MessageElementUrl[addr='$addr', description='$description']"
 }
 
 class MessageElementParagraph(content: MessageElement) : TypedMessageElement(content) {
-    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence {
-        return content.makeSpan(spanContext)
-    }
+    override fun makeSpan(spanContext: SpanGenerationContext): CharSequence = content.makeSpan(spanContext)
 }

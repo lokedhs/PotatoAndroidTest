@@ -43,7 +43,5 @@ class DomainInfoResult : RemoteResult {
     @SerializedName("groups")
     var groups: List<Group>? = null
 
-    override fun errorMsg(): String? {
-        return null
-    }
+    override fun errorMsg(): String? = null
 }

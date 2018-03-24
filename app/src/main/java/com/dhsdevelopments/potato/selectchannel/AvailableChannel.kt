@@ -6,11 +6,9 @@ import java.util.*
 
 class AvailableChannel(channel: Channel) {
     object COMPARATOR : Comparator<AvailableChannel> {
-        val collator = Collator.getInstance()!!
+        private val collator = Collator.getInstance()!!
 
-        override fun compare(p0: AvailableChannel?, p1: AvailableChannel?): Int {
-            return collator.compare(p0!!.name, p1!!.name)
-        }
+        override fun compare(p0: AvailableChannel?, p1: AvailableChannel?) = collator.compare(p0!!.name, p1!!.name)
     }
 
     val id = channel.id

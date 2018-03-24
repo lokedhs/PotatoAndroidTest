@@ -14,10 +14,10 @@ import com.dhsdevelopments.potato.common.DbTools
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.RemoteRequestService
-import retrofit.Call
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.*
@@ -197,7 +197,7 @@ class ChannelSubscriptionService : Service() {
                             outstandingCall = null
                         }
 
-                        if (response.isSuccess) {
+                        if (response.isSuccessful) {
                             // It seems as though response.body() is null when the outstanding call has been cancelled.
                             val body = response.body() ?: throw ReceiverStoppedException()
                             updateEventIdAndCheckPendingBindRequests(body.eventId)
@@ -300,9 +300,9 @@ class ChannelSubscriptionService : Service() {
             val e = eventId ?: throw IllegalStateException("eventId is null")
             val call = api.channelUpdatesUpdate(apiKey, e, "add", cid, "content,state")
             call.enqueue(object : Callback<ChannelUpdatesUpdateResult> {
-                override fun onResponse(response: Response<ChannelUpdatesUpdateResult>, retrofit: Retrofit) {
-                    if (response.isSuccess) {
-                        if ("ok" != response.body().result) {
+                override fun onResponse(call: Call<ChannelUpdatesUpdateResult>, response: Response<ChannelUpdatesUpdateResult>) {
+                    if (response.isSuccessful) {
+                        if ("ok" != response.body()!!.result) {
                             Log.e("Unexpected result form bind call")
                             throw RuntimeException("Unexpected result form bind call")
                         }
@@ -317,7 +317,7 @@ class ChannelSubscriptionService : Service() {
                     }
                 }
 
-                override fun onFailure(t: Throwable) {
+                override fun onFailure(call: Call<ChannelUpdatesUpdateResult>, t: Throwable) {
                     Log.e("Failed to bind", t)
                     throw RuntimeException("Failed to bind", t)
                 }

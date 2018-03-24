@@ -41,9 +41,7 @@ class UserNameTokeniser(private val userTracker: ChannelUsersTracker) : MultiAut
                 || codePoint == '@'.toInt()
     }
 
-    override fun findTokenEnd(text: CharSequence, cursor: Int): Int {
-        return cursor
-    }
+    override fun findTokenEnd(text: CharSequence, cursor: Int): Int = cursor
 
     override fun terminateToken(text: CharSequence): CharSequence {
         val uid = text.toString()

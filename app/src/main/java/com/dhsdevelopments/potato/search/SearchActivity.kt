@@ -10,9 +10,10 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.common.Log
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class SearchActivity : AppCompatActivity() {
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }
@@ -37,8 +38,8 @@ class SearchActivity : AppCompatActivity() {
         val app = PotatoApplication.getInstance(this)
         val call = app.findApiProvider().makePotatoApi().searchMessages(app.findApiKey(), channelId, query, "0")
         call.enqueue(object : Callback<SearchResult?> {
-            override fun onResponse(result: Response<SearchResult?>, retrofit: Retrofit) {
-                if (result.isSuccess) {
+            override fun onResponse(call: Call<SearchResult?>, result: Response<SearchResult?>) {
+                if (result.isSuccessful) {
                     processResults(result.body()!!)
                 }
                 else {
@@ -46,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(result: Throwable?) {
+            override fun onFailure(call: Call<SearchResult?>, result: Throwable?) {
                 throw UnsupportedOperationException()
             }
         })

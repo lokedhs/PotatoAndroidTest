@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.common
 
+@Suppress("unused")
 object Log {
     val LOG_TAG = "potato.common"
 

@@ -15,8 +15,8 @@ import com.dhsdevelopments.potato.common.R
  */
 class CodeTypefaceSpan(val context: Context) : ReplacementSpan() {
     private val typeface = Typeface.MONOSPACE
-    val frameColour = ContextCompat.getColor(context, R.color.code_inline_frame)
-    val backgroundColour = ContextCompat.getColor(context, R.color.code_background)
+    private val frameColour = ContextCompat.getColor(context, R.color.code_inline_frame)
+    private val backgroundColour = ContextCompat.getColor(context, R.color.code_background)
 
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
         val bounds = Rect()
@@ -25,7 +25,7 @@ class CodeTypefaceSpan(val context: Context) : ReplacementSpan() {
         return bounds.right + FRAME_MARGIN * 2
     }
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
+    @Suppress("UnnecessaryVariable")
     override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
         paint.typeface = typeface
 
@@ -81,7 +81,7 @@ class CodeBlockTypefaceSpan : ReplacementSpan() {
 }
 
 class CodeBlockBackgroundSpan(context: Context) : LineBackgroundSpan {
-    val colour = ContextCompat.getColor(context, R.color.code_block_background)
+    private val colour = ContextCompat.getColor(context, R.color.code_block_background)
 
     override fun drawBackground(canvas: Canvas, paint: Paint,
                                 left: Int, right: Int, top: Int, baseline: Int, bottom: Int,

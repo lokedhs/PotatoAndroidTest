@@ -14,7 +14,11 @@ import java.io.IOException
 
 class RegistrationIntentService : IntentService("RegistrationIntentService") {
 
-    val PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk"
+    companion object {
+        const val ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER"
+
+        private const val PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk"
+    }
 
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null && intent.action == ACTION_REGISTER) {
@@ -34,7 +38,7 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
             val app = PotatoApplication.getInstance(this)
             val call = app.findApiProvider().makePotatoApi().registerGcm(app.findApiKey(), GcmRegistrationRequest(token, "gcm"))
             val result = call.execute()
-            if (!result.isSuccess) {
+            if (!result.isSuccessful) {
                 if (result.code() == 503) {
                     Log.w("GCM is disabled on the server")
                 }
@@ -42,27 +46,23 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
                     Log.e("Error when updating GCM key: " + result.code() + ", " + result.message())
                 }
             }
-            else if ("ok" == result.body().result) {
+            else if ("ok" == result.body()!!.result) {
                 val prefsEditor = prefs.edit()
                 prefsEditor.putBoolean(PREFS_KEY_GCM_REGISTERED, true)
                 prefsEditor.apply()
 
                 // If this was a new registration, we need to clear the channel notification configuration
-                if ("token_registered" == result.body().detail) {
+                if ("token_registered" == result.body()!!.detail) {
                     DbTools.clearUnreadNotificationSettings(this)
                 }
             }
             else {
-                Log.e("Unexpected reply from gcm registration: ${result.body().result}")
+                Log.e("Unexpected reply from gcm registration: ${result.body()!!.result}")
             }
         }
         catch (e: IOException) {
             Log.e("Error when requesting token", e)
         }
 
-    }
-
-    companion object {
-        val ACTION_REGISTER = "com.dhsdevelopments.potato.gcm.REGISTER"
     }
 }

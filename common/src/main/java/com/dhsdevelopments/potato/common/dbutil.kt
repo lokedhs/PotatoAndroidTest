@@ -5,39 +5,18 @@ import android.content.Context
 import com.dhsdevelopments.potato.clientapi.callServiceBackground
 import com.dhsdevelopments.potato.clientapi.channelinfo.LoadChannelInfoResult
 
-@Entity(tableName = "channels",
-        foreignKeys = arrayOf(ForeignKey(
-                entity = DomainDescriptor::class,
-                parentColumns = arrayOf("id"),
-                childColumns = arrayOf("domain_id"))),
-        indices = arrayOf(Index("domain_id")))
-class ChannelDescriptor(
-        @PrimaryKey
-        @ColumnInfo(name = "id")
-        var id: String = "",
-        @ColumnInfo(name = "name")
-        var name: String = "",
-        @ColumnInfo(name = "private_user")
-        var privateUser: String? = null,
-        @ColumnInfo(name = "hidden")
-        var hidden: Boolean = false,
-        @ColumnInfo(name = "domain_id")
-        var domainId: String = "",
-        @ColumnInfo(name = "unread")
-        var unreadCount: Int = 0)
-
 @Dao
 interface ChannelDao {
     @Query("select * from channels")
     fun findAll(): List<ChannelDescriptor>
 
-    @Query("select * from channels where id = :arg0")
+    @Query("select * from channels where id = :id")
     fun findById(id: String): ChannelDescriptor?
 
-    @Query("select id from channels where id = :arg0")
+    @Query("select id from channels where id = :id")
     fun findCollectionById(id: String): List<String>
 
-    @Query("select * from channels where domain_id = :arg0")
+    @Query("select * from channels where domain_id = :domainId")
     fun findByDomain(domainId: String): List<ChannelDescriptor>
 
     @Query("select * from channels where unread > 0")
@@ -84,7 +63,7 @@ class ChannelConfigDescriptor(
 
 @Dao
 interface ChannelConfigDao {
-    @Query("select * from channel_config where id = :arg0")
+    @Query("select * from channel_config where id = :id")
     fun findByChannelId(id: String): ChannelConfigDescriptor?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

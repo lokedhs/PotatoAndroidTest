@@ -3,10 +3,8 @@ package com.dhsdevelopments.potato.service
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
 import com.dhsdevelopments.potato.PotatoApplication

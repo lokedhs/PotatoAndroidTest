@@ -13,7 +13,7 @@ import com.dhsdevelopments.potato.common.DbTools
 import java.util.*
 
 @Suppress("unused")
-class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainId: String) : RecyclerView.Adapter<AvailableChannelListAdapter.ViewHolder>() {
+class AvailableChannelListAdapter(val parent: SelectChannelActivity, private val domainId: String) : RecyclerView.Adapter<AvailableChannelListAdapter.ViewHolder>() {
     private val channels = ArrayList<AvailableChannel>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
@@ -45,9 +45,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, val domainI
         holder.fillInView(channels[position])
     }
 
-    override fun getItemCount(): Int {
-        return channels.size
-    }
+    override fun getItemCount(): Int = channels.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val titleView = view.findViewById<TextView>(R.id.channel_name)

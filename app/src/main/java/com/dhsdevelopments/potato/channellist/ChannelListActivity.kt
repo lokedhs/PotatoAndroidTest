@@ -63,12 +63,12 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_channel_list)
 
-        if (savedInstanceState != null) {
-            selectedDomainId = savedInstanceState.getString(STATE_SELECTED_DOMAIN_ID)
+        selectedDomainId = if (savedInstanceState != null) {
+            savedInstanceState.getString(STATE_SELECTED_DOMAIN_ID)
         }
         else {
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-            selectedDomainId = prefs.getString(resources.getString(R.string.pref_key_default_domain), null)
+            prefs.getString(resources.getString(R.string.pref_key_default_domain), null)
         }
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -184,7 +184,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         if (selectedDomainId != null) {
             var domainName: String? = null
             val n = domainsMenu.size()
-            for (i in 0..n - 1) {
+            for (i in 0 until n) {
                 val item = domainsMenu.getItem(i)
                 val isSelectedDomain = item.intent.getStringExtra(EXTRA_DOMAIN_ID) == selectedDomainId
                 if (isSelectedDomain) {
@@ -278,9 +278,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         invalidateOptionsMenu()
     }
 
-    override fun findUserTracker(): ChannelUsersTracker {
-        return usersTracker!!
-    }
+    override fun findUserTracker(): ChannelUsersTracker = usersTracker!!
 
     override fun closeChannel() {
         if (channelContentFragment != null) {
@@ -299,7 +297,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
         setActiveChannel(cid)
     }
 
-    fun updateDomainList() {
+    private fun updateDomainList() {
         domainsMenu.clear()
 
         val db = PotatoApplication.getInstance(this).cacheDatabase

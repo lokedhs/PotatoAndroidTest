@@ -1,16 +1,14 @@
 package com.dhsdevelopments.potato.imagecache
 
-import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.os.AsyncTask
 import com.dhsdevelopments.potato.ImageHelpers
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.makeRandomFile
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -176,7 +174,7 @@ class ImageCache(private val context: Context) {
                     loadTaskIsActive = true
                     shouldStartTask = true
                 }
-                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=${shouldStartTask}")
+                Log.d("created new cache entry. current load queue size=${loadQueue.size}, willStartNewTask=$shouldStartTask")
                 Unit
             }
             else {
@@ -347,12 +345,12 @@ class ImageCache(private val context: Context) {
 
         private fun nextEntryAndMaybeUpdateStatus(): LoadQueueEntry? {
             synchronized(bitmapCache) {
-                if (loadQueue.isEmpty()) {
+                return if (loadQueue.isEmpty()) {
                     loadTaskIsActive = false
-                    return null
+                    null
                 }
                 else {
-                    return loadQueue.removeAt(0)
+                    loadQueue.removeAt(0)
                 }
             }
         }
@@ -422,7 +420,7 @@ class ImageCache(private val context: Context) {
             }
 
             try {
-                response.body().byteStream().use { inStream ->
+                response.body()!!.byteStream().use { inStream ->
                     FileOutputStream(found).use { outStream ->
                         val fileBuf = ByteArray(1024 * 16)
                         while (true) {

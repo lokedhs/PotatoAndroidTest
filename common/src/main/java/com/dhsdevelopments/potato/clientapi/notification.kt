@@ -31,15 +31,11 @@ open class PotatoNotification : Serializable {
     @SerializedName("type")
     lateinit var type: String
 
-    override fun toString(): String {
-        return "PotatoNotification[type='$type']"
-    }
+    override fun toString() = "PotatoNotification[type='$type']"
 }
 
 class DefaultNotification : PotatoNotification() {
-    override fun toString(): String {
-        return "DefaultNotification[type='$type']"
-    }
+    override fun toString() = "DefaultNotification[type='$type']"
 }
 
 class MessageNotification : PotatoNotification() {
@@ -74,9 +70,7 @@ class UserStateUpdateUser {
     @SerializedName("id")
     lateinit var id: String
 
-    override fun toString(): String {
-        return "UserStateUpdateUser[id='$id']"
-    }
+    override fun toString() = "UserStateUpdateUser[id='$id']"
 }
 
 class PotatoNotificationResult {
@@ -86,9 +80,7 @@ class PotatoNotificationResult {
     @SerializedName("data")
     var notifications: List<PotatoNotification>? = null
 
-    override fun toString(): String {
-        return "PotatoNotificationResult(eventId='$eventId', notifications=$notifications)"
-    }
+    override fun toString() = "PotatoNotificationResult(eventId='$eventId', notifications=$notifications)"
 }
 
 class TypingNotification : PotatoNotification() {
@@ -101,9 +93,7 @@ class TypingNotification : PotatoNotification() {
     @SerializedName("add-type")
     lateinit var addType: String
 
-    override fun toString(): String {
-        return "TypingNotification[userId='$userId', channelId='$channelId', addType='$addType']"
-    }
+    override fun toString() = "TypingNotification[userId='$userId', channelId='$channelId', addType='$addType']"
 }
 
 class OptionNotification : PotatoNotification(), Serializable {

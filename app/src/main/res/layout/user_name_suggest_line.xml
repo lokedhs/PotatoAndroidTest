@@ -18,5 +18,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nickname"
-        android:paddingLeft="20sp"/>
+        android:paddingStart="20sp"/>
 </LinearLayout>

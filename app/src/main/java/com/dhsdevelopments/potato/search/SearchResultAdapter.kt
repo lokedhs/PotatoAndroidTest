@@ -6,10 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dhsdevelopments.potato.common.DateHelper
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.clientapi.search.SearchResult
 import com.dhsdevelopments.potato.clientapi.search.SearchResultMessage
+import com.dhsdevelopments.potato.common.DateHelper
 import java.util.*
 
 class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
@@ -26,9 +26,7 @@ class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Ada
         return ViewHolder(layoutInflater.inflate(R.layout.message_search_result, parent, false))
     }
 
-    override fun getItemCount(): Int {
-        return searchResults.size
-    }
+    override fun getItemCount(): Int = searchResults.size
 
     fun updateSearchResults(results: SearchResult) {
         searchResults.clear()
@@ -51,6 +49,5 @@ class SearchResultAdapter(private val parent: SearchActivity) : RecyclerView.Ada
             dateView.text = DateHelper.makeDateDiffString(parent, timestamp.time)
             dateDetailView.text = dateHelper.formatDateTimeOutputFormat(timestamp)
         }
-
     }
 }

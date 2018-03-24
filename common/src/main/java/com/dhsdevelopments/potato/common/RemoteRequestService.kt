@@ -1,7 +1,6 @@
 package com.dhsdevelopments.potato.common
 
 import android.app.IntentService
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -68,12 +67,12 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             val call = app.findApiProvider().makePotatoApi().getChannels2(app.findApiKey())
             val result = call.execute()
 
-            if (result.isSuccess) {
+            if (result.isSuccessful) {
                 val db = app.cacheDatabase
                 db.runInTransaction {
                     // We need to delete everything from the table since this call returns the full state
                     db.deleteChannelsAndDomains()
-                    result.body().domains.filter { it.type != "PRIVATE" }.forEach { d ->
+                    result.body()!!.domains.filter { it.type != "PRIVATE" }.forEach { d ->
                         db.domainDao().insertDomain(DomainDescriptor(d.id, d.name))
                         for (c in d.channels) {
                             DbTools.insertChannelIntoChannelsTable(db, c.id, d.id, c.name, c.unreadCount, c.privateUser, c.hide)

@@ -10,9 +10,9 @@ import com.dhsdevelopments.potato.clientapi.users.User
 import com.dhsdevelopments.potato.common.IntentUtil
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.service.ChannelSubscriptionService
-import retrofit.Callback
-import retrofit.Response
-import retrofit.Retrofit
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -24,9 +24,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         loadUsers()
     }
 
-    fun getUsers(): Map<String, UserDescriptor> {
-        return users
-    }
+    fun getUsers(): Map<String, UserDescriptor> = users
 
     fun processIncoming(intent: Intent) {
         Log.d("processing channel user intent: $intent")
@@ -91,13 +89,13 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
     fun addUserActivityListener(listener: UserActivityListener) = listeners.add(listener)
     fun removeUserActivityListener(listener: UserActivityListener) = listeners.remove(listener)
 
-    fun loadUsers() {
+    private fun loadUsers() {
         val app = PotatoApplication.getInstance(context)
         val call = app.findApiProvider().makePotatoApi().loadUsers(app.findApiKey(), cid)
         call.enqueue(object : Callback<LoadUsersResult> {
-            override fun onResponse(response: Response<LoadUsersResult>, retrofit: Retrofit) {
-                if (response.isSuccess) {
-                    updateUsers(response.body().members)
+            override fun onResponse(call: Call<LoadUsersResult>, response: Response<LoadUsersResult>) {
+                if (response.isSuccessful) {
+                    updateUsers(response.body()!!.members)
                 }
                 else {
                     Log.e("Error code from server")
@@ -105,7 +103,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
                 }
             }
 
-            override fun onFailure(t: Throwable) {
+            override fun onFailure(call: Call<LoadUsersResult>, t: Throwable) {
                 Log.e("Error loading users", t)
                 throw RuntimeException("Error loading users", t)
             }

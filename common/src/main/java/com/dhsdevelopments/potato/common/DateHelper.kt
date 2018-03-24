@@ -1,5 +1,6 @@
 package com.dhsdevelopments.potato.common
 
+import android.annotation.SuppressLint
 import android.content.Context
 import java.text.DateFormat
 import java.text.MessageFormat
@@ -7,6 +8,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
+@SuppressLint("SimpleDateFormat")
 class DateHelper {
     private val inputFormat: DateFormat by lazy {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -18,19 +20,18 @@ class DateHelper {
         DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     }
 
-    @Synchronized fun parseDate(text: String): Date {
-        try {
-            return inputFormat.parse(text)
+    @Synchronized
+    fun parseDate(text: String): Date {
+        return try {
+            inputFormat.parse(text)
         }
         catch (e: ParseException) {
             throw IllegalArgumentException("illegal date format: " + text, e)
         }
-
     }
 
-    @Synchronized fun formatDateTimeOutputFormat(date: Date): String {
-        return dateTimeOutputFormat.format(date)
-    }
+    @Synchronized
+    fun formatDateTimeOutputFormat(date: Date): String = dateTimeOutputFormat.format(date)
 
     companion object {
         val SECOND_MILLIS: Long = 1000
@@ -43,23 +44,25 @@ class DateHelper {
 
             val diffInMillis = System.currentTimeMillis() - date
 
-            if (diffInMillis <= MINUTE_MILLIS) {
-                return resources.getString(R.string.dates_less_than_one_minute_ago)
-            }
-            else if (diffInMillis <= HOUR_MILLIS) {
-                val mins = diffInMillis / MINUTE_MILLIS
-                val fmt = resources.getString(R.string.date_number_minutes_ago)
-                return MessageFormat.format(fmt, mins)
-            }
-            else if (diffInMillis <= DAY_MILLIS) {
-                val hours = diffInMillis / HOUR_MILLIS
-                val fmt = resources.getString(R.string.date_number_hours_ago)
-                return MessageFormat.format(fmt, hours)
-            }
-            else {
-                val days = diffInMillis / DAY_MILLIS
-                val fmt = resources.getString(R.string.date_number_days_ago)
-                return MessageFormat.format(fmt, days)
+            return when {
+                diffInMillis <= MINUTE_MILLIS -> {
+                    resources.getString(R.string.dates_less_than_one_minute_ago)
+                }
+                diffInMillis <= HOUR_MILLIS -> {
+                    val mins = diffInMillis / MINUTE_MILLIS
+                    val fmt = resources.getString(R.string.date_number_minutes_ago)
+                    MessageFormat.format(fmt, mins)
+                }
+                diffInMillis <= DAY_MILLIS -> {
+                    val hours = diffInMillis / HOUR_MILLIS
+                    val fmt = resources.getString(R.string.date_number_hours_ago)
+                    MessageFormat.format(fmt, hours)
+                }
+                else -> {
+                    val days = diffInMillis / DAY_MILLIS
+                    val fmt = resources.getString(R.string.date_number_days_ago)
+                    MessageFormat.format(fmt, days)
+                }
             }
         }
     }
