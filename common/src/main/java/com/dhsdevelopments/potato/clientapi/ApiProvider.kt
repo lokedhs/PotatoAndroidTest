@@ -8,9 +8,9 @@ import com.dhsdevelopments.potato.clientapi.notifications.PotatoNotification
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.R
 import com.google.gson.GsonBuilder
-import com.squareup.okhttp.OkHttpClient
-import retrofit.GsonConverterFactory
-import retrofit.Retrofit
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class ApiProvider(val context: Context) {
@@ -20,8 +20,7 @@ class ApiProvider(val context: Context) {
         Log.d("Got identifier for com.dhsdevelopments.potato:string/override_server_prefix = $identifier")
         val p = if (identifier == 0) {
             context.resources.getString(R.string.server_prefix)
-        }
-        else {
+        } else {
             context.resources.getString(identifier)
         }
         p ?: throw IllegalStateException("No server prefix found")
@@ -29,16 +28,20 @@ class ApiProvider(val context: Context) {
 
     val apiUrlPrefix by lazy { serverUrlPrefix + "api/1.0/" }
 
-    fun makePotatoApi(timeout: Int = -1): PotatoApi {
+    fun makePotatoApi(timeout: Long = -1): PotatoApi {
+        Log.i("Creating api with timeout $timeout")
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter())
                 .registerTypeAdapter(PotatoNotification::class.java, NotificationTypeAdapter())
                 .create()
-        val httpClient = OkHttpClient()
+        val builder = OkHttpClient.Builder()
         if (timeout > 0) {
-            httpClient.setReadTimeout(timeout.toLong(), TimeUnit.SECONDS)
+            builder.readTimeout(timeout, TimeUnit.SECONDS)
+                    .writeTimeout(timeout, TimeUnit.SECONDS)
+                    .build()
         }
+        val httpClient = builder.build()
         val retrofit = Retrofit.Builder()
                 .baseUrl(apiUrlPrefix)
                 .addConverterFactory(GsonConverterFactory.create(gson))

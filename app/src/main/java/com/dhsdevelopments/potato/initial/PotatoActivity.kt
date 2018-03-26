@@ -43,8 +43,8 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         Log.d("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
-                val dialog = availability.getErrorDialog(this, result, 0)
-                dialog.show()
+//                val dialog = availability.getErrorDialog(this, result, 0)
+                availability.showErrorNotification(this, result)
             }
             else {
                 throw RuntimeException("google apis not available")

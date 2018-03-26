@@ -25,8 +25,8 @@ import com.dhsdevelopments.potato.clientapi.users.LoadUserResult
 import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
 import com.dhsdevelopments.potato.common.Log
 import com.google.gson.annotations.SerializedName
-import com.squareup.okhttp.MediaType
-import com.squareup.okhttp.RequestBody
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import okio.BufferedSink
 import retrofit2.Call
 import retrofit2.Callback
@@ -166,7 +166,7 @@ class ClearNotificationsResult : RemoteResult {
 }
 
 class ImageUriRequestBody(private val context: Context, private val imageUri: Uri) : RequestBody() {
-    private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri))
+    private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri)) ?: throw IllegalStateException("Illegal media type (not well formed)")
 
     override fun contentType(): MediaType = mediaType
 
