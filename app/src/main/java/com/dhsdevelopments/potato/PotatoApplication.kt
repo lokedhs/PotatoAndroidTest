@@ -26,7 +26,7 @@ class PotatoApplication : CommonApplication() {
         val prefName = getString(name)
         val value = prefs.getString(prefName, "")
         if (value == "") {
-            throw RuntimeException("Preference value not found: " + prefName)
+            throw RuntimeException("Preference value not found: $prefName")
         }
         return value
     }

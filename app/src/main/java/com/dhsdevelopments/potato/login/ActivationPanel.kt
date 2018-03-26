@@ -11,7 +11,7 @@ import java.text.MessageFormat
 
 class ActivationPanel : AppCompatActivity() {
     companion object {
-        val EXTRA_EMAIL_ADDRESS = "com.dhsdevelopments.potato.email"
+        const val EXTRA_EMAIL_ADDRESS = "com.dhsdevelopments.potato.email"
     }
 
     private val registeredMessage by lazy { findViewById<TextView>(R.id.registered_message) }

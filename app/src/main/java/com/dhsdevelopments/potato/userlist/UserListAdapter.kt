@@ -43,7 +43,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
         return when (viewType) {
             VIEW_TYPE_HEADER -> HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_header, parent, false))
             VIEW_TYPE_USER -> UserElementViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_element, parent, false))
-            else -> throw IllegalArgumentException("Unexpected viewType: " + viewType)
+            else -> throw IllegalArgumentException("Unexpected viewType: $viewType")
         }
     }
 
@@ -141,7 +141,7 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
     }
 
     companion object {
-        private val VIEW_TYPE_HEADER = 0
-        private val VIEW_TYPE_USER = 1
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_USER = 1
     }
 }

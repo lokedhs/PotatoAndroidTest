@@ -86,7 +86,7 @@ class MessageElementList(private val list: List<MessageElement>) : MessageElemen
     }
 }
 
-@Suppress("MemberVisibilityCanPrivate")
+@Suppress("MemberVisibilityCanPrivate", "MemberVisibilityCanBePrivate")
 class Message : Serializable {
     @SerializedName("id")
     lateinit var id: String

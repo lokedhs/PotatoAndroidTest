@@ -41,7 +41,7 @@ public class ChannelDescriptor {
     }
 
     @Ignore
-    public ChannelDescriptor(@NonNull String id, String name, String privateUser, boolean hidden, String domainId, int unreadCount) {
+    public ChannelDescriptor(@NonNull String id, @NonNull String name, String privateUser, boolean hidden, @NonNull String domainId, int unreadCount) {
         this.id = id;
         this.name = name;
         this.privateUser = privateUser;

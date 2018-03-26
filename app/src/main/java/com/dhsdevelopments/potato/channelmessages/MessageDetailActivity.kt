@@ -103,9 +103,9 @@ class MessageDetailActivity : AppCompatActivity() {
     }
 
     companion object {
-        internal val EXTRA_MESSAGE_DATA = "com.dhsdevelopments.potato.MESSAGE_DATA"
-        internal val EXTRA_USER_NAME = "com.dhsdevelopments.potato.USER_DESCRIPTION"
-        internal val EXTRA_USER_NICKNAME = "com.dhsdevelopments.potato.USER_NICKNAME"
+        internal const val EXTRA_MESSAGE_DATA = "com.dhsdevelopments.potato.MESSAGE_DATA"
+        internal const val EXTRA_USER_NAME = "com.dhsdevelopments.potato.USER_DESCRIPTION"
+        internal const val EXTRA_USER_NICKNAME = "com.dhsdevelopments.potato.USER_NICKNAME"
 
         fun makeIntent(context: Context, userTracker: ChannelUsersTracker, msg: MessageWrapper): Intent {
             val uid = msg.sender

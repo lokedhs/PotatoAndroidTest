@@ -1,7 +1,7 @@
 package com.dhsdevelopments.watch
 
 object Log {
-    val LOG_TAG = "potato.watch"
+    const val LOG_TAG = "potato.watch"
 
     fun e(message: String) {
         android.util.Log.e(LOG_TAG, message)

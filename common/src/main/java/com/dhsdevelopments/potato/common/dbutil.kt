@@ -53,7 +53,7 @@ interface ChannelConfigDao {
     fun updateChannelConfig(channelConfig: ChannelConfigDescriptor)
 }
 
-@Database(entities = arrayOf(ChannelDescriptor::class, DomainDescriptor::class, ChannelConfigDescriptor::class), version = 1, exportSchema = false)
+@Database(entities = [(ChannelDescriptor::class), (DomainDescriptor::class), (ChannelConfigDescriptor::class)], version = 1, exportSchema = false)
 abstract class PotatoDatabase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
     abstract fun domainDao(): DomainDao
@@ -94,10 +94,7 @@ object DbTools {
 
     fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
         val db = CommonApplication.getInstance(context).cacheDatabase
-        val channel = db.channelDao().findById(cid)
-        if (channel == null) {
-            throw IllegalArgumentException("Attempt to load nonexistent channel")
-        }
+        val channel = db.channelDao().findById(cid) ?: throw IllegalArgumentException("Attempt to load nonexistent channel")
         return channel
     }
 

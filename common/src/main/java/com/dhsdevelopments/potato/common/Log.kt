@@ -2,7 +2,7 @@ package com.dhsdevelopments.potato.common
 
 @Suppress("unused")
 object Log {
-    val LOG_TAG = "potato.common"
+    const val LOG_TAG = "potato.common"
 
     fun e(message: String) {
         android.util.Log.e(LOG_TAG, message)

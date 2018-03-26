@@ -56,8 +56,8 @@ class CodeTypefaceSpan(val context: Context) : ReplacementSpan() {
     }
 
     companion object {
-        private val FRAME_MARGIN = 3
-        private val FRAME_WIDTH = 1
+        private const val FRAME_MARGIN = 3
+        private const val FRAME_WIDTH = 1
     }
 }
 

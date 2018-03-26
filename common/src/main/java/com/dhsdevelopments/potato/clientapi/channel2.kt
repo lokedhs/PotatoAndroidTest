@@ -5,7 +5,7 @@ package com.dhsdevelopments.potato.clientapi.channel2
 import com.dhsdevelopments.potato.clientapi.RemoteResult
 import com.google.gson.annotations.SerializedName
 
-@Suppress("MemberVisibilityCanPrivate")
+@Suppress("MemberVisibilityCanPrivate", "MemberVisibilityCanBePrivate")
 class Channel {
     @SerializedName("id")
     lateinit var id: String

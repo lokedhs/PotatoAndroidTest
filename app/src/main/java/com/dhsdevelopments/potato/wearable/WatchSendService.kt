@@ -17,7 +17,6 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 
-
 class WatchSendService : IntentService("WatchSendService") {
 
     companion object {

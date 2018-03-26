@@ -16,10 +16,10 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.common.Log
 
 class TesterActivity : Activity() {
-    val testNotificationButton by lazy { findViewById<Button>(R.id.test_notification_button) }
-    val openDialogButton by lazy { findViewById<Button>(R.id.test_dialog_button) }
-    val dialogStylePicker by lazy { findViewById<NumberPicker>(R.id.dialog_style_number_picker) }
-    val themePicker by lazy { findViewById<NumberPicker>(R.id.theme_picker) }
+    private val testNotificationButton: Button by lazy { findViewById<Button>(R.id.test_notification_button) }
+    private val openDialogButton: Button by lazy { findViewById<Button>(R.id.test_dialog_button) }
+    private val dialogStylePicker: NumberPicker by lazy { findViewById<NumberPicker>(R.id.dialog_style_number_picker) }
+    private val themePicker: NumberPicker by lazy { findViewById<NumberPicker>(R.id.theme_picker) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -11,8 +11,8 @@ import java.util.*
 
 class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView.Adapter<ChannelListAdapter.ViewHolder>() {
     companion object {
-        private val VIEW_TYPE_HEADER = 0
-        private val VIEW_TYPE_CHANNEL = 1
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_CHANNEL = 1
     }
 
     private var publicChannels: MutableList<ChannelEntry> = ArrayList()
@@ -27,7 +27,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
         return when (viewType) {
             VIEW_TYPE_HEADER -> HeaderViewHolder(layoutInflater.inflate(R.layout.channel_list_header, parent, false))
             VIEW_TYPE_CHANNEL -> ChannelViewHolder(layoutInflater.inflate(R.layout.channel_list_content, parent, false))
-            else -> throw RuntimeException("Unexpected view type=" + viewType)
+            else -> throw RuntimeException("Unexpected view type=$viewType")
         }
     }
 

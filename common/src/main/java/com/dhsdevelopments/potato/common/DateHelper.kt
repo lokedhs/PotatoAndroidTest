@@ -1,6 +1,5 @@
 package com.dhsdevelopments.potato.common
 
-import android.annotation.SuppressLint
 import android.content.Context
 import java.text.DateFormat
 import java.text.MessageFormat
@@ -8,7 +7,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-@SuppressLint("SimpleDateFormat")
 class DateHelper {
     private val inputFormat: DateFormat by lazy {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -26,7 +24,7 @@ class DateHelper {
             inputFormat.parse(text)
         }
         catch (e: ParseException) {
-            throw IllegalArgumentException("illegal date format: " + text, e)
+            throw IllegalArgumentException("illegal date format: $text", e)
         }
     }
 
@@ -34,10 +32,10 @@ class DateHelper {
     fun formatDateTimeOutputFormat(date: Date): String = dateTimeOutputFormat.format(date)
 
     companion object {
-        val SECOND_MILLIS: Long = 1000
-        val MINUTE_MILLIS = SECOND_MILLIS * 60
-        val HOUR_MILLIS = MINUTE_MILLIS * 60
-        val DAY_MILLIS = HOUR_MILLIS * 24
+        const val SECOND_MILLIS: Long = 1000
+        const val MINUTE_MILLIS = SECOND_MILLIS * 60
+        const val HOUR_MILLIS = MINUTE_MILLIS * 60
+        const val DAY_MILLIS = HOUR_MILLIS * 24
 
         fun makeDateDiffString(context: Context, date: Long): String {
             val resources = context.resources

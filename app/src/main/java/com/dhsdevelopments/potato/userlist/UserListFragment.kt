@@ -39,7 +39,7 @@ class UserListFragment : Fragment() {
     }
 
     companion object {
-        private val ARG_CHANNEL_ID = "channelId"
+        private const val ARG_CHANNEL_ID = "channelId"
 
         fun newInstance(cid: String): UserListFragment {
             val fragment = UserListFragment()

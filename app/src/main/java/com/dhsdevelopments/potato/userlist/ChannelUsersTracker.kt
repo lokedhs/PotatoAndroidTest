@@ -51,7 +51,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
             d.isActive = active
         }
         else {
-            users.put(uid, UserDescriptor("noname", "unknown", null, active))
+            users[uid] = UserDescriptor("noname", "unknown", null, active)
         }
 
         if (fireEvent) {
@@ -72,7 +72,7 @@ class ChannelUsersTracker private constructor(private val context: Context, val 
         for (u in members) {
             val d = users[u.id]
             if (d == null) {
-                users.put(u.id, UserDescriptor(u.description, u.nickname, u.imageName, false))
+                users[u.id] = UserDescriptor(u.description, u.nickname, u.imageName, false)
             }
             else {
                 d.name = u.description

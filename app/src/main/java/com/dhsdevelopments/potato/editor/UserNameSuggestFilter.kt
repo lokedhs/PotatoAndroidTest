@@ -28,7 +28,7 @@ internal class UserNameSuggestFilter(private val usersTracker: ChannelUsersTrack
         }
 
         if (text[0] != '@') {
-            Log.w("Attempt to filter a string which does not start with @: \"" + text + "\"")
+            Log.w("Attempt to filter a string which does not start with @: \"$text\"")
             return null
         }
 

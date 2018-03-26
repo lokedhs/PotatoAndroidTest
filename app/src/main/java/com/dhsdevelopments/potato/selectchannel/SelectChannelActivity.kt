@@ -13,7 +13,7 @@ import com.dhsdevelopments.potato.createchannel.CreateChannelActivity
 class SelectChannelActivity : Activity() {
 
     companion object {
-        val RESULT_ERROR_LOADING_CHANNEL = RESULT_FIRST_USER
+        const val RESULT_ERROR_LOADING_CHANNEL = RESULT_FIRST_USER
     }
 
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.channel_select_list) }

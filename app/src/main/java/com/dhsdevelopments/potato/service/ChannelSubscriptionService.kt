@@ -32,7 +32,7 @@ class ChannelSubscriptionService : Service() {
         when (action) {
             ACTION_BIND_TO_CHANNEL -> bindToChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
             ACTION_UNBIND_FROM_CHANNEL -> unbindFromChannel(intent.getStringExtra(IntentUtil.EXTRA_CHANNEL_ID))
-            else -> throw UnsupportedOperationException("Illegal subscription command: " + action)
+            else -> throw UnsupportedOperationException("Illegal subscription command: $action")
         }
         return Service.START_NOT_STICKY
     }
@@ -367,29 +367,29 @@ class ChannelSubscriptionService : Service() {
     }
 
     companion object {
-        val ACTION_BIND_TO_CHANNEL = "com.dhsdevelopments.potato.BIND_CHANNEL"
-        val ACTION_UNBIND_FROM_CHANNEL = "com.dhsdevelopments.potato.UNBIND_CHANNEL"
+        const val ACTION_BIND_TO_CHANNEL = "com.dhsdevelopments.potato.BIND_CHANNEL"
+        const val ACTION_UNBIND_FROM_CHANNEL = "com.dhsdevelopments.potato.UNBIND_CHANNEL"
 
-        val ACTION_MESSAGE_RECEIVED = "com.dhsdevelopments.potato.MESSAGE_RECEIVED"
-        val EXTRA_MESSAGE = "com.dhsdevelopments.potato.message"
+        const val ACTION_MESSAGE_RECEIVED = "com.dhsdevelopments.potato.MESSAGE_RECEIVED"
+        const val EXTRA_MESSAGE = "com.dhsdevelopments.potato.message"
 
-        val ACTION_CHANNEL_USERS_UPDATE = "com.dhsdevelopments.potato.CHANNEL_USERS_UPDATED"
-        val EXTRA_CHANNEL_USERS_SYNC_USERS = "com.dhsdevelopments.potato.sync_users"
-        val EXTRA_CHANNEL_USERS_USER_ID = "com.dhsdevelopments.potato.update_user"
-        val EXTRA_CHANNEL_USERS_TYPE = "com.dhsdevelopments.potato.update_user_add_type"
-        val USER_UPDATE_TYPE_SYNC = "sync"
-        val USER_UPDATE_TYPE_ADD = "add"
-        val USER_UPDATE_TYPE_REMOVE = "remove"
+        const val ACTION_CHANNEL_USERS_UPDATE = "com.dhsdevelopments.potato.CHANNEL_USERS_UPDATED"
+        const val EXTRA_CHANNEL_USERS_SYNC_USERS = "com.dhsdevelopments.potato.sync_users"
+        const val EXTRA_CHANNEL_USERS_USER_ID = "com.dhsdevelopments.potato.update_user"
+        const val EXTRA_CHANNEL_USERS_TYPE = "com.dhsdevelopments.potato.update_user_add_type"
+        const val USER_UPDATE_TYPE_SYNC = "sync"
+        const val USER_UPDATE_TYPE_ADD = "add"
+        const val USER_UPDATE_TYPE_REMOVE = "remove"
 
-        val ACTION_TYPING = "com.dhsdevelopments.potato.TYPING_UPDATED"
-        val EXTRA_TYPING_MODE = "com.dhsdevelopments.potato.typing_mode"
-        val TYPING_MODE_ADD = "add"
-        val TYPING_MODE_REMOVE = "remove"
+        const val ACTION_TYPING = "com.dhsdevelopments.potato.TYPING_UPDATED"
+        const val EXTRA_TYPING_MODE = "com.dhsdevelopments.potato.typing_mode"
+        const val TYPING_MODE_ADD = "add"
+        const val TYPING_MODE_REMOVE = "remove"
 
-        val ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE = "com.dhsdevelopments.potato.UNKNOWN_COMMAND"
-        val EXTRA_COMMAND_NAME = "command_name"
+        const val ACTION_UNKNOWN_SLASHCOMMAND_RESPONSE = "com.dhsdevelopments.potato.UNKNOWN_COMMAND"
+        const val EXTRA_COMMAND_NAME = "command_name"
 
-        val ACTION_OPTIONS = "com.dhsdevelopments.potato.SESSION_OPTIONS_REQUEST"
-        val EXTRA_OPTION_NOTIFICATION = "options"
+        const val ACTION_OPTIONS = "com.dhsdevelopments.potato.SESSION_OPTIONS_REQUEST"
+        const val EXTRA_OPTION_NOTIFICATION = "options"
     }
 }

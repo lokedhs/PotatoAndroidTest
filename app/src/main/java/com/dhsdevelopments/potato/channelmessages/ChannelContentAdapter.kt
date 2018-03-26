@@ -159,7 +159,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             VIEW_TYPE_PLAIN_MESSAGE -> MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.message_basic, parent, false))
             VIEW_TYPE_EXTRA_CONTENT -> MessageViewHolderExtraContent(LayoutInflater.from(parent.context).inflate(R.layout.message_extra_html, parent, false))
             VIEW_TYPE_END_OF_CHANNEL_MARKER -> EndOfChannelMarkerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.message_marker, parent, false))
-            else -> throw IllegalStateException("Unexpected viewType: " + viewType)
+            else -> throw IllegalStateException("Unexpected viewType: $viewType")
         }
     }
 

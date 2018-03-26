@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName
 @Suppress("MemberVisibilityCanPrivate")
 class GcmRegistrationRequest {
     @SerializedName("token")
-    lateinit var token: String
+    private lateinit var token: String
     @SerializedName("provider")
-    lateinit var provider: String
+    private lateinit var provider: String
 
     @Suppress("unused", "RemoveEmptySecondaryConstructorBody")
     constructor() {

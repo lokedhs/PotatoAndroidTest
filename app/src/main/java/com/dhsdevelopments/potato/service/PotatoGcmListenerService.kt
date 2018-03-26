@@ -19,9 +19,9 @@ import com.google.android.gms.gcm.GcmListenerService
 class PotatoGcmListenerService : GcmListenerService() {
 
     companion object {
-        private val UNREAD_NOTIFICATIONS_TAG = "unread_channels"
-        private val MESSAGE_NOTIFICATION_ID = 0
-        private val UNREAD_NOTIFICATION_ID = 1
+        private const val UNREAD_NOTIFICATIONS_TAG = "unread_channels"
+        private const val MESSAGE_NOTIFICATION_ID = 0
+        private const val UNREAD_NOTIFICATION_ID = 1
     }
 
     override fun onCreate() {

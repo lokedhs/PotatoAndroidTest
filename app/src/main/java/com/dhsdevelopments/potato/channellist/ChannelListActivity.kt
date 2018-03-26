@@ -130,7 +130,7 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     private fun showErrorSnackbar(message: String) {
-        Snackbar.make(channelListRecyclerView, "Error loading channels: " + message, Snackbar.LENGTH_LONG)
+        Snackbar.make(channelListRecyclerView, "Error loading channels: $message", Snackbar.LENGTH_LONG)
                 .setAction("Action", null)
                 .show()
     }
@@ -317,9 +317,9 @@ class ChannelListActivity : AppCompatActivity(), HasChannelContentActivity {
     }
 
     companion object {
-        val EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id"
-        val EXTRA_DOMAIN_NAME = "com.dhsdevelopments.potato.domain_name"
+        const val EXTRA_DOMAIN_ID = "com.dhsdevelopments.potato.domain_id"
+        const val EXTRA_DOMAIN_NAME = "com.dhsdevelopments.potato.domain_name"
 
-        private val STATE_SELECTED_DOMAIN_ID = "selectedDomain"
+        private const val STATE_SELECTED_DOMAIN_ID = "selectedDomain"
     }
 }

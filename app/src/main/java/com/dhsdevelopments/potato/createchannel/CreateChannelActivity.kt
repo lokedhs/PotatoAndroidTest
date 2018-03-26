@@ -43,6 +43,6 @@ class CreateChannelActivity : AppCompatActivity() {
     }
 
     companion object {
-        val EXTRA_DOMAIN_ID = "domainId"
+        const val EXTRA_DOMAIN_ID = "domainId"
     }
 }

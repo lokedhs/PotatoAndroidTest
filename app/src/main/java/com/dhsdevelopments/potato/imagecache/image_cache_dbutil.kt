@@ -35,7 +35,7 @@ interface ImageCacheDao {
     fun deleteCacheEntries(entryList: List<ImageCacheEntry>)
 }
 
-@Database(entities = arrayOf(ImageCacheEntry::class), version = 1, exportSchema = false)
+@Database(entities = [(ImageCacheEntry::class)], version = 1, exportSchema = false)
 abstract class ImageCacheDatabase : RoomDatabase() {
     abstract fun imageCacheDao(): ImageCacheDao
 

@@ -167,7 +167,7 @@ class ImageCache(private val context: Context) {
             }
             if (cacheEntry == null) {
                 val e = BitmapCacheEntry(true)
-                bitmapCache.put(cacheKey, e)
+                bitmapCache[cacheKey] = e
                 e.addCallback(callback)
                 loadQueue.add(LoadQueueEntry(url, imageWidth, imageHeight, storageType, e, apiKey))
                 if (!loadTaskIsActive) {
@@ -253,7 +253,7 @@ class ImageCache(private val context: Context) {
                 if (fileName != null) {
                     val file = File(cacheDir, fileName)
                     if (!file.delete()) {
-                        Log.w("could not delete file: " + file)
+                        Log.w("could not delete file: $file")
                     }
                 }
             }
@@ -357,7 +357,7 @@ class ImageCache(private val context: Context) {
 
         private fun removeOldFile(url: String, file: File) {
             if (!file.delete()) {
-                Log.w("failed to delete file: " + file)
+                Log.w("failed to delete file: $file")
             }
             deleteCacheEntryFromDatabase(url)
         }
@@ -388,7 +388,7 @@ class ImageCache(private val context: Context) {
     }
 
     companion object {
-        private val IMAGE_CACHE_DIR_NAME = "images"
+        private const val IMAGE_CACHE_DIR_NAME = "images"
 
         @Throws(IOException::class, FileDownloadFailedException::class)
         fun copyUrlToFile(cacheDirCopy: File, url: String, tmpFilePrefix: String, apiKey: String?): File? {
@@ -409,7 +409,7 @@ class ImageCache(private val context: Context) {
                 if (response.code() == 404) {
                     // Simply return null here since we want to cache the 404's
                     if (!found.delete()) {
-                        Log.w("Failed to delete unused temp file: " + found)
+                        Log.w("Failed to delete unused temp file: $found")
                     }
                     return null
                 }
@@ -435,7 +435,7 @@ class ImageCache(private val context: Context) {
             }
             catch (e: IOException) {
                 if (!found.delete()) {
-                    Log.w("error when trying to delete broken download file: " + found)
+                    Log.w("error when trying to delete broken download file: $found")
                 }
                 throw e
             }

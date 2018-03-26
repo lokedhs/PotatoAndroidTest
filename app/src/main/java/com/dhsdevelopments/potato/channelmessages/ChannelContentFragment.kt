@@ -44,9 +44,9 @@ import java.util.*
 class ChannelContentFragment : Fragment() {
 
     companion object {
-        val ARG_CHANNEL_ID = "item_id"
+        const val ARG_CHANNEL_ID = "item_id"
 
-        private val SELECT_IMAGE_RESULT_CODE = 1
+        private const val SELECT_IMAGE_RESULT_CODE = 1
     }
 
     private lateinit var cid: String
@@ -217,7 +217,7 @@ class ChannelContentFragment : Fragment() {
 
                 override fun loadFailed(errorMessage: String) {
                     swipeRefreshLayout.isRefreshing = false
-                    showErrorSnackbar("Error loading messages: " + errorMessage)
+                    showErrorSnackbar("Error loading messages: $errorMessage")
                 }
             })
         }
@@ -253,7 +253,7 @@ class ChannelContentFragment : Fragment() {
             }
 
             override fun loadFailed(errorMessage: String) {
-                showErrorSnackbar("Error loading messages: " + errorMessage)
+                showErrorSnackbar("Error loading messages: $errorMessage")
             }
         })
 
@@ -395,10 +395,10 @@ class ChannelContentFragment : Fragment() {
         val uid = intent.getStringExtra(IntentUtil.EXTRA_USER_ID)
         val mode = intent.getStringExtra(ChannelSubscriptionService.EXTRA_TYPING_MODE)
         when (mode) {
-            ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers.put(uid, findUserTracker().getNameForUid(uid))
+            ChannelSubscriptionService.TYPING_MODE_ADD -> typingUsers[uid] = findUserTracker().getNameForUid(uid)
             ChannelSubscriptionService.TYPING_MODE_REMOVE -> typingUsers.remove(uid)
             else -> {
-                Log.w("Unexpected typing mode in broadcast message: " + mode)
+                Log.w("Unexpected typing mode in broadcast message: $mode")
             }
         }
 
