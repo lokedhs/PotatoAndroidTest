@@ -8,28 +8,32 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+@SuppressWarnings("WeakerAccess")
 @Entity(tableName = "channels",
         foreignKeys = @ForeignKey(entity = DomainDescriptor.class,
                 parentColumns = "id",
                 childColumns = "domain_id"),
         indices = @Index("domain_id"))
-//        foreignKeys = [ForeignKey(entity = DomainDescriptor::class,
-//        parentColumns = ["id"],
-//        childColumns = ["domain_id"],
-//        indices = arrayOf(Index("domain_id"))]
 public class ChannelDescriptor {
     @PrimaryKey
     @ColumnInfo(name = "id")
     @NonNull
     public String id = "";
+
     @ColumnInfo(name = "name")
+    @NonNull
     public String name = "";
+
     @ColumnInfo(name = "private_user")
     public String privateUser = null;
+
     @ColumnInfo(name = "hidden")
     public boolean hidden = false;
+
     @ColumnInfo(name = "domain_id")
+    @NonNull
     public String domainId = "";
+
     @ColumnInfo(name = "unread")
     public int unreadCount;
 

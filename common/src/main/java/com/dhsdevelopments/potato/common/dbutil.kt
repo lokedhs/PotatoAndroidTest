@@ -32,15 +32,6 @@ interface ChannelDao {
     fun updateChannel(channel: ChannelDescriptor)
 }
 
-
-@Entity(tableName = "domains")
-class DomainDescriptor(
-        @PrimaryKey
-        @ColumnInfo(name = "id")
-        var id: String = "",
-        @ColumnInfo(name = "name")
-        var name: String = "")
-
 @Dao
 interface DomainDao {
     @Query("select * from domains")
@@ -49,17 +40,6 @@ interface DomainDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDomain(domain: DomainDescriptor)
 }
-
-@Entity(tableName = "channel_config")
-class ChannelConfigDescriptor(
-        @PrimaryKey
-        @ColumnInfo(name = "id")
-        var channelId: String = "",
-        @ColumnInfo(name = "show_notification")
-        var showNotification: Boolean = false,
-        @ColumnInfo(name = "show_unread")
-        var showUnread: Boolean = false
-)
 
 @Dao
 interface ChannelConfigDao {

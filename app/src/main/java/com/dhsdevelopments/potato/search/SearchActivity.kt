@@ -13,7 +13,6 @@ import com.dhsdevelopments.potato.common.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 class SearchActivity : AppCompatActivity() {
     private val recyclerView by lazy { findViewById<RecyclerView>(R.id.search_results_recycler_view) }

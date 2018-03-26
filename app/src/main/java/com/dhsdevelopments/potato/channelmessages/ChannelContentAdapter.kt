@@ -32,7 +32,6 @@ import com.dhsdevelopments.potato.userlist.ChannelUsersTracker
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import java.text.MessageFormat
 import java.util.*
 
@@ -40,11 +39,11 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
         RecyclerView.Adapter<ChannelContentAdapter.ViewHolder>() {
 
     companion object {
-        private val VIEW_TYPE_PLAIN_MESSAGE = 0
-        private val VIEW_TYPE_EXTRA_CONTENT = 1
-        private val VIEW_TYPE_END_OF_CHANNEL_MARKER = 2
+        private const val VIEW_TYPE_PLAIN_MESSAGE = 0
+        private const val VIEW_TYPE_EXTRA_CONTENT = 1
+        private const val VIEW_TYPE_END_OF_CHANNEL_MARKER = 2
 
-        private val NUM_MESSAGES_PER_LOAD = 20
+        private const val NUM_MESSAGES_PER_LOAD = 20
     }
 
     private val context: Context

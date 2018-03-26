@@ -36,7 +36,6 @@ import com.dhsdevelopments.potato.service.ChannelSubscriptionService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import java.io.IOException
 import java.text.Collator
 import java.text.MessageFormat
