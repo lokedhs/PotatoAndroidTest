@@ -20,20 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "serverAddress"
-    productFlavors {
-        serverTesting {
-            resValue "string", "override_server_prefix", "https://potato.dhsdevelopments.com/"
-            dimension "serverAddress"
-        }
-        serverLocal {
-            resValue "string", "override_server_prefix", "http://10.0.2.2:8080/"
-            dimension "serverAddress"
-        }
-    }
-//    defaultConfig {
-//        flavorSelection "serverAddress", "serverTesting"
-//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

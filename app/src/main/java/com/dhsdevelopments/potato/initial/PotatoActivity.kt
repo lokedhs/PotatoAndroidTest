@@ -23,18 +23,27 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         super.onCreate(savedInstanceState)
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val apiKey = prefs.getString(getString(R.string.pref_apikey), "")
-        if (apiKey == "") {
-            val intent = Intent(this, WebLoginActivity::class.java)
+
+        val serverName = prefs.getString(getString(R.string.pref_servername), "")
+        if(serverName == "") {
+            val intent = Intent(this, ReadServerNameActivity::class.java)
             startActivity(intent)
             finish()
-        } else {
-            val uid = prefs.getString(getString(R.string.pref_user_id), "")
-            if (uid == "") {
-                throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
-            }
-            if (checkGooglePlayApis()) {
-                startChannelListActivity()
+        }
+        else {
+            val apiKey = prefs.getString(getString(R.string.pref_apikey), "")
+            if (apiKey == "") {
+                val intent = Intent(this, WebLoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                val uid = prefs.getString(getString(R.string.pref_user_id), "")
+                if (uid == "") {
+                    throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
+                }
+                if (checkGooglePlayApis()) {
+                    startChannelListActivity()
+                }
             }
         }
     }

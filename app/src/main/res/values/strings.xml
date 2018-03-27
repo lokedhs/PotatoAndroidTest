@@ -81,4 +81,10 @@
     <string name="create_new_channel">Create new channel</string>
     <string name="title_activity_create_channel">Create new channel</string>
     <string name="create_channel_ok">Save</string>
+    <string name="server_url">Server URL</string>
+    <string name="server_url_hint">https://name</string>
+    <string name="connect">Connect</string>
+    <string name="no_response_from_server">No response from server</string>
+    <string name="request_server_connection_error">Error: %1s</string>
+    <string name="request_server_connect_failed">Connection error</string>
 </resources>

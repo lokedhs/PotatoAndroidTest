@@ -1,6 +1,7 @@
 package com.dhsdevelopments.potato.clientapi
 
 import android.content.Context
+import android.preference.PreferenceManager
 import com.dhsdevelopments.potato.clientapi.message.MessageElement
 import com.dhsdevelopments.potato.clientapi.message.MessageElementTypeAdapter
 import com.dhsdevelopments.potato.clientapi.notifications.NotificationTypeAdapter
@@ -16,19 +17,20 @@ import java.util.concurrent.TimeUnit
 class ApiProvider(val context: Context) {
 
     val serverUrlPrefix by lazy {
-        val identifier = context.resources.getIdentifier("com.dhsdevelopments.potato:string/override_server_prefix", null, null)
-        Log.d("Got identifier for com.dhsdevelopments.potato:string/override_server_prefix = $identifier")
-        val p = if (identifier == 0) {
-            context.resources.getString(R.string.server_prefix)
-        } else {
-            context.resources.getString(identifier)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val serverName = prefs.getString(context.getString(R.string.pref_servername), "")!!
+        if (serverName == "") {
+            throw IllegalStateException("No server prefix found")
         }
-        p ?: throw IllegalStateException("No server prefix found")
+        serverName
     }
 
-    val apiUrlPrefix by lazy { serverUrlPrefix + "api/1.0/" }
+    val apiUrlPrefix: String
+        get() = makeApiUrlPrefix(serverUrlPrefix)
 
-    fun makePotatoApi(timeout: Long = -1): PotatoApi {
+    fun makeApiUrlPrefix(url: String) = "${url}api/1.0/"
+
+    fun makePotatoApi(timeout: Long = -1, urlPrefix: String = serverUrlPrefix): PotatoApi {
         Log.i("Creating api with timeout $timeout")
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -42,8 +44,9 @@ class ApiProvider(val context: Context) {
                     .build()
         }
         val httpClient = builder.build()
+        Log.i("building potato api from url: |${makeApiUrlPrefix(urlPrefix)}|")
         val retrofit = Retrofit.Builder()
-                .baseUrl(apiUrlPrefix)
+                .baseUrl(makeApiUrlPrefix(urlPrefix))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(httpClient)
                 .build()

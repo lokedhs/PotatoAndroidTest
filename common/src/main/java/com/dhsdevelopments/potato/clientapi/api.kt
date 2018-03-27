@@ -35,9 +35,8 @@ import retrofit2.http.*
 import java.io.IOException
 
 interface PotatoApi {
-    //    @GET("domain/{domainId}/channels")
-    //    fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
-    //                               @Path("domainId") domainId: String): Call<ChannelsInDomainResult>
+    @GET("server")
+    fun getServerInfo(): Call<ServerInfoResult>
 
     @GET("domains/{domainId}")
     fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
