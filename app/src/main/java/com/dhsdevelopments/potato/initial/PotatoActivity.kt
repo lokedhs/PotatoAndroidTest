@@ -15,6 +15,10 @@ import com.google.android.gms.common.api.GoogleApiClient
 
 class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
 
+    companion object {
+        private const val AVAILABILITY_DIALOG_RESULT = 0
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,41 +28,53 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             val intent = Intent(this, WebLoginActivity::class.java)
             startActivity(intent)
             finish()
-        }
-        else {
+        } else {
             val uid = prefs.getString(getString(R.string.pref_user_id), "")
             if (uid == "") {
                 throw RuntimeException("uid is not set in preferences, should probably look it up on the server here")
             }
-            checkGooglePlayApis()
-            startActivity(Intent(this, ChannelListActivity::class.java))
-            finish()
+            if (checkGooglePlayApis()) {
+                startChannelListActivity()
+            }
         }
     }
 
-    private fun checkGooglePlayApis() {
+    private fun startChannelListActivity() {
+        startActivity(Intent(this, ChannelListActivity::class.java))
+        finish()
+    }
+
+    private fun checkGooglePlayApis(): Boolean {
         Log.d("Checking for google play apis")
         val availability = GoogleApiAvailability.getInstance()
         val result = availability.isGooglePlayServicesAvailable(this)
         Log.d("check result=$result")
         if (result != ConnectionResult.SUCCESS) {
             if (availability.isUserResolvableError(result)) {
-//                val dialog = availability.getErrorDialog(this, result, 0)
-                availability.showErrorNotification(this, result)
-            }
-            else {
+                val dialog = availability.getErrorDialog(this, result, AVAILABILITY_DIALOG_RESULT)
+                dialog.show()
+            } else {
                 throw RuntimeException("google apis not available")
             }
-        }
-        else {
+            return false
+        } else {
             val intent = Intent(this, RegistrationIntentService::class.java)
             intent.action = RegistrationIntentService.ACTION_REGISTER
             startService(intent)
+            return true
         }
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
         Log.e("Did not find the google apis")
         throw RuntimeException("google apis not available")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == AVAILABILITY_DIALOG_RESULT) {
+            if(checkGooglePlayApis()) {
+                startChannelListActivity()
+            }
+        }
     }
 }
