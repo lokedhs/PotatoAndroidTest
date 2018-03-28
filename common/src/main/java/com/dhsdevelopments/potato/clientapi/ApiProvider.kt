@@ -44,7 +44,6 @@ class ApiProvider(val context: Context) {
                     .build()
         }
         val httpClient = builder.build()
-        Log.i("building potato api from url: |${makeApiUrlPrefix(urlPrefix)}|")
         val retrofit = Retrofit.Builder()
                 .baseUrl(makeApiUrlPrefix(urlPrefix))
                 .addConverterFactory(GsonConverterFactory.create(gson))

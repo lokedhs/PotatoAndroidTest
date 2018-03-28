@@ -32,8 +32,13 @@ class PotatoApplication : CommonApplication() {
     }
 
     override fun findApiProvider() = apiProvider
-
     override fun findApiKey(): String = getPrefByName(R.string.pref_apikey)
+
+    override fun findGcmSenderId(): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        return prefs.getString(getString(R.string.pref_gcm_sender), "")
+    }
+
     override fun findUserId(): String = getPrefByName(R.string.pref_user_id)
 
     companion object {

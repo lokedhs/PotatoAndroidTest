@@ -85,6 +85,7 @@
     <string name="server_url_hint">https://name</string>
     <string name="connect">Connect</string>
     <string name="no_response_from_server">No response from server</string>
-    <string name="request_server_connection_error">Error: %1s</string>
+    <string name="request_server_connection_error">Error: %1$s</string>
     <string name="request_server_connect_failed">Connection error</string>
+    <string name="pref_gcm_sender">gcmSender</string>
 </resources>

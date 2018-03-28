@@ -34,10 +34,11 @@ class ReadServerNameActivity : AppCompatActivity() {
         }
     }
 
-    fun storeServerUrlAndFinish(url: String) {
+    fun storeServerUrlAndFinish(url: String, gcmSender: String) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.edit().apply {
             putString(getString(R.string.pref_servername), url)
+            putString(getString(R.string.pref_gcm_sender), gcmSender)
             apply()
         }
 
@@ -60,7 +61,7 @@ class ReadServerNameActivity : AppCompatActivity() {
         error_message_text_view.visibility = View.GONE
         updateBusyState(true)
 
-        Log.i("Attempting to connecto to url: $url")
+        Log.d("Attempting to connect to url: $url")
         val app = PotatoApplication.getInstance(this)
         val call = app.findApiProvider().makePotatoApi(urlPrefix = url).getServerInfo()
         call.enqueue(object : Callback<ServerInfoResult?> {
@@ -76,7 +77,7 @@ class ReadServerNameActivity : AppCompatActivity() {
                         showErrorMessage(getString(R.string.no_response_from_server))
                         updateBusyState(false)
                     } else {
-                        storeServerUrlAndFinish(url)
+                        storeServerUrlAndFinish(url, body.gcmSender ?: "")
                     }
                 } else {
                     showErrorMessage(getString(R.string.request_server_connection_error, response.message()))

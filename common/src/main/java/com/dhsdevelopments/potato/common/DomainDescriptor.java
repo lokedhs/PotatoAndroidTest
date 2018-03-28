@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.common;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -20,6 +21,7 @@ public class DomainDescriptor {
     public DomainDescriptor() {
     }
 
+    @Ignore
     public DomainDescriptor(@NonNull String id, @NonNull String name) {
         this.id = id;
         this.name = name;

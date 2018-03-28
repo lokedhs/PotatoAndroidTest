@@ -2,6 +2,7 @@ package com.dhsdevelopments.potato.common;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -22,6 +23,7 @@ public class ChannelConfigDescriptor {
     public ChannelConfigDescriptor() {
     }
 
+    @Ignore
     public ChannelConfigDescriptor(@NonNull String channelId, boolean showNotification, boolean showUnread) {
         this.channelId = channelId;
         this.showNotification = showNotification;
