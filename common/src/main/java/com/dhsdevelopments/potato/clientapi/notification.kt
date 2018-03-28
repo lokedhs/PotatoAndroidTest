@@ -75,12 +75,12 @@ class UserStateUpdateUser {
 
 class PotatoNotificationResult {
     @SerializedName("event")
-    lateinit var eventId: String
+    var eventId: String? = null
 
     @SerializedName("data")
     var notifications: List<PotatoNotification>? = null
 
-    override fun toString() = "PotatoNotificationResult(eventId='$eventId', notifications=$notifications)"
+    override fun toString() = "PotatoNotificationResult[eventId='$eventId', notifications=$notifications]"
 }
 
 class TypingNotification : PotatoNotification() {
