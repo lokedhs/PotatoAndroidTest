@@ -100,7 +100,12 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
         val app = CommonApplication.getInstance(this)
-        val token = InstanceID.getInstance(this).getToken(app.findGcmSenderId(), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
+        val gcmSenderId = app.findGcmSenderId()
+        if(gcmSenderId == "") {
+            return
+        }
+
+        val token = InstanceID.getInstance(this).getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
         val call = app.findApiProvider().makePotatoApi().updateUnreadNotification(app.findApiKey(), cid, UpdateUnreadNotificationRequest(token, add, "gcm"))
         callService(call, ::plainErrorHandler) {
             updateRegistrationInDb(cid, add)

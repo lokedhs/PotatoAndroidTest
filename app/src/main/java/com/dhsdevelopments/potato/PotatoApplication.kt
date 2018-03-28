@@ -42,8 +42,8 @@ class PotatoApplication : CommonApplication() {
     override fun findUserId(): String = getPrefByName(R.string.pref_user_id)
 
     companion object {
-        private val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS
-        private val IMAGE_CACHE_PURGE_CUTOFF_SHORT = DateHelper.HOUR_MILLIS
+        private const val IMAGE_CACHE_PURGE_CUTOFF_LONG = DateHelper.DAY_MILLIS
+        private const val IMAGE_CACHE_PURGE_CUTOFF_SHORT = DateHelper.HOUR_MILLIS
 
         fun getInstance(context: Context): PotatoApplication {
             return context.applicationContext as PotatoApplication
