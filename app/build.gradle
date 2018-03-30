@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.dhsdevelopments.potato"
@@ -21,8 +21,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     dexOptions {
         preDexLibraries = false
@@ -45,13 +45,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation project(':common')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.google.android.gms:play-services-auth:12.0.0'
-    implementation 'com.google.android.gms:play-services-gcm:12.0.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.google.android.gms:play-services-wearable:12.0.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
+    implementation 'com.google.android.gms:play-services-gcm:12.0.1'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
+    implementation 'com.google.android.gms:play-services-wearable:12.0.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.koushikdutta.ion:ion:2.2.1'
     implementation 'nz.bradcampbell:paperparcel:2.0.4'
     implementation 'nz.bradcampbell:paperparcel-kotlin:2.0.4'

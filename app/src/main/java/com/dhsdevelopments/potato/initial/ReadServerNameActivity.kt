@@ -63,7 +63,7 @@ class ReadServerNameActivity : AppCompatActivity() {
 
         Log.d("Attempting to connect to url: $url")
         val app = PotatoApplication.getInstance(this)
-        val call = app.findApiProvider().makePotatoApi(urlPrefix = url).getServerInfo()
+        val call = app.findApiProvider().makePotatoApi(urlPrefix = url).serverInfo()
         call.enqueue(object : Callback<ServerInfoResult?> {
             override fun onFailure(call: Call<ServerInfoResult?>?, t: Throwable?) {
                 showErrorMessage(getString(R.string.request_server_connect_failed))

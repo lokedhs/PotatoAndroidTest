@@ -12,6 +12,8 @@ import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.concurrent.TimeUnit
 
 class ApiProvider(val context: Context) {
@@ -37,6 +39,11 @@ class ApiProvider(val context: Context) {
                 .registerTypeAdapter(MessageElement::class.java, MessageElementTypeAdapter())
                 .registerTypeAdapter(PotatoNotification::class.java, NotificationTypeAdapter())
                 .create()
+        gson.excluder().apply {
+            withModifiers(Modifier.FINAL or Modifier.TRANSIENT or Modifier.STATIC)
+            excludeClass(Method::class.java, false)
+            excludeClass(Context::class.java, false)
+        }
         val builder = OkHttpClient.Builder()
         if (timeout > 0) {
             builder.readTimeout(timeout, TimeUnit.SECONDS)

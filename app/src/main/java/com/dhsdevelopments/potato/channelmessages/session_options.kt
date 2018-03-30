@@ -64,12 +64,12 @@ class OptionsAdapter(private val parent: OptionsDialogFragment, notification: Op
     private val options: List<OptionWrapper> = notification.options.map { OptionWrapper(it) }
     private lateinit var imageCache: ImageCache
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         imageCache = ImageCache(parent.activity)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(layoutInflater.inflate(R.layout.option_dialog_view, parent, false))
     }

@@ -16,7 +16,7 @@ import java.util.*
 class AvailableChannelListAdapter(val parent: SelectChannelActivity, private val domainId: String) : RecyclerView.Adapter<AvailableChannelListAdapter.ViewHolder>() {
     private val channels = ArrayList<AvailableChannel>()
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         loadChannels()
     }
@@ -36,7 +36,7 @@ class AvailableChannelListAdapter(val parent: SelectChannelActivity, private val
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return ViewHolder(layoutInflater.inflate(R.layout.available_channel_row, parent, false))
     }

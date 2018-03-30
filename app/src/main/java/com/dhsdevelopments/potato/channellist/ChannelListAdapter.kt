@@ -18,7 +18,7 @@ class ChannelListAdapter(private val parent: ChannelListActivity) : RecyclerView
     private var publicChannels: MutableList<ChannelEntry> = ArrayList()
     private var privateChannels: MutableList<ChannelEntry> = ArrayList()
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
     }
 

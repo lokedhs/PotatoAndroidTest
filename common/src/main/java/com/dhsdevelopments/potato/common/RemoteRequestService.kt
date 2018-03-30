@@ -17,8 +17,8 @@ import com.dhsdevelopments.potato.clientapi.plainErrorHandler
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import com.google.android.gms.iid.InstanceID
+import okhttp3.MultipartBody
 import java.io.IOException
-import java.util.*
 
 class RemoteRequestService : IntentService("RemoteRequestService") {
     override fun onHandleIntent(intent: Intent?) {
@@ -39,14 +39,14 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
     private fun sendMessageWithImageImpl(cid: String, imageUri: Uri) {
         val app = CommonApplication.getInstance(this)
-        val map = HashMap<String, Any>()
-
-        map["content"] = SendMessageRequest("Uploaded file from mobile")
 
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(imageUri)) ?: "jpg"
-        map["body\"; filename=\"file.$extension\""] = ImageUriRequestBody(this, imageUri)
-
-        val call = app.findApiProvider().makePotatoApi().sendMessageWithFile(app.findApiKey(), cid, map)
+        val call = app.findApiProvider()
+                .makePotatoApi()
+                .sendMessageWithFile(app.findApiKey(),
+                                     cid,
+                                     SendMessageRequest("Uploaded file from mobile"),
+                                     MultipartBody.Part.createFormData("body", "file.$extension", ImageUriRequestBody(this, imageUri)))
         callService(call, ::plainErrorHandler) { response ->
             com.dhsdevelopments.potato.common.Log.i("Uploaded image, messageId=${response.id}")
         }
@@ -80,8 +80,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
                     }
                 }
             }
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             Log.e("Exception when loading channels", e)
             errorMessage = e.message
         }
@@ -90,8 +89,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
         val intent: Intent
         if (errorMessage == null) {
             intent = Intent(ACTION_CHANNEL_LIST_UPDATED)
-        }
-        else {
+        } else {
             intent = Intent(ACTION_CHANNEL_LIST_UPDATE_FAIL)
             intent.putExtra(EXTRA_ERROR_MESSAGE, errorMessage)
         }
@@ -101,7 +99,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
     private fun updateUnreadSubscriptionStateImpl(cid: String, add: Boolean) {
         val app = CommonApplication.getInstance(this)
         val gcmSenderId = app.findGcmSenderId()
-        if(gcmSenderId == "") {
+        if (gcmSenderId == "") {
             return
         }
 
@@ -190,7 +188,7 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
         fun markNotificationsForChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_MARK_NOTIFICATIONS,
-                    EXTRA_CHANNEL_ID to cid)
+                               EXTRA_CHANNEL_ID to cid)
         }
 
         fun loadChannelList(context: Context) {
@@ -199,46 +197,46 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
 
         fun updateUnreadSubscriptionState(context: Context, cid: String, subscribe: Boolean) {
             makeAndStartIntent(context, ACTION_UPDATE_UNREAD_SUBSCRIPTION,
-                    EXTRA_CHANNEL_ID to cid,
-                    EXTRA_UPDATE_STATE to subscribe)
+                               EXTRA_CHANNEL_ID to cid,
+                               EXTRA_UPDATE_STATE to subscribe)
         }
 
         fun sendMessageWithImage(context: Context, cid: String, imageUri: Uri) {
             makeAndStartIntent(context, ACTION_SEND_MESSAGE_WITH_IMAGE,
-                    EXTRA_CHANNEL_ID to cid,
-                    EXTRA_IMAGE_URI to imageUri)
+                               EXTRA_CHANNEL_ID to cid,
+                               EXTRA_IMAGE_URI to imageUri)
         }
 
         fun deleteMessage(context: Context, messageId: String) {
             makeAndStartIntent(context, ACTION_DELETE_MESSAGE,
-                    EXTRA_MESSAGE_ID to messageId)
+                               EXTRA_MESSAGE_ID to messageId)
         }
 
         fun leaveChannel(context: Context, cid: String) {
             makeAndStartIntent(context, ACTION_LEAVE_CHANNEL,
-                    EXTRA_CHANNEL_ID to cid)
+                               EXTRA_CHANNEL_ID to cid)
         }
 
         fun updateChannelVisibility(context: Context, cid: String, visibility: Boolean) {
             makeAndStartIntent(context, ACTION_UPDATE_CHANNEL_VISIBILITY,
-                    EXTRA_CHANNEL_ID to cid,
-                    EXTRA_VISIBILITY to visibility)
+                               EXTRA_CHANNEL_ID to cid,
+                               EXTRA_VISIBILITY to visibility)
         }
 
         fun sendCommand(context: Context, cid: String, cmd: String, args: String, reply: Boolean = false) {
             makeAndStartIntent(context, ACTION_SEND_COMMAND,
-                    EXTRA_CHANNEL_ID to cid,
-                    EXTRA_CMD to cmd,
-                    EXTRA_ARGS to args,
-                    EXTRA_REPLY to reply
+                               EXTRA_CHANNEL_ID to cid,
+                               EXTRA_CMD to cmd,
+                               EXTRA_ARGS to args,
+                               EXTRA_REPLY to reply
             )
         }
 
         fun createPublicChannel(context: Context, domainId: String, name: String, topic: String) {
             makeAndStartIntent(context, ACTION_CREATE_PUBLIC_CHANNEL,
-                    EXTRA_DOMAIN_ID to domainId,
-                    EXTRA_CHANNEL_NAME to name,
-                    EXTRA_CHANNEL_TOPIC to topic)
+                               EXTRA_DOMAIN_ID to domainId,
+                               EXTRA_CHANNEL_NAME to name,
+                               EXTRA_CHANNEL_TOPIC to topic)
         }
 
         private fun makeAndStartIntent(context: Context, action: String, vararg extraElements: Pair<String, Any>) {

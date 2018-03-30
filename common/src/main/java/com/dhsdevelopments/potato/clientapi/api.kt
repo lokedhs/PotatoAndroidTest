@@ -26,6 +26,7 @@ import com.dhsdevelopments.potato.clientapi.users.LoadUsersResult
 import com.dhsdevelopments.potato.common.Log
 import com.google.gson.annotations.SerializedName
 import okhttp3.MediaType
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
 import retrofit2.Call
@@ -36,7 +37,7 @@ import java.io.IOException
 
 interface PotatoApi {
     @GET("server")
-    fun getServerInfo(): Call<ServerInfoResult>
+    fun serverInfo(): Call<ServerInfoResult>
 
     @GET("domains/{domainId}")
     fun getAllChannelsInDomain(@Header("API-token") apiKey: String,
@@ -84,7 +85,8 @@ interface PotatoApi {
     @POST("channel/{cid}/upload")
     fun sendMessageWithFile(@Header("API-token") apiKey: String,
                             @Path("cid") channelId: String,
-                            @PartMap params: Map<String, Any>): Call<SendMessageResult>
+                            @Part("content") message: SendMessageRequest,
+                            @Part file: MultipartBody.Part): Call<SendMessageResult>
 
     @GET("channel/{cid}/users")
     fun loadUsers(@Header("API-token") apiKey: String,
@@ -163,8 +165,12 @@ class ClearNotificationsResult : RemoteResult {
     override fun toString(): String = "ClearNotificationsResult[result='$result']"
 }
 
-class ImageUriRequestBody(private val context: Context, private val imageUri: Uri) : RequestBody() {
-    private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri)) ?: throw IllegalStateException("Illegal media type (not well formed)")
+class ImageUriRequestBody(
+        private val context: Context,
+        private val imageUri: Uri) : RequestBody() {
+
+    private val mediaType: MediaType = MediaType.parse(context.contentResolver.getType(imageUri))
+            ?: throw IllegalStateException("Illegal media type (not well formed)")
 
     override fun contentType(): MediaType = mediaType
 
@@ -191,12 +197,10 @@ fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Uni
         val errMsg = body.errorMsg()
         if (errMsg == null) {
             successCallback(body)
-        }
-        else {
+        } else {
             errorCallback(errMsg)
         }
-    }
-    else {
+    } else {
         errorCallback("Call failed, code: ${result.code()}, message: ${result.message()}")
     }
 }
@@ -210,12 +214,10 @@ fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (Stri
                     val errorMessage = response.body()!!.errorMsg()
                     if (errorMessage == null) {
                         successCallback(response.body()!!)
-                    }
-                    else {
+                    } else {
                         errorCallback(errorMessage)
                     }
-                }
-                else {
+                } else {
                     errorCallback("Call failed, code: ${response.code()}, message: ${response.message()}")
                 }
             }

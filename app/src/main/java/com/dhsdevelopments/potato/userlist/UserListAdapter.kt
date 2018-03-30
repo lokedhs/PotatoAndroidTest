@@ -28,13 +28,13 @@ class UserListAdapter(private val parentActivity: HasChannelContentActivity) : R
         comparator = Comparator { o1, o2 -> collator.compare(o1.name, o2.name) }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         parentActivity.findUserTracker().addUserActivityListener(listener)
         loadStateFromUserTracker()
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         parentActivity.findUserTracker().removeUserActivityListener(listener)
         super.onDetachedFromRecyclerView(recyclerView)
     }
