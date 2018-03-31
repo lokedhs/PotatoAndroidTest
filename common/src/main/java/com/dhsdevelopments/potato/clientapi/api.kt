@@ -190,7 +190,7 @@ class ImageUriRequestBody(
     }
 }
 
-fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit, successCallback: (T) -> Unit) {
+fun <T : RemoteResult> callService(call: Call<T>, errorCallback: (String) -> Unit = ::plainErrorHandler, successCallback: (T) -> Unit) {
     val result = call.execute()
     if (result.isSuccessful) {
         val body = result.body()!!
