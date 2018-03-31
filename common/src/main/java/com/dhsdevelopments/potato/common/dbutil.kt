@@ -53,34 +53,45 @@ interface ChannelConfigDao {
     fun updateChannelConfig(channelConfig: ChannelConfigDescriptor)
 }
 
-@Database(entities = [(ChannelDescriptor::class), (DomainDescriptor::class), (ChannelConfigDescriptor::class)], version = 1, exportSchema = false)
+@Database(entities = [ChannelDescriptor::class, DomainDescriptor::class, ChannelConfigDescriptor::class], version = 1, exportSchema = false)
 abstract class PotatoDatabase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
     abstract fun domainDao(): DomainDao
     abstract fun channelConfigDao(): ChannelConfigDao
 
+    /**
+     * Execute an SQL statement.
+     *
+     * This function is needed becasue when using [query] the statement is only executed
+     * once a method is called on the cursor that is returned.
+     */
+    fun runStatement(sql: String, args: Array<Any>?) {
+        query(sql, args).use { c ->
+            c.count
+        }
+    }
+
     fun deleteChannelsAndDomains() {
-        query("delete from channels", null).close()
-        query("delete from domains", null).close()
+        runStatement("delete from channels", null)
+        runStatement("delete from domains", null)
     }
 
     fun updateShowUnread(cid: String, showUnread: Boolean) {
         val channelConfig = channelConfigDao().findByChannelId(cid)
         if (channelConfig == null) {
             channelConfigDao().insertChannelConfig(ChannelConfigDescriptor(cid, false, showUnread))
-        }
-        else if (channelConfig.showUnread != showUnread) {
+        } else if (channelConfig.showUnread != showUnread) {
             channelConfig.showUnread = showUnread
             channelConfigDao().updateChannelConfig(channelConfig)
         }
     }
 
     fun updateVisibility(cid: String, hidden: Boolean) {
-        query("update channels set hidden = ? where id = ?", arrayOf(hidden, cid))
+        runStatement("update channels set hidden = ? where id = ?", arrayOf(hidden, cid))
     }
 
     fun deleteChannel(cid: String) {
-        query("delete from channel where id = ?", arrayOf(cid))
+        runStatement("delete from channels where id = ?", arrayOf(cid))
     }
 }
 
@@ -94,7 +105,8 @@ object DbTools {
 
     fun loadChannelInfoFromDb(context: Context, cid: String): ChannelDescriptor {
         val db = CommonApplication.getInstance(context).cacheDatabase
-        val channel = db.channelDao().findById(cid) ?: throw IllegalArgumentException("Attempt to load nonexistent channel")
+        val channel = db.channelDao().findById(cid)
+                ?: throw IllegalArgumentException("Attempt to load nonexistent channel")
         return channel
     }
 
@@ -123,11 +135,10 @@ object DbTools {
         val db = CommonApplication.getInstance(context).cacheDatabase
         if (db.channelDao().findCollectionById(cid).isEmpty()) {
             fn()
-        }
-        else {
+        } else {
             refreshChannelEntryInDb(context, cid,
-                    { message -> throw RuntimeException("Error loading channel info: $message") },
-                    { fn() })
+                                    { message -> throw RuntimeException("Error loading channel info: $message") },
+                                    { fn() })
         }
     }
 
@@ -137,8 +148,8 @@ object DbTools {
         callServiceBackground(call, {
             errorFn(it)
         }, {
-            updateChannelInDatabase(context, it); successFn(it)
-        })
+                                  updateChannelInDatabase(context, it); successFn(it)
+                              })
     }
 
     private fun updateChannelInDatabase(context: Context, c: LoadChannelInfoResult) {
