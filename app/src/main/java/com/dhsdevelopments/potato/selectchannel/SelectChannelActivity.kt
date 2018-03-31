@@ -33,13 +33,13 @@ class SelectChannelActivity : Activity() {
     }
 
     private fun createChannelClicked() {
-        startActivity(Intent(this, CreateChannelActivity::class.java).apply {putExtra(CreateChannelActivity.EXTRA_DOMAIN_ID, domainId)})
+        startActivity(Intent(this, CreateChannelActivity::class.java).apply { putExtra(CreateChannelActivity.EXTRA_DOMAIN_ID, domainId) })
     }
 
     fun channelSelected(channel: AvailableChannel) {
         DbTools.refreshChannelEntryInDb(this, channel.id,
-                { message -> returnError(message) },
-                { returnChannel(channel) })
+                                        { message -> returnError(message) },
+                                        { returnChannel(channel) })
     }
 
     private fun returnChannel(channel: AvailableChannel) {
