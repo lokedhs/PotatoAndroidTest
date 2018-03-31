@@ -108,7 +108,7 @@ class ReadServerNameActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val validUrlRegexp = Regex("^(?:https?://)?[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*/?$")
+        private val validUrlRegexp = Regex("^(?:https?://)?[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*(?::[0-9]+)?/?$")
         private val protocolRegexp = Regex("^https?://.*$")
     }
 }
