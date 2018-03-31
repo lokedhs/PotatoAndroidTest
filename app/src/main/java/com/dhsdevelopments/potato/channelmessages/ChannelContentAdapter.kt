@@ -108,8 +108,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                     isLoading = false
                     if (response.isSuccessful) {
                         callback(response.body()!!.messages)
-                    }
-                    else {
+                    } else {
                         Log.e("Server error when loading message history. code=${response.code()}, message=${response.message()}")
                         errorCallback("HTTP error: " + response.code())
                     }
@@ -142,8 +141,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     fun loadMoreMessages(callback: LoadMessagesCallback) {
         if (messages.isEmpty()) {
             loadMessages(callback)
-        }
-        else {
+        } else {
             val lastMessageId = messages[0].id
             loadMessageHistory(lastMessageId, {
                 val parsed = parseMessageList(it)
@@ -182,8 +180,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
     override fun getItemViewType(position: Int): Int {
         return if (position == messages.size) {
             VIEW_TYPE_END_OF_CHANNEL_MARKER
-        }
-        else {
+        } else {
             val m = messages[position]
             if (m.extraHtml == null && m.image == null) VIEW_TYPE_PLAIN_MESSAGE else VIEW_TYPE_EXTRA_CONTENT
         }
@@ -210,8 +207,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                     notifyItemChanged(pos)
                 }
             }
-        }
-        else {
+        } else {
             // This is an update. Only update if the message is already in the log.
             if (pos >= 0) {
                 if (msg.deleted) {
@@ -220,8 +216,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                     if (updateDisplayStateForPosition(pos)) {
                         notifyItemChanged(pos)
                     }
-                }
-                else {
+                } else {
                     messages[pos] = w
                     notifyItemChanged(pos)
                 }
@@ -349,8 +344,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
             if (message.extraHtml != null) {
                 htmlContentView.text = Html.fromHtml(message.extraHtml, 0)
                 htmlContentView.visibility = View.VISIBLE
-            }
-            else {
+            } else {
                 htmlContentView.text = ""
                 htmlContentView.visibility = View.GONE
             }
@@ -375,8 +369,7 @@ class ChannelContentAdapter(private val parent: ChannelContentFragment, private 
                 val imageWidth = res.getDimensionPixelSize(R.dimen.message_image_width)
                 val imageHeight = res.getDimensionPixelSize(R.dimen.message_image_height)
                 imageCache.loadImageFromApi(messageImage.file, imageWidth, imageHeight, StorageType.LONG, callback)
-            }
-            else {
+            } else {
                 imageView.setImageDrawable(null)
                 imageView.visibility = View.GONE
             }
