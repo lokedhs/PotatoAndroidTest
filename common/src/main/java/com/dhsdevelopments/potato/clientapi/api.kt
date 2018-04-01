@@ -219,7 +219,8 @@ fun <T : RemoteResult> callServiceBackground(call: Call<T>, errorCallback: (Stri
                         errorCallback(errorMessage)
                     }
                 } else {
-                    errorCallback("Call failed, code: ${response.code()}, message: ${response.message()}")
+                    val error = response.errorBody()?.string() ?: "No error body"
+                    errorCallback("Call failed, code: ${response.code()}, message: ${response.message()}, body: $error")
                 }
             }
         }
