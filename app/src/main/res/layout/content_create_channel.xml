@@ -8,28 +8,41 @@
     tools:context="com.dhsdevelopments.potato.createchannel.CreateChannelActivity"
     tools:showIn="@layout/activity_create_channel">
 
-    <EditText
-        android:id="@+id/create_channel_name_field"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/create_channel_name_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/create_channel_topic_field"
+        <EditText
+            android:id="@+id/create_channel_name_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/create_channel_name_label"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/create_channel_topic_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Topic"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_channel_name_field"/>
+        app:layout_constraintTop_toBottomOf="@+id/create_channel_name_input_layout">
+
+        <EditText
+            android:id="@+id/create_channel_topic_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="@string/create_channel_topic_label"/>
+
+    </android.support.design.widget.TextInputLayout>
 
 </android.support.constraint.ConstraintLayout>

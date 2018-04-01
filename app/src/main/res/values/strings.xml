@@ -88,4 +88,6 @@
     <string name="request_server_connection_error">Error: %1$s</string>
     <string name="request_server_connect_failed">Connection error</string>
     <string name="pref_gcm_sender">gcmSender</string>
+    <string name="create_channel_name_label">Name</string>
+    <string name="create_channel_topic_label">Topic</string>
 </resources>
