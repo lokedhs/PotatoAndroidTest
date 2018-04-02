@@ -30,6 +30,15 @@ interface ChannelDao {
 
     @Update
     fun updateChannel(channel: ChannelDescriptor)
+
+    @Query("delete from channels where id = :id")
+    fun deleteById(id: String)
+
+    @Query("update channels set hidden = :hidden where id = :id")
+    fun updateChannelVisibility(id: String, hidden: Boolean)
+
+    @Query("delete from channels")
+    fun deleteAllChannels()
 }
 
 @Dao
@@ -39,6 +48,9 @@ interface DomainDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDomain(domain: DomainDescriptor)
+
+    @Query("delete from domains")
+    fun deleteAllDomains()
 }
 
 @Dao
@@ -59,21 +71,9 @@ abstract class PotatoDatabase : RoomDatabase() {
     abstract fun domainDao(): DomainDao
     abstract fun channelConfigDao(): ChannelConfigDao
 
-    /**
-     * Execute an SQL statement.
-     *
-     * This function is needed becasue when using [query] the statement is only executed
-     * once a method is called on the cursor that is returned.
-     */
-    fun runStatement(sql: String, args: Array<Any>?) {
-        query(sql, args).use { c ->
-            c.count
-        }
-    }
-
     fun deleteChannelsAndDomains() {
-        runStatement("delete from channels", null)
-        runStatement("delete from domains", null)
+        channelDao().deleteAllChannels()
+        domainDao().deleteAllDomains()
     }
 
     fun updateShowUnread(cid: String, showUnread: Boolean) {
@@ -87,11 +87,11 @@ abstract class PotatoDatabase : RoomDatabase() {
     }
 
     fun updateVisibility(cid: String, hidden: Boolean) {
-        runStatement("update channels set hidden = ? where id = ?", arrayOf(hidden, cid))
+        channelDao().updateChannelVisibility(cid, hidden)
     }
 
     fun deleteChannel(cid: String) {
-        runStatement("delete from channels where id = ?", arrayOf(cid))
+        channelDao().deleteById(cid)
     }
 }
 
