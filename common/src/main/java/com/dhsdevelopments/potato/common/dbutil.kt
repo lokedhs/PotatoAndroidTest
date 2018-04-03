@@ -137,8 +137,8 @@ object DbTools {
             fn()
         } else {
             refreshChannelEntryInDb(context, cid,
-                                    { message -> throw RuntimeException("Error loading channel info: $message") },
-                                    { fn() })
+                    { message -> throw RuntimeException("Error loading channel info: $message") },
+                    { fn() })
         }
     }
 
@@ -148,8 +148,8 @@ object DbTools {
         callServiceBackground(call, {
             errorFn(it)
         }, {
-                                  updateChannelInDatabase(context, it); successFn(it)
-                              })
+            updateChannelInDatabase(context, it); successFn(it)
+        })
     }
 
     private fun updateChannelInDatabase(context: Context, c: LoadChannelInfoResult) {
