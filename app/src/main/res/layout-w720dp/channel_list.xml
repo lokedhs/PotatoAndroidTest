@@ -1,15 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_marginLeft="16dp"
-              android:layout_marginRight="16dp"
-              android:baselineAligned="false"
-              android:divider="?android:attr/dividerHorizontal"
-              android:orientation="horizontal"
-              android:showDividers="middle"
-              tools:context=".channellist.ChannelListActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:baselineAligned="false"
+        android:divider="?android:attr/dividerHorizontal"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        tools:context=".channellist.ChannelListActivity">
 
     <!--
     This layout is a two-pane layout for the Channels
@@ -26,16 +26,16 @@
             tools:context=".channellist.ChannelListActivity">
 
         <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                                                xmlns:tools="http://schemas.android.com/tools"
-                                                android:id="@+id/channel_list"
-                                                android:name="androidclient.potato.dhsdevelopments.com.potatoandroidtest.ChannelListFragment"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:layout_marginLeft="16dp"
-                                                android:layout_marginRight="16dp"
-                                                app:layoutManager="LinearLayoutManager"
-                                                tools:context=".channellist.ChannelListActivity"
-                                                tools:listitem="@layout/channel_list_content"/>
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/channel_list"
+                android:name="androidclient.potato.dhsdevelopments.com.potatoandroidtest.ChannelListFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:layoutManager="LinearLayoutManager"
+                tools:context=".channellist.ChannelListActivity"
+                tools:listitem="@layout/channel_list_content"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

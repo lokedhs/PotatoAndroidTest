@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_option_search_history"
-          android:icon="@android:drawable/ic_menu_search"
-          android:title="@string/channel_content_toolbar_search"
-          app:showAsAction="ifRoom|collapseActionView"
-          app:actionViewClass="android.support.v7.widget.SearchView"/>
-    <item android:id="@+id/menu_option_show_users"
-          android:icon="@android:drawable/ic_menu_send"
-          android:title="@string/menu_show_users"
-          app:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_option_send_image"
-          android:icon="@android:drawable/ic_menu_gallery"
-          android:title="@string/channel_content_toolbar_upload_photo"
-          app:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_option_notify_unread"
-          android:title="@string/channel_content_toolbar_notify_unread"
-          app:showAsAction="never"
-          android:checkable="true"/>
-    <item android:id="@+id/menu_option_leave_channel"
-          android:title="@string/channel_content_toolbar_leave_channel"
-          app:showAsAction="never"/>
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/menu_option_search_history"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/channel_content_toolbar_search"
+            app:showAsAction="ifRoom|collapseActionView"
+            app:actionViewClass="android.support.v7.widget.SearchView"/>
+    <item
+            android:id="@+id/menu_option_show_users"
+            android:icon="@android:drawable/ic_menu_send"
+            android:title="@string/menu_show_users"
+            app:showAsAction="ifRoom"/>
+    <item
+            android:id="@+id/menu_option_send_image"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/channel_content_toolbar_upload_photo"
+            app:showAsAction="ifRoom"/>
+    <item
+            android:id="@+id/menu_option_notify_unread"
+            android:title="@string/channel_content_toolbar_notify_unread"
+            app:showAsAction="never"
+            android:checkable="true"/>
+    <item
+            android:id="@+id/menu_option_leave_channel"
+            android:title="@string/channel_content_toolbar_leave_channel"
+            app:showAsAction="never"/>
 </menu>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackground">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground">
 
     <TextView
             android:id="@+id/content"
@@ -15,17 +15,21 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:layout_alignParentEnd="true" android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:text="Channel name"
             tools:ignore="HardcodedText"/>
 
     <TextView
             android:id="@+id/unread_messages"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true" android:layout_alignBaseline="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBaseline="@+id/content"
             android:background="@drawable/unread_indicator"
             android:padding="5dip"
-            android:text="1" tools:ignore="HardcodedText"/>
+            android:text="1"
+            tools:ignore="HardcodedText"/>
 
 </RelativeLayout>

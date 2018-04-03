@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_width="wrap_content"
@@ -21,6 +20,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             tools:ignore="HardcodedText"/>
+
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,6 +28,7 @@
             android:layout_below="@+id/option_title"
             android:layout_centerHorizontal="true"
             android:contentDescription="@string/option_dialog_view_image_content_description"/>
+
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/channel_detail"
-                style="?android:attr/textAppearanceLarge"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textIsSelectable="true"
-                tools:context=".channelmessages.ChannelContentFragment"
-                android:orientation="vertical">
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/channel_detail"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textIsSelectable="true"
+        tools:context=".channelmessages.ChannelContentFragment"
+        android:orientation="vertical">
 
     <LinearLayout
             android:id="@+id/scroll_down_panel"
@@ -24,6 +24,7 @@
             android:layout_gravity="end"
             android:visibility="gone"
             android:elevation="4dp">
+
         <Button
                 android:id="@+id/scroll_to_bottom"
                 android:layout_height="wrap_content"
@@ -56,22 +57,29 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
-            android:hint="@string/post_message_hint" android:layout_toStartOf="@+id/send_button"/>
+            android:hint="@string/post_message_hint"
+            android:layout_toStartOf="@+id/send_button"/>
+
     <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/post_button_text"
-            android:id="@+id/send_button" android:layout_alignParentBottom="true"
+            android:id="@+id/send_button"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/message_input_field" android:layout_alignBottom="@+id/message_input_field"/>
+            android:layout_alignTop="@+id/message_input_field"
+            android:layout_alignBottom="@+id/message_input_field"/>
+
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/typing_text_view" android:layout_alignBottom="@+id/channel_content_refresh"
-            android:layout_alignParentStart="true" android:layout_alignEnd="@+id/channel_content_refresh"
+            android:id="@+id/typing_text_view"
+            android:layout_alignBottom="@+id/channel_content_refresh"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/channel_content_refresh"
             android:gravity="end"/>
 
 </RelativeLayout>

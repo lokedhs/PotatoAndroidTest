@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
     <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Some text field"
-            android:id="@+id/textView2" tools:ignore="HardcodedText"/>
+            tools:ignore="HardcodedText"/>
+
     <EditText
+            android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText" android:text="Some text to be edited here" tools:ignore="HardcodedText,LabelFor,TextFields"/>
+            android:text="Some text to be edited here"
+            tools:ignore="HardcodedText,LabelFor,TextFields"/>
+
     <Button
+            android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Test button"
-            android:id="@+id/button" tools:ignore="HardcodedText"/>
+            tools:ignore="HardcodedText"/>
 </LinearLayout>

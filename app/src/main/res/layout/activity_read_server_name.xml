@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.dhsdevelopments.potato.initial.ReadServerNameActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.dhsdevelopments.potato.initial.ReadServerNameActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/request_server_name_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/server_url"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:labelFor="@id/request_server_name_url"
-            tools:text="Server URL"/>
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+                android:id="@+id/request_server_name_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/server_url"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:labelFor="@id/request_server_name_url"
+                tools:text="Server URL"/>
 
         <EditText
-            android:id="@+id/request_server_name_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/server_url_hint"
-            android:inputType="textUri"/>
+                android:id="@+id/request_server_name_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/server_url_hint"
+                android:inputType="textUri"/>
 
         <Button
-            android:id="@+id/request_server_name_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="connectClicked"
-            android:text="@string/connect"
-            tools:text="Connect" />
+                android:id="@+id/request_server_name_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="connectClicked"
+                android:text="@string/connect"
+                tools:text="Connect"/>
 
         <ProgressBar
-            android:id="@+id/connect_progress"
-            style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:layout_editor_absoluteX="167dp"
-            tools:layout_editor_absoluteY="148dp"
-            tools:visibility="visible" />
+                android:id="@+id/connect_progress"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:layout_editor_absoluteX="167dp"
+                tools:layout_editor_absoluteY="148dp"
+                tools:visibility="visible"/>
 
         <TextView
-            android:id="@+id/error_message_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_red_dark"
-            android:visibility="gone"
-            tools:layout_editor_absoluteX="162dp"
-            tools:layout_editor_absoluteY="196dp"
-            tools:text="Error message"
-            tools:visibility="visible" />
+                android:id="@+id/error_message_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_red_dark"
+                android:visibility="gone"
+                tools:layout_editor_absoluteX="162dp"
+                tools:layout_editor_absoluteY="196dp"
+                tools:text="Error message"
+                tools:visibility="visible"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
