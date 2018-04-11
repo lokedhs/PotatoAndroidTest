@@ -8,7 +8,6 @@ import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.login.WebLoginActivity
-import com.dhsdevelopments.potato.service.RegistrationIntentService
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
@@ -67,9 +66,10 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
             return false
         } else {
-            val intent = Intent(this, RegistrationIntentService::class.java)
-            intent.action = RegistrationIntentService.ACTION_REGISTER
-            startService(intent)
+            Log.w("Not calling registration directly, it should be called anyway")
+//            val intent = Intent(this, RegistrationIntentService::class.java)
+//            intent.action = RegistrationIntentService.ACTION_REGISTER
+//            startService(intent)
             return true
         }
     }

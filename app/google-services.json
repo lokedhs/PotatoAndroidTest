@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "274254878033",
-    "project_id": "potato-android-test"
+    "firebase_url": "https://potato-android-test.firebaseio.com",
+    "project_id": "potato-android-test",
+    "storage_bucket": "potato-android-test.appspot.com"
   },
   "client": [
     {
@@ -11,8 +13,29 @@
           "package_name": "com.dhsdevelopments.potato"
         }
       },
-      "oauth_client": [],
-      "api_key": [{ "current_key": "" }],
+      "oauth_client": [
+        {
+          "client_id": "274254878033-29jq0jcqehgbkrul4kuevtij9dem8jrc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dhsdevelopments.potato",
+            "certificate_hash": "a8c474bb63fa55aea4398e360d612157d9c8cb1a"
+          }
+        },
+        {
+          "client_id": "274254878033-quhol8l1ue07vmuck9tupslv45396ibd.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "274254878033-o45rhp431st4av6n3vop6lg2pm3rbd3n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS38gXBgXkl3bTW3z_SHdgVsGoGGB2qdY"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
@@ -22,7 +45,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

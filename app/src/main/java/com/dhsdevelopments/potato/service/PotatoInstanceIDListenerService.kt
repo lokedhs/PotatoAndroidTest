@@ -1,15 +1,18 @@
 package com.dhsdevelopments.potato.service
 
-import android.content.Intent
 import com.dhsdevelopments.potato.common.Log
-import com.google.android.gms.iid.InstanceIDListenerService
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.FirebaseInstanceIdService
 
-class PotatoInstanceIDListenerService : InstanceIDListenerService() {
+class PotatoInstanceIDListenerService : FirebaseInstanceIdService() {
     override fun onTokenRefresh() {
         Log.d("Got token refresh message")
-
-        val intent = Intent(this, RegistrationIntentService::class.java)
-        intent.action = RegistrationIntentService.ACTION_REGISTER
-        startService(intent)
+        val updatedToken = FirebaseInstanceId.getInstance().token
+        if(updatedToken == null) {
+            Log.e("Received null token from Firebase id listener")
+        }
+        else {
+            RegistrationIntentService.sendTokenToServer(this, updatedToken)
+        }
     }
 }
