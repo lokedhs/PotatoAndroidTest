@@ -17,6 +17,16 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
 
         private const val PREFS_KEY_GCM_REGISTERED = "gcmRegisterOk"
 
+        fun tokenUpdated(context: Context) {
+            val updatedToken = FirebaseInstanceId.getInstance().token
+            if(updatedToken != null) {
+                val app = PotatoApplication.getInstance(context)
+                if(app.isAuthenticated()) {
+                    sendTokenToServer(context, updatedToken)
+                }
+            }
+        }
+
         fun sendTokenToServer(context: Context, token: String) {
             val app = PotatoApplication.getInstance(context)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
@@ -51,20 +61,6 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
     }
 
     private fun handleRegister() {
-        val app = PotatoApplication.getInstance(this)
-
-        val gcmSenderId = app.findGcmSenderId()
-        Log.d("Found GCM sender: $gcmSenderId")
-        if (gcmSenderId != "") {
-            val token = FirebaseInstanceId.getInstance().token
-            if (token == null) {
-                Log.e("Firebase token was null")
-                return
-            }
-
-            Log.d("Got token: $token")
-
-            sendTokenToServer(this, token)
-        }
+        tokenUpdated(this)
     }
 }

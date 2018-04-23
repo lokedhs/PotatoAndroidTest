@@ -19,6 +19,7 @@ abstract class CommonApplication : Application() {
     abstract fun findApiKey(): String
     abstract fun findUserId(): String
     abstract fun findGcmSenderId(): String
+    abstract fun isAuthenticated(): Boolean
 
     companion object {
         fun getInstance(context: Context) = context.applicationContext as CommonApplication

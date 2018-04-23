@@ -10,6 +10,7 @@ import android.webkit.WebViewClient
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.initial.PotatoActivity
+import com.dhsdevelopments.potato.service.RegistrationIntentService
 
 class WebLoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +43,10 @@ class WebLoginActivity : AppCompatActivity() {
                         editor.putString(getString(R.string.pref_apikey), key)
                         editor.putString(getString(R.string.pref_user_id), uid)
                         editor.apply()
+
+                        val registrationIntent = Intent(this@WebLoginActivity, RegistrationIntentService::class.java)
+                        registrationIntent.action = RegistrationIntentService.ACTION_REGISTER
+                        startService(registrationIntent)
 
                         val intent = Intent(this@WebLoginActivity, PotatoActivity::class.java)
                         startActivity(intent)

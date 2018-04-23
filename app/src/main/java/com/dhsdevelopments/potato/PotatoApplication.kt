@@ -21,11 +21,11 @@ class PotatoApplication : CommonApplication() {
         imageCache.purge(IMAGE_CACHE_PURGE_CUTOFF_LONG, IMAGE_CACHE_PURGE_CUTOFF_SHORT)
     }
 
-    private fun getPrefByName(name: Int): String {
+    private fun getPrefByName(name: Int, allowEmpty: Boolean = false): String {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val prefName = getString(name)
         val value = prefs.getString(prefName, "")
-        if (value == "") {
+        if (value == "" && !allowEmpty) {
             throw RuntimeException("Preference value not found: $prefName")
         }
         return value
@@ -33,6 +33,7 @@ class PotatoApplication : CommonApplication() {
 
     override fun findApiProvider() = apiProvider
     override fun findApiKey(): String = getPrefByName(R.string.pref_apikey)
+    override fun isAuthenticated(): Boolean = getPrefByName(R.string.pref_apikey, true) != ""
 
     override fun findGcmSenderId(): String {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
