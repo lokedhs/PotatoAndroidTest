@@ -35,7 +35,6 @@
         <activity android:name=".initial.PotatoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -46,7 +45,13 @@
         <activity
                 android:name=".selectchannel.SelectChannelActivity"
                 android:theme="@android:style/Theme.Material.Light.Dialog"/>
-        <activity android:name=".tester.TesterActivity"/>
+        <activity
+                android:name=".tester.TesterActivity" android:label="Potato Tester">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity
                 android:name=".tester.TesterFabActivity"
                 android:label="@string/title_activity_tester_fab"

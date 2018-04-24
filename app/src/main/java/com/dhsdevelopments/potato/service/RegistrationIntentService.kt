@@ -61,6 +61,7 @@ class RegistrationIntentService : IntentService("RegistrationIntentService") {
     }
 
     private fun handleRegister() {
+        //FirebaseInstanceId.getInstance().
         tokenUpdated(this)
     }
 }

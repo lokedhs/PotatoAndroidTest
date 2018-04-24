@@ -1,11 +1,11 @@
 package com.dhsdevelopments.potato.service
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.support.v4.app.NotificationCompat
 import com.dhsdevelopments.potato.PotatoApplication
 import com.dhsdevelopments.potato.R
 import com.dhsdevelopments.potato.channellist.ChannelListActivity
@@ -134,10 +134,10 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
         }
     }
 
-    private fun sendNotification(tag: String?, id: Int, config: NotificationConfigProvider, callback: (Notification.Builder) -> Unit) {
+    private fun sendNotification(tag: String?, id: Int, config: NotificationConfigProvider, callback: (NotificationCompat.Builder) -> Unit) {
         val prefs = getSharedPreferences("com.dhsdevelopments.potato_preferences", MODE_PRIVATE)
         if (prefs.getBoolean(config.enabledKey, true)) {
-            val builder = Notification.Builder(this)
+            val builder = NotificationCompat.Builder(this, PotatoApplication.NOTIFICATION_CHANNEL_ID)
                     .setAutoCancel(true)
                     .setOnlyAlertOnce(true)
 
