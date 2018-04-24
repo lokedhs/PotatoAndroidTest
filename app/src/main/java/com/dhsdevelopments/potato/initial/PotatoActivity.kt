@@ -24,12 +24,11 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         val serverName = prefs.getString(getString(R.string.pref_servername), "")
-        if(serverName == "") {
+        if (serverName == "") {
             val intent = Intent(this, ReadServerNameActivity::class.java)
             startActivity(intent)
             finish()
-        }
-        else {
+        } else {
             val apiKey = prefs.getString(getString(R.string.pref_apikey), "")
             if (apiKey == "") {
                 val intent = Intent(this, WebLoginActivity::class.java)
@@ -80,8 +79,8 @@ class PotatoActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(resultCode == AVAILABILITY_DIALOG_RESULT) {
-            if(checkGooglePlayApis()) {
+        if (resultCode == AVAILABILITY_DIALOG_RESULT) {
+            if (checkGooglePlayApis()) {
                 startChannelListActivity()
             }
         }

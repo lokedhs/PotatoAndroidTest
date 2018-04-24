@@ -13,6 +13,7 @@ import com.dhsdevelopments.potato.channelmessages.ChannelContentActivity
 import com.dhsdevelopments.potato.channelmessages.ChannelContentFragment
 import com.dhsdevelopments.potato.common.Log
 import com.dhsdevelopments.potato.common.PotatoDatabase
+import com.dhsdevelopments.potato.common.markupToPlain
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -42,8 +43,7 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
         val messageType = data["potato_message_type"]
         if (messageType == null) {
             Log.e("Missing message_type in notification")
-        }
-        else {
+        } else {
             when (messageType) {
                 "message" -> processMessage(data)
                 "unread" -> processUnread(data)
@@ -51,7 +51,7 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
         }
     }
 
-    private fun processMessage(data: Map<String,String>) {
+    private fun processMessage(data: Map<String, String>) {
         //val messageId = data.getString("message_id")
         val notificationType = data["notification_type"]
         val text = data["text"]
@@ -59,7 +59,7 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
         val senderName = data["sender_name"]
         val channelId = data["channel"]
 
-        if(notificationType == null || text == null || senderName == null || channelId == null) {
+        if (notificationType == null || text == null || senderName == null || channelId == null) {
             Log.e("Missing data in incoming new message notification: $data")
             return
         }
@@ -81,16 +81,16 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
                         "WORD" -> "Keyword mentioned from $senderName"
                         else -> "Notification in channel from $senderName"
                     })
-                    .setContentText(text).setAutoCancel(true)
+                    .setContentText(markupToPlain(text)).setAutoCancel(true)
                     .setContentIntent(pendingIntent)
         }
     }
 
-    private fun processUnread(data: Map<String,String>) {
+    private fun processUnread(data: Map<String, String>) {
         val cid = data["channel"]
         val unreadCountString = data["unread"]
 
-        if(cid == null || unreadCountString == null) {
+        if (cid == null || unreadCountString == null) {
             Log.e("Missing data in unread notification: $data")
             return
         }
@@ -100,7 +100,7 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
 
         val db = PotatoApplication.getInstance(this).cacheDatabase
         val channel = db.channelDao().findById(cid)
-        if(channel != null) {
+        if (channel != null) {
             channel.unreadCount = unreadCount
             db.channelDao().updateChannel(channel)
             sendUnreadNotification(db)
@@ -113,8 +113,7 @@ class PotatoGcmListenerService : FirebaseMessagingService() {
             val mgr = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (unread == 0) {
                 mgr.cancel(UNREAD_NOTIFICATIONS_TAG, UNREAD_NOTIFICATION_ID)
-            }
-            else {
+            } else {
                 val config = object : NotificationConfigProvider {
                     override val enabledKey = getString(R.string.pref_notifications_unread)
                     override val vibrateKey = getString(R.string.pref_notifications_unread_vibrate)

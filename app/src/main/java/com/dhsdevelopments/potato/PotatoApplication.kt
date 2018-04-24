@@ -24,7 +24,7 @@ class PotatoApplication : CommonApplication() {
         val imageCache = ImageCache(this)
         imageCache.purge(IMAGE_CACHE_PURGE_CUTOFF_LONG, IMAGE_CACHE_PURGE_CUTOFF_SHORT)
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(NotificationChannel(NOTIFICATION_CHANNEL_ID, "Potato", NotificationManager.IMPORTANCE_DEFAULT))
         }
