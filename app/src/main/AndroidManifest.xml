@@ -46,12 +46,8 @@
                 android:name=".selectchannel.SelectChannelActivity"
                 android:theme="@android:style/Theme.Material.Light.Dialog"/>
         <activity
-                android:name=".tester.TesterActivity" android:label="Potato Tester">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+                android:name=".tester.TesterActivity"
+                android:label="Potato Tester"/>
         <activity
                 android:name=".tester.TesterFabActivity"
                 android:label="@string/title_activity_tester_fab"
@@ -132,7 +128,7 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.dhsdevelopments.potato.selectchannel.SelectChannelActivity"/>
         </activity>
-        <activity android:name=".initial.ReadServerNameActivity"></activity>
+        <activity android:name=".initial.ReadServerNameActivity"/>
     </application>
 
 </manifest>
