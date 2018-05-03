@@ -14,8 +14,7 @@ import com.dhsdevelopments.potato.clientapi.channelinfo.CreateChannelRequest
 import com.dhsdevelopments.potato.clientapi.command.SendCommandRequest
 import com.dhsdevelopments.potato.clientapi.editchannel.UpdateChannelVisibilityRequest
 import com.dhsdevelopments.potato.clientapi.sendmessage.unreadnotification.SendMessageRequest
-import com.google.android.gms.gcm.GoogleCloudMessaging
-import com.google.android.gms.iid.InstanceID
+import com.google.firebase.iid.FirebaseInstanceId
 import okhttp3.MultipartBody
 import java.io.IOException
 
@@ -102,11 +101,13 @@ class RemoteRequestService : IntentService("RemoteRequestService") {
             return
         }
 
-        val token = InstanceID.getInstance(this).getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
-        val call = app.findApiProvider().makePotatoApi().updateUnreadNotification(app.findApiKey(), cid, UpdateUnreadNotificationRequest(token, add, "gcm"))
-        callService(call) {
-            updateRegistrationInDb(cid, add)
-            com.dhsdevelopments.potato.common.Log.d("Subscription updated successfully")
+        val token = FirebaseInstanceId.getInstance().token
+        if(token != null) {
+            val call = app.findApiProvider().makePotatoApi().updateUnreadNotification(app.findApiKey(), cid, UpdateUnreadNotificationRequest(token, add, "gcm"))
+            callService(call) {
+                updateRegistrationInDb(cid, add)
+                com.dhsdevelopments.potato.common.Log.d("Subscription updated successfully")
+            }
         }
     }
 
